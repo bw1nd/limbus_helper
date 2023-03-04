@@ -1,0 +1,18 @@
+package ua.blackwind.limbushelper.domain.sinner.model
+
+import ua.blackwind.limbushelper.domain.DamageType
+import ua.blackwind.limbushelper.domain.Effect
+import ua.blackwind.limbushelper.domain.Sin
+
+data class Skill(
+    val id: Int,
+    val name: String,
+    val identityId: Int,
+    val dmgType: DamageType,
+    val sin: Sin,
+    val copiesCount: Int,
+    val baseDie: Int,
+    val coinBonus: Int,
+    val coinCount: Int,
+    val effects: List<Effect>
+)

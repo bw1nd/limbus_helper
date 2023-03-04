@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.limbushelper'
+    namespace 'ua.blackwind.limbushelper'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.limbushelper"
+        applicationId "ua.blackwind.limbushelper"
         minSdk 27
         targetSdk 33
         versionCode 1
