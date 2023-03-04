@@ -1,4 +1,4 @@
-# limbus_helper
+# Limbus Helper
 Open source party-building and analyze tool for ProjectMoon's Limbus Company game.
 
 Planned features:
