@@ -12,7 +12,7 @@ data class Identity(
     val bluntRes: IdentityDamageResistType,
     val maxHp: Int,
     val maxArmor: Int,
-    val speed: IntRange,
+    val speed: Pair<Int, Int>,
     val firstSkillId: Int,
     val secondSkillId: Int,
     val thirdSkillId: Int,

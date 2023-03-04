@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import com.example.limbushelper.domain.DamageType
 import com.example.limbushelper.domain.Effect
 import com.example.limbushelper.domain.Sin
+import com.example.limbushelper.domain.parseStringToEffectsList
 import com.example.limbushelper.domain.sinner.model.Skill
 
 @Entity(tableName = "skill")
@@ -19,7 +20,7 @@ data class SkillEntity(
     val baseDie: Int,
     val coinBonus: Int,
     val coinCount: Int,
-    val effects: List<Effect>
+    val effects: String
 )
 
 fun SkillEntity.toSkill() = Skill(
@@ -32,5 +33,7 @@ fun SkillEntity.toSkill() = Skill(
     baseDie = this.baseDie,
     coinBonus = this.coinBonus,
     coinCount = this.coinCount,
-    effects = this.effects
+    effects = this.effects.split(EFFECTS_SEPARATOR).map { it.parseStringToEffectsList() }
 )
+
+private const val EFFECTS_SEPARATOR = ","

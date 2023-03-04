@@ -18,7 +18,7 @@ data class IdentityEntity(
     val bluntRes: IdentityDamageResistType,
     val maxHp: Int,
     val maxArmor: Int,
-    val speed: IntRange,
+    val speed: String,
     val firstSkillId: Int,
     val secondSkillId: Int,
     val thirdSkillId: Int,
@@ -27,6 +27,9 @@ data class IdentityEntity(
     val imageUrl: String
 )
 
+/**
+ * @throws NumberFormatException
+ */
 fun IdentityEntity.toIdentity() = Identity(
     id = this.id,
     name = this.name,
@@ -37,7 +40,8 @@ fun IdentityEntity.toIdentity() = Identity(
     bluntRes = this.bluntRes,
     maxHp = this.maxHp,
     maxArmor = this.maxArmor,
-    speed = this.speed,
+    speed = this.speed.split(SPEED_VALUE_SEPARATOR)
+        .let { Pair(it.first().toInt(), it.last().toInt()) },
     firstSkillId = this.firstSkillId,
     secondSkillId = this.secondSkillId,
     thirdSkillId = this.thirdSkillId,
@@ -45,3 +49,5 @@ fun IdentityEntity.toIdentity() = Identity(
     supportId = this.supportId,
     imageUrl = this.imageUrl
 )
+
+private const val SPEED_VALUE_SEPARATOR = "-"

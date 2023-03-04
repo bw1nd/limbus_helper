@@ -20,3 +20,9 @@ enum class Effect {
     CHARGE,
     AMMO
 }
+
+fun String.parseStringToEffectsList(): Effect {
+    return Effect.values().toList().find { it.name == this }
+        ?: throw Exception("Can't parse string")
+}
+
