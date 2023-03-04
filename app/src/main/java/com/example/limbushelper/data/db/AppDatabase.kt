@@ -18,4 +18,8 @@ import com.example.limbushelper.data.db.model.SkillEntity
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract val dao: Dao
+
+    companion object{
+        const val DB_NAME = "app.db"
+    }
 }
