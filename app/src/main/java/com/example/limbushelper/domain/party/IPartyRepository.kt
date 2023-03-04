@@ -7,13 +7,13 @@ interface IPartyRepository {
 
     fun getParty(): Flow<Party>
 
-    suspend fun addIdentityToParty(identityId: Int, isActive: Boolean)
-
-    suspend fun deleteIdentityFromParty(identityId: Int)
+    /**
+     * @param identity represents party identity by <id, isActive> pair.
+     */
+    suspend fun addIdentityToParty(identity: Pair<Int, Boolean>)
 
     /**
-     * Changes identity with provided Id isActive status to true and previous active identity
-     * (if there was one) to false.
+     * @param identity represents party identity by <id, isActive> pair.
      */
-    suspend fun changeIdentityActiveStatus(identityId: Int)
+    suspend fun deleteIdentityFromParty(identity: Pair<Int, Boolean>)
 }
