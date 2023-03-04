@@ -7,7 +7,7 @@ import com.example.limbushelper.domain.sinner.model.Skill
 interface ISinnerRepository {
     suspend fun getAllSinners(): List<Sinner>
 
-    suspend fun getSinnerById(): List<Sinner>
+    suspend fun getSinnerById(id: Int): Sinner
 
     suspend fun getAllIdentities(): List<Identity>
 
