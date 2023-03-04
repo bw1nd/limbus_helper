@@ -1,10 +1,13 @@
 package com.example.limbushelper.data.db.model
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "party")
 data class PartyEntity(
+    @PrimaryKey
     val id: Int,
-    val identityId: Int,
     val isActive: Boolean
 )
+
+fun PartyEntity.toPartyIdentityPair() = Pair(this.id, this.isActive)
