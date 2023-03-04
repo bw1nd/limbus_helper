@@ -1,6 +1,6 @@
 package com.example.limbushelper.data
 
-import com.example.limbushelper.data.db.Database
+import com.example.limbushelper.data.db.AppDatabase
 import com.example.limbushelper.data.db.model.toIdentity
 import com.example.limbushelper.data.db.model.toSinner
 import com.example.limbushelper.data.db.model.toSkill
@@ -11,7 +11,7 @@ import com.example.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
 
 class SinnerRepository @Inject constructor(
-    db: Database
+    db: AppDatabase
 ): ISinnerRepository {
 
     private val dao = db.dao

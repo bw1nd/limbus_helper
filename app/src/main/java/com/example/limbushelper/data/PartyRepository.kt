@@ -1,6 +1,6 @@
 package com.example.limbushelper.data
 
-import com.example.limbushelper.data.db.Database
+import com.example.limbushelper.data.db.AppDatabase
 import com.example.limbushelper.data.db.model.PartyEntity
 import com.example.limbushelper.data.db.model.toPartyIdentityPair
 import com.example.limbushelper.domain.party.IPartyRepository
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PartyRepository @Inject constructor(
-    db: Database
+    db: AppDatabase
 ): IPartyRepository {
     private val dao = db.dao
 
