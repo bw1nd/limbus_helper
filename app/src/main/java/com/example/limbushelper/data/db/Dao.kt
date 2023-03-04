@@ -1,9 +1,7 @@
 package com.example.limbushelper.data.db
 
+import androidx.room.*
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
 import com.example.limbushelper.data.db.model.IdentityEntity
 import com.example.limbushelper.data.db.model.PartyEntity
 import com.example.limbushelper.data.db.model.SinnerEntity
@@ -15,7 +13,7 @@ interface Dao {
     @Query("SELECT * FROM party")
     fun getParty(): Flow<List<PartyEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addIdentityToParty(partyEntity: PartyEntity)
 
     @Delete
