@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import com.example.limbushelper.domain.DamageType
 import com.example.limbushelper.domain.Effect
 import com.example.limbushelper.domain.Sin
+import com.example.limbushelper.domain.sinner.model.Skill
 
 @Entity(tableName = "skill")
 data class SkillEntity(
@@ -19,4 +20,17 @@ data class SkillEntity(
     val coinBonus: Int,
     val coinCount: Int,
     val effects: List<Effect>
+)
+
+fun SkillEntity.toSkill() = Skill(
+    id = this.id,
+    name = this.name,
+    identityId = this.identityId,
+    dmgType = this.dmgType,
+    sin = this.sin,
+    copiesCount = this.copiesCount,
+    baseDie = this.baseDie,
+    coinBonus = this.coinBonus,
+    coinCount = this.coinCount,
+    effects = this.effects
 )

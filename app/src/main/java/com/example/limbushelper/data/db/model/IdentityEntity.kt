@@ -28,20 +28,20 @@ data class IdentityEntity(
 )
 
 fun IdentityEntity.toIdentity() = Identity(
-    this.id,
-    this.name,
-    this.sinnerId,
-    this.rarity,
-    this.slashRes,
-    this.pierceRes,
-    this.bluntRes,
-    this.maxHp,
-    this.maxArmor,
-    this.speed,
-    this.firstSkillId,
-    this.secondSkillId,
-    this.thirdSkillId,
-    this.passiveId,
-    this.supportId,
-    this.imageUrl
+    id = this.id,
+    name = this.name,
+    sinnerId = this.sinnerId,
+    rarity = this.rarity,
+    slashRes = this.slashRes,
+    pierceRes = this.pierceRes,
+    bluntRes = this.bluntRes,
+    maxHp = this.maxHp,
+    maxArmor = this.maxArmor,
+    speed = this.speed,
+    firstSkillId = this.firstSkillId,
+    secondSkillId = this.secondSkillId,
+    thirdSkillId = this.thirdSkillId,
+    passiveId = this.passiveId,
+    supportId = this.supportId,
+    imageUrl = this.imageUrl
 )
