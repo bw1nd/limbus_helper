@@ -46,7 +46,6 @@ class SinnerRepository @Inject constructor(
         return dao.getSkillsByIdentityId(id).map { it.toSkill() }
     }
 
-
     private suspend fun identityEntityToIdentity(identityEntity: IdentityEntity): Identity {
         //TODO this function uses dummy data, must add passive and support db tables to implement it
         return identityEntity.toIdentity(

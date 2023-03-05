@@ -18,6 +18,7 @@ object Main {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DB_NAME)
+            .createFromAsset("app.db")
             .build()
     }
 }
