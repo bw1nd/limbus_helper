@@ -168,25 +168,26 @@ private fun getDamageTypeIcon(damageType: DamageType): Int {
 }
 
 private fun getEffectIcon(effect: Effect): Int {
+    //TODO add other icons
     return when (effect) {
         Effect.BLEED -> R.drawable.bleed_ic
-        Effect.PARALYZE -> R.drawable.bleed_ic
+        Effect.PARALYSIS -> R.drawable.bleed_ic
         Effect.RUPTURE -> R.drawable.rupture_ic
         Effect.SINKING -> R.drawable.sink_ic
         Effect.TREMOR -> R.drawable.tremor_ic
         Effect.BURN -> R.drawable.burn_ic
-        Effect.BIND -> TODO()
-        Effect.FRAGILITY -> TODO()
-        Effect.CURSE -> TODO()
-        Effect.DAMAGE_UP -> TODO()
-        Effect.DAMAGE_DOWN -> TODO()
-        Effect.POWER_UP -> TODO()
-        Effect.POWER_DOWN -> TODO()
-        Effect.POISE -> TODO()
-        Effect.PROTECT -> TODO()
-        Effect.HASTE -> TODO()
-        Effect.CHARGE -> TODO()
-        Effect.AMMO -> TODO()
+        Effect.BIND -> R.drawable.rupture_ic
+        Effect.FRAGILE -> R.drawable.rupture_ic
+        Effect.CURSE -> R.drawable.rupture_ic
+        Effect.ATTACK_UP -> R.drawable.dmg_up_ic
+        Effect.ATTACK_DOWN -> R.drawable.dmg_up_ic
+        Effect.OFFENCE_UP -> R.drawable.power_up_ic
+        Effect.OFFENCE_DOWN -> R.drawable.power_up_ic
+        Effect.POISE -> R.drawable.poise_ic
+        Effect.PROTECT -> R.drawable.poise_ic
+        Effect.HASTE -> R.drawable.poise_ic
+        Effect.CHARGE -> R.drawable.charge_ic
+        Effect.AMMO -> R.drawable.burn_ic
     }
 }
 
