@@ -1,7 +1,9 @@
 package ua.blackwind.limbushelper.ui
 
+import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.sinner.model.*
 
 val previewIdentity = Identity(
     id = 0,
@@ -13,11 +15,12 @@ val previewIdentity = Identity(
     bluntRes = IdentityDamageResistType.FATAL,
     maxHp = 146,
     maxArmor = 38,
-    speed = Pair(3, 6),
-    firstSkillId = 0,
-    secondSkillId = 0,
-    thirdSkillId = 0,
-    passiveId = 0,
-    supportId = 0,
+    maxDamage = 30,
+    speed = 3 to 6,
+    firstSkill = Skill(0, "Rip", 0, DamageType.SLASH, Sin.SLOTH, 3, 3, 2, 2, emptyList()),
+    secondSkill = Skill(0, "Rip", 0, DamageType.SLASH, Sin.SLOTH, 3, 3, 2, 2, emptyList()),
+    thirdSkill = Skill(0, "Rip", 0, DamageType.SLASH, Sin.SLOTH, 3, 3, 2, 2, emptyList()),
+    passive = Passive(0, 0, SinCost(emptyList()), ""),
+    support = Support(0, 0, SinCost(emptyList()), ""),
     imageUrl = ""
 )
