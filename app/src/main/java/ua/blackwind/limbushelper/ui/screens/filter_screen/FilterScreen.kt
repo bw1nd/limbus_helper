@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.room.util.TableInfo
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.ui.common.IdentityItem
@@ -28,7 +27,7 @@ fun FilterScreen() {
             previewIdentity,
             previewIdentity,
 
-        )
+            )
     )
 }
 

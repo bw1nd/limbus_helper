@@ -2,7 +2,8 @@ package ua.blackwind.limbushelper.ui.screens.main_screen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,12 +22,20 @@ fun MainScreen(navController: NavHostController) {
         bottomBar = {
             BottomAppBar() {
                 NavigationBarItem(selected = false,
-                    onClick = { navController.navigate(PartyBuilderScreenDestination) },
+                    onClick = {
+                        if (navController.currentDestination?.route != PartyBuilderScreenDestination.route) {
+                            navController.navigate(PartyBuilderScreenDestination)
+                        }
+                    },
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("Party") }
                 )
                 NavigationBarItem(selected = false,
-                    onClick = { navController.navigate(FilterScreenDestination) },
+                    onClick = {
+                        if (navController.currentDestination?.route != FilterScreenDestination.route) {
+                            navController.navigate(FilterScreenDestination)
+                        }
+                    },
                     icon = { Icon(imageVector = Icons.Default.List, contentDescription = null) },
                     label = { Text("Filter") }
                 )
