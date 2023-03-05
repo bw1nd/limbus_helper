@@ -1,18 +1,17 @@
 package ua.blackwind.limbushelper.ui.common
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialogDefaults.shape
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,13 +25,23 @@ import ua.blackwind.limbushelper.ui.previewIdentity
 
 @Composable
 fun IdentityItem(identity: Identity) {
-    Card(Modifier.size(width = 380.dp, height = 100.dp)) {
+    Card(
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+        modifier = Modifier.size(width = 380.dp, height = 100.dp)
+    ) {
         Row() {
+            //this box is image placeholder
             Box(Modifier.size(50.dp, 100.dp))
-            Column() {
-                Row() {
-                    Text(text = identity.name)
-                    Text(text = "0".repeat(identity.rarity))
+            Column(Modifier.width(290.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = identity.name, fontSize = 20.sp)
+                    Text(
+                        text = "0".repeat(identity.rarity),
+                        fontSize = 22.sp
+                    )
                 }
                 Row() {
                     Row() {
@@ -67,7 +76,7 @@ fun SkillItem(skill: Skill) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .size(50.dp)
+            .size(55.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary)
     ) {
