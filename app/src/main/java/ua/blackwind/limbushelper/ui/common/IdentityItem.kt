@@ -13,13 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.DamageType
+import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
@@ -29,21 +29,28 @@ import ua.blackwind.limbushelper.ui.previewIdentity
 fun IdentityItem(identity: Identity) {
     Card(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-        modifier = Modifier.size(width = 380.dp, height = 110.dp)
+        modifier = Modifier.width(380.dp)
     ) {
-        Row() {
+        Row {
             //this box is image placeholder
             Box(Modifier.size(50.dp, 100.dp))
             Column(Modifier.width(290.dp)) {
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = identity.name, fontSize = 20.sp)
-                    Text(
-                        text = "0".repeat(identity.rarity),
-                        fontSize = 22.sp
-                    )
+                    Text(text = identity.name, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row {
+                        repeat(identity.rarity + 1) {
+                            Image(
+                                painter = painterResource(R.drawable.rarity_ic),
+                                contentDescription = null,
+                                modifier = Modifier.size(10.dp, 25.dp)
+                            )
+                        }
+                    }
                 }
                 Row(Modifier.padding(bottom = 5.dp)) {
                     ResistanceBlock(
@@ -62,6 +69,13 @@ fun IdentityItem(identity: Identity) {
                     )
                 }
                 Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
+                EffectsBlock(
+                    effects = listOf(
+                        identity.firstSkill.effects,
+                        identity.secondSkill.effects,
+                        identity.thirdSkill.effects
+                    ).flatten()
+                )
             }
         }
     }
@@ -90,7 +104,7 @@ fun SkillItem(skill: Skill) {
             .background(MaterialTheme.colorScheme.primary)
     ) {
         Image(
-            painter = painterResource(id = chooseDamageTypeIcon(skill.dmgType)),
+            painter = painterResource(id = getDamageTypeIcon(skill.dmgType)),
             contentDescription = null,
             modifier = Modifier.size(40.dp)
 
@@ -121,7 +135,7 @@ fun ResistanceBlock(
 fun ResistanceItem(dmgType: DamageType, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
-            painter = painterResource(id = chooseDamageTypeIcon(damageType = dmgType)),
+            painter = painterResource(id = getDamageTypeIcon(damageType = dmgType)),
             contentDescription = null,
             modifier = Modifier.size(35.dp, 35.dp)
         )
@@ -129,11 +143,50 @@ fun ResistanceItem(dmgType: DamageType, label: String) {
     }
 }
 
-private fun chooseDamageTypeIcon(damageType: DamageType): Int {
+@Composable
+fun EffectsBlock(effects: List<Effect>) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.padding(top = 2.dp, bottom = 5.dp)
+    ) {
+        for (effect in effects) {
+            Image(
+                painter = painterResource(id = getEffectIcon(effect)), contentDescription = null,
+                modifier = Modifier
+                    .size(20.dp)
+            )
+        }
+    }
+}
+
+private fun getDamageTypeIcon(damageType: DamageType): Int {
     return when (damageType) {
         DamageType.SLASH -> R.drawable.slash_ic
         DamageType.PIERCE -> R.drawable.pierce_ic
         DamageType.BLUNT -> R.drawable.blunt_ic
+    }
+}
+
+private fun getEffectIcon(effect: Effect): Int {
+    return when (effect) {
+        Effect.BLEED -> R.drawable.bleed_ic
+        Effect.PARALYZE -> R.drawable.bleed_ic
+        Effect.RUPTURE -> R.drawable.rupture_ic
+        Effect.SINKING -> R.drawable.sink_ic
+        Effect.TREMOR -> R.drawable.tremor_ic
+        Effect.BURN -> R.drawable.burn_ic
+        Effect.BIND -> TODO()
+        Effect.FRAGILITY -> TODO()
+        Effect.CURSE -> TODO()
+        Effect.DAMAGE_UP -> TODO()
+        Effect.DAMAGE_DOWN -> TODO()
+        Effect.POWER_UP -> TODO()
+        Effect.POWER_DOWN -> TODO()
+        Effect.POISE -> TODO()
+        Effect.PROTECT -> TODO()
+        Effect.HASTE -> TODO()
+        Effect.CHARGE -> TODO()
+        Effect.AMMO -> TODO()
     }
 }
 
