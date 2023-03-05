@@ -19,7 +19,17 @@ import ua.blackwind.limbushelper.ui.previewIdentity
 @Destination
 @Composable
 fun FilterScreen() {
+    FilterScreenUi(
+        identities =
+        listOf(
+            previewIdentity,
+            previewIdentity,
+            previewIdentity,
+            previewIdentity,
+            previewIdentity,
 
+        )
+    )
 }
 
 @Composable

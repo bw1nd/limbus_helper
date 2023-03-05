@@ -6,12 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,7 +29,7 @@ import ua.blackwind.limbushelper.ui.previewIdentity
 fun IdentityItem(identity: Identity) {
     Card(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-        modifier = Modifier.size(width = 380.dp, height = 100.dp)
+        modifier = Modifier.size(width = 380.dp, height = 110.dp)
     ) {
         Row() {
             //this box is image placeholder
@@ -43,20 +45,23 @@ fun IdentityItem(identity: Identity) {
                         fontSize = 22.sp
                     )
                 }
-                Row() {
-                    Row() {
-                        ResistanceBlock(
-                            slashRes = identity.slashRes,
-                            pierceRes = identity.pierceRes,
-                            bluntRes = identity.bluntRes
-                        )
-                        SkillBlock(
-                            firstSkill = identity.firstSkill,
-                            secondSkill = identity.secondSkill,
-                            thirdSkill = identity.thirdSkill
-                        )
-                    }
+                Row(Modifier.padding(bottom = 5.dp)) {
+                    ResistanceBlock(
+                        slashRes = identity.slashRes,
+                        pierceRes = identity.pierceRes,
+                        bluntRes = identity.bluntRes
+                    )
+                    Divider(
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(2.dp, 45.dp)
+                    )
+                    SkillBlock(
+                        firstSkill = identity.firstSkill,
+                        secondSkill = identity.secondSkill,
+                        thirdSkill = identity.thirdSkill
+                    )
                 }
+                Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -64,7 +69,11 @@ fun IdentityItem(identity: Identity) {
 
 @Composable
 fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
-    Row() {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.width(185.dp)
+    ) {
         SkillItem(skill = firstSkill)
         SkillItem(skill = secondSkill)
         SkillItem(skill = thirdSkill)
@@ -76,7 +85,7 @@ fun SkillItem(skill: Skill) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .size(55.dp)
+            .size(50.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary)
     ) {
@@ -98,7 +107,10 @@ fun ResistanceBlock(
     val res = mapOf(
         slashRes to DamageType.SLASH, pierceRes to DamageType.PIERCE, bluntRes to DamageType.BLUNT
     )
-    Row {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.width(105.dp)
+    ) {
         ResistanceItem(dmgType = (res[IdentityDamageResistType.INEFFECTIVE]!!), label = "Ineff.")
         ResistanceItem(dmgType = res[IdentityDamageResistType.NORMAL]!!, label = "Normal")
         ResistanceItem(dmgType = res[IdentityDamageResistType.FATAL]!!, label = "Fatal")
@@ -111,9 +123,9 @@ fun ResistanceItem(dmgType: DamageType, label: String) {
         Image(
             painter = painterResource(id = chooseDamageTypeIcon(damageType = dmgType)),
             contentDescription = null,
-            modifier = Modifier.size(40.dp, 40.dp)
+            modifier = Modifier.size(35.dp, 35.dp)
         )
-        Text(text = label, fontSize = 12.sp)
+        Text(text = label, fontSize = 10.sp)
     }
 }
 
