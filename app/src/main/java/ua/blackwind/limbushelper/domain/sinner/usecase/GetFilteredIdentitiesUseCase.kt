@@ -34,7 +34,7 @@ data class FilterSkillsSetArg(
 
 data class FilterSkillArg(
     val damageType: FilterDamageTypeArg,
-    val sin: Sin
+    val sin: FilterSinTypeArg
 )
 
 sealed class FilterDamageTypeArg {
@@ -42,4 +42,11 @@ sealed class FilterDamageTypeArg {
     data class Type(
         val type: DamageType
     ): FilterDamageTypeArg()
+}
+
+sealed class FilterSinTypeArg {
+    object Empty: FilterSinTypeArg()
+    data class Type(
+        val type: Sin
+    ): FilterSinTypeArg()
 }
