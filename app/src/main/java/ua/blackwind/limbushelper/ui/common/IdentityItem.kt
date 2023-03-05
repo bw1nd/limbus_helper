@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,9 +22,12 @@ import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import ua.blackwind.limbushelper.ui.previewIdentity
+import ua.blackwind.limbushelper.ui.theme.*
+
 
 @Composable
 fun IdentityItem(identity: Identity) {
@@ -101,7 +105,7 @@ fun SkillItem(skill: Skill) {
         modifier = Modifier
             .size(50.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(getSinColor(skill.sin))
     ) {
         Image(
             painter = painterResource(id = getDamageTypeIcon(skill.dmgType)),
@@ -156,6 +160,18 @@ fun EffectsBlock(effects: List<Effect>) {
                     .size(20.dp)
             )
         }
+    }
+}
+
+private fun getSinColor(sin: Sin): Color {
+    return when (sin) {
+        Sin.WRATH -> wrath
+        Sin.LUST -> lust
+        Sin.SLOTH -> sloth
+        Sin.GLUTTONY -> gluttony
+        Sin.GLOOM -> gloom
+        Sin.PRIDE -> pride
+        Sin.ENVY -> envy
     }
 }
 
