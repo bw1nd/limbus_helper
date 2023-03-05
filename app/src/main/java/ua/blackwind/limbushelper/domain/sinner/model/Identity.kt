@@ -2,6 +2,8 @@ package ua.blackwind.limbushelper.domain.sinner.model
 
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
 
+//TODO this item missing damage attribute, must be added here and in other missing places
+//TODO replace skills fields with actual skill objects
 data class Identity(
     val id: Int,
     val name: String,
