@@ -20,6 +20,6 @@ abstract class AppDatabase: RoomDatabase() {
     abstract val dao: Dao
 
     companion object{
-        const val DB_NAME = "app.db"
+        const val DB_NAME = "app"
     }
 }
