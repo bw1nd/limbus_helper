@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
 }
 
 android {
@@ -46,6 +47,14 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+    applicationVariants.all { variant ->
+        kotlin.sourceSets {
+            getByName(variant.name) {
+                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -65,10 +74,19 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     implementation "androidx.room:room-ktx:$room_version"
 
+    //navigation
+    implementation("io.github.raamcosta.compose-destinations:core:$nav_version")
+    ksp("io.github.raamcosta.compose-destinations:ksp:$nav_version")
+    implementation "androidx.hilt:hilt-navigation-compose:$compose_hilt_navigation_version"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+}
+
+kapt {
+    correctErrorTypes true
 }
