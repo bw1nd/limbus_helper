@@ -204,6 +204,9 @@ private fun getEffectIcon(effect: Effect): Int {
         Effect.HASTE -> R.drawable.poise_ic
         Effect.CHARGE -> R.drawable.charge_ic
         Effect.AMMO -> R.drawable.burn_ic
+        Effect.DEFENSE_UP -> R.drawable.dmg_up_ic
+        Effect.DEFENSE_DOWN -> R.drawable.dmg_up_ic
+        Effect.HEAL -> R.drawable.blunt_ic
     }
 }
 
