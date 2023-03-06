@@ -31,18 +31,24 @@ import ua.blackwind.limbushelper.ui.util.getSinColor
 @Composable
 fun FilterScreen() {
     val viewModel = hiltViewModel<FilterScreenViewModel>()
-    val identities = viewModel.filteredIdentities.collectAsState()
-    val filterSkillState = viewModel.filterSkillsState.collectAsState()
-    val filterResistState = viewModel.filterResistState.collectAsState()
+    val identities by viewModel.filteredIdentities.collectAsState()
+    val filterSkillState by viewModel.filterSkillsState.collectAsState()
+    val filterResistState by viewModel.filterResistState.collectAsState()
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
         stringResource(R.string.res_normal),
         stringResource(R.string.res_fatal)
     )
 
-//    FilterScreenUi(
-//        identities.value
-//    )
+    FilterScreenUi(
+        identities,
+        filterSkillState,
+        filterResistState,
+        labels,
+        viewModel::onFilterModeSwitch,
+        viewModel::onFilterSkillButtonClick,
+        viewModel::onFilterResistButtonClick
+    )
 }
 
 @Composable

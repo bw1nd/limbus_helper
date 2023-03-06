@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
 import javax.inject.Inject
@@ -18,6 +17,20 @@ class FilterScreenViewModel @Inject constructor(
 ): ViewModel() {
     private val _filteredIdentities = MutableStateFlow<List<Identity>>(emptyList())
     val filteredIdentities: StateFlow<List<Identity>> = _filteredIdentities
+
+    private val _filterSkillsState = MutableStateFlow(
+        FilterSkillBlockState(
+            first = FilterSkillButtonState(null, null),
+            second = FilterSkillButtonState(null, null),
+            third = FilterSkillButtonState(null, null)
+        )
+    )
+    val filterSkillsState: StateFlow<FilterSkillBlockState> = _filterSkillsState
+
+    private val _filterResistState = MutableStateFlow(
+        FilterResistBlockState(null, null, null)
+    )
+    val filterResistState: StateFlow<FilterResistBlockState> = _filterResistState
 
     init {
         viewModelScope.launch {
@@ -48,5 +61,17 @@ class FilterScreenViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun onFilterModeSwitch(checked: Boolean) {
+
+    }
+
+    fun onFilterSkillButtonClick(id: Int) {
+
+    }
+
+    fun onFilterResistButtonClick(id: Int) {
+
     }
 }
