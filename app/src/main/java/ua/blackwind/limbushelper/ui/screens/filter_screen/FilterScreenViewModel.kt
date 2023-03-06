@@ -93,7 +93,7 @@ class FilterScreenViewModel @Inject constructor(
                     state.first,
                     state.second,
                     newSkillState(
-                        state.second, cycleSkillDamageTypes(state.third.type)
+                        state.third, cycleSkillDamageTypes(state.third.type)
                     )
                 )
                 else -> throw IllegalArgumentException(
@@ -124,7 +124,6 @@ class FilterScreenViewModel @Inject constructor(
                 else ->
                     throw java.lang.IllegalArgumentException("Resist button id: $id out of range 1..3")
             }
-
         }
     }
 

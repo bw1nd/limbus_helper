@@ -1,9 +1,13 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
@@ -60,7 +64,6 @@ fun FilterScreenUi(
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
     onResistButtonClick: (Int) -> Unit
-
 ) {
     Box(contentAlignment = Alignment.BottomCenter) {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -99,19 +102,21 @@ fun FilterDrawerSheet(
     var height by remember { mutableStateOf(200.dp) }
 
     Surface(
+        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+        color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .animateContentSize()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.size(400.dp, height)
+            modifier = Modifier.size(380.dp, height)
         ) {
-            IconButton(onClick = {
+            Button(onClick = {
                 if (drawerState == FilterDrawerState.Open) {
-                    height = 200.dp
+                    height = 100.dp
                     drawerState = FilterDrawerState.Closed
                 } else {
-                    height = 400.dp
+                    height = 300.dp
                     drawerState = FilterDrawerState.Open
                 }
             }) {
@@ -141,7 +146,10 @@ fun FilterBlock(
     onSkillButtonClick: (Int) -> Unit,
     onResistButtonClick: (Int) -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(bottom = 10.dp)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Skills/Resistances")
             Spacer(modifier = Modifier.width(10.dp))
@@ -150,7 +158,11 @@ fun FilterBlock(
             Text(text = "Effects")
         }
         FilterSkillBlock(state = skillState, onButtonClick = onSkillButtonClick)
-        Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
+        Divider(
+            thickness = 2.dp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.width(300.dp)
+        )
         FilterResistBlock(labels = resistLabels, state = resistState, onResistButtonClick)
 
     }
@@ -175,16 +187,18 @@ data class FilterSkillBlockState(
 fun FilterSkillButton(id: Int, state: FilterSkillButtonState, onClick: (Int) -> Unit) {
     Surface(
         shape = CircleShape,
-        color = state.sin?.let { getSinColor(it) } ?: Color.White
+        color = state.sin?.let { getSinColor(it) } ?: Color.White,
+        modifier = Modifier.padding(5.dp)
     ) {
-        IconButton(onClick = { onClick(id) }) {
-            Icon(painter = painterResource(id = state.type?.let {
-                getDamageTypeIcon(
-                    state.type
-                )
-            } ?: R.drawable.charge_ic
-            ), contentDescription = null)
-        }
+        Image(painter = painterResource(id = state.type?.let {
+            getDamageTypeIcon(
+                it
+            )
+        } ?: R.drawable.charge_ic
+        ), contentDescription = null,
+            modifier = Modifier
+                .size(50.dp)
+                .clickable { onClick(id) })
     }
 }
 
@@ -193,7 +207,12 @@ fun FilterResistBlock(
     labels: FilterResistButtonLabels, state: FilterResistBlockState,
     onButtonClick: (Int) -> Unit
 ) {
-    Row() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(id = R.drawable.def_ic),
+            contentDescription = null,
+            modifier = Modifier.size(40.dp)
+        )
         FilterResistButton(
             1,
             label = labels.ineffective,
@@ -217,13 +236,18 @@ fun FilterResistBlock(
 
 @Composable
 fun FilterResistButton(id: Int, label: String, state: DamageType?, onClick: (Int) -> Unit) {
+//TODO fix icons bug
     Column() {
-        IconButton(onClick = { onClick(id) }) {
-            Icon(painter = painterResource(id = state?.let {
-                getDamageTypeIcon(it)
-            } ?: R.drawable.charge_ic
-            ), contentDescription = null)
-        }
+        Image(painter = painterResource(id = state?.let {
+            Log.d("BUTTON", "Button id: $id - $it")
+            getDamageTypeIcon(it)
+        } ?: R.drawable.charge_ic
+        ), contentDescription = null,
+            modifier = Modifier
+                .size(40.dp)
+                .clickable {
+                    onClick(id)
+                })
         Text(text = label)
     }
 }
@@ -250,7 +274,7 @@ private sealed class FilterDrawerState() {
 @Preview
 @Composable
 fun PreviewFilterBlock() {
-    FilterBlock(
+    FilterDrawerSheet(
         FilterSkillBlockState(
             FilterSkillButtonState(DamageType.BLUNT, Sin.LUST),
             FilterSkillButtonState(DamageType.SLASH, null),
