@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
 import javax.inject.Inject
@@ -64,14 +65,75 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onFilterModeSwitch(checked: Boolean) {
-
+        //TODO add mode switch logic
     }
 
     fun onFilterSkillButtonClick(id: Int) {
-
+        val newSkillState: (FilterSkillButtonState, DamageType?) -> FilterSkillButtonState =
+            { oldState, type ->
+                FilterSkillButtonState(type, oldState.sin)
+            }
+        _filterSkillsState.update { state ->
+            when (id) {
+                1 -> FilterSkillBlockState(
+                    newSkillState(
+                        state.first, cycleSkillDamageTypes(state.first.type)
+                    ),
+                    state.second,
+                    state.third
+                )
+                2 -> FilterSkillBlockState(
+                    state.first,
+                    newSkillState(
+                        state.second, cycleSkillDamageTypes(state.second.type)
+                    ),
+                    state.third
+                )
+                3 -> FilterSkillBlockState(
+                    state.first,
+                    state.second,
+                    newSkillState(
+                        state.second, cycleSkillDamageTypes(state.third.type)
+                    )
+                )
+                else -> throw IllegalArgumentException(
+                    "Skill button id: $id out of range 1..3"
+                )
+            }
+        }
     }
 
     fun onFilterResistButtonClick(id: Int) {
+        _filterResistState.update { oldState ->
+            when (id) {
+                1 -> FilterResistBlockState(
+                    cycleSkillDamageTypes(oldState.ineffective),
+                    oldState.normal,
+                    oldState.fatal
+                )
+                2 -> FilterResistBlockState(
+                    oldState.ineffective,
+                    cycleSkillDamageTypes(oldState.normal),
+                    oldState.fatal
+                )
+                3 -> FilterResistBlockState(
+                    oldState.ineffective,
+                    oldState.normal,
+                    cycleSkillDamageTypes(oldState.fatal)
+                )
+                else ->
+                    throw java.lang.IllegalArgumentException("Resist button id: $id out of range 1..3")
+            }
 
+        }
+    }
+
+    private fun cycleSkillDamageTypes(type: DamageType?): DamageType? {
+        return when (type) {
+            DamageType.SLASH -> DamageType.PIERCE
+            DamageType.PIERCE -> DamageType.BLUNT
+            DamageType.BLUNT -> null
+            null -> DamageType.SLASH
+        }
     }
 }
