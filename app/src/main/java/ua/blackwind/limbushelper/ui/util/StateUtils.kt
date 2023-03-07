@@ -28,6 +28,12 @@ data class FilterDamageStateBundle(
     val second: StateType<DamageType>,
     val third: StateType<DamageType>,
 )
+
+fun FilterDamageStateBundle.isUnique() = run {
+    val filtered = listOf(first, second, third).filter { it !is StateType.Empty }
+    filtered.size == filtered.toSet().size
+}
+
 /**
  * State holder representing sin type state of skills
  * in order they appear on screen.

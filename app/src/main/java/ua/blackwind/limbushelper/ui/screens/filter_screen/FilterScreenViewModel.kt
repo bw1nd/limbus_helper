@@ -11,10 +11,7 @@ import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
-import ua.blackwind.limbushelper.ui.util.FilterDamageStateBundle
-import ua.blackwind.limbushelper.ui.util.FilterSinStateBundle
-import ua.blackwind.limbushelper.ui.util.FilterSkillBlockState
-import ua.blackwind.limbushelper.ui.util.StateType
+import ua.blackwind.limbushelper.ui.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -97,7 +94,7 @@ class FilterScreenViewModel @Inject constructor(
     fun onFilterSkillButtonClick(id: Int) {
         _filterSkillsState.update { state ->
             FilterSkillBlockState(
-                updateDamageStateBundle(id, state.damage),
+                updateDamageStateBundle(id, state.damage, false),
                 state.sin
             )
         }
@@ -105,13 +102,19 @@ class FilterScreenViewModel @Inject constructor(
 
     fun onFilterResistButtonClick(id: Int) {
         _filterResistState.update { state ->
-            updateDamageStateBundle(id, state)
+            updateDamageStateBundle(id, state, true)
         }
     }
 
+    /**
+     * Updates damage bundle with new value
+     * @param unique this parameter decides if returning result must have unique damage types
+     * (for resistance block) or non unique (for skills block)
+     */
     private fun updateDamageStateBundle(
         buttonId: Int,
-        input: FilterDamageStateBundle
+        input: FilterDamageStateBundle,
+        unique: Boolean
     ): FilterDamageStateBundle {
         var (first, second, third) = input
         when (buttonId) {
@@ -119,7 +122,10 @@ class FilterScreenViewModel @Inject constructor(
             2 -> second = cycleSkillDamageTypes(second)
             3 -> third = cycleSkillDamageTypes(third)
         }
-        return FilterDamageStateBundle(first, second, third)
+        val result = FilterDamageStateBundle(first, second, third)
+        return if (unique && !result.isUnique()) {
+            updateDamageStateBundle(buttonId, FilterDamageStateBundle(first, second, third), unique)
+        } else result
     }
 
     private fun updateSinStateBundle(
