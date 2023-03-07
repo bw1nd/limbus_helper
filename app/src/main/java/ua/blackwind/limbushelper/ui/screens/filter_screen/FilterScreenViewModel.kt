@@ -70,6 +70,10 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
+    fun onFilterButtonClick(){
+        //TODO implement filtering
+    }
+
     fun onFilterModeSwitch(checked: Boolean) {
         //TODO add mode switch logic
     }

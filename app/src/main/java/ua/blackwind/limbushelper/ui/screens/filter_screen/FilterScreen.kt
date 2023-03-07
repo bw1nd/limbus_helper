@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +52,7 @@ fun FilterScreen() {
         labels,
         sinPickerVisible,
         viewModel::onFilterModeSwitch,
+        viewModel::onFilterButtonClick,
         viewModel::onFilterSkillButtonClick,
         viewModel::onFilterSkillButtonLongPress,
         viewModel::onFilterSinPickerPress,
@@ -68,6 +68,7 @@ fun FilterScreenUi(
     resistLabels: FilterResistButtonLabels,
     sinPickerVisible: Boolean,
     onSwitchChange: (Boolean) -> Unit,
+    onFilterButtonClick: () -> Unit,
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
@@ -92,6 +93,7 @@ fun FilterScreenUi(
             resistLabels = resistLabels,
             sinPickerVisible = sinPickerVisible,
             onSwitchChange = onSwitchChange,
+            onFilterButtonClick,
             onSkillButtonClick = onSkillButtonClick,
             onSkillButtonLongPress = onSkillButtonLongPress,
             onResistButtonClick = onResistButtonClick,
@@ -107,6 +109,7 @@ fun FilterDrawerSheet(
     resistLabels: FilterResistButtonLabels,
     sinPickerVisible: Boolean,
     onSwitchChange: (Boolean) -> Unit,
+    onFilterButtonClick: () -> Unit,
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
@@ -151,6 +154,9 @@ fun FilterDrawerSheet(
                 onResistButtonClick = onResistButtonClick,
                 onSinPickerClick = onSinPickerClick
             )
+            OutlinedButton(onClick = { onFilterButtonClick() }) {
+                Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
+            }
         }
     }
 }
@@ -390,7 +396,7 @@ fun PreviewFilterBlock() {
             StateType.Empty
         ),
         FilterResistButtonLabels("Ineff.", "Normal", "Fatal"), false,
-        {}, {}, {}, {}, {}
+        {}, {}, {}, {}, {}, {}
     )
 }
 
