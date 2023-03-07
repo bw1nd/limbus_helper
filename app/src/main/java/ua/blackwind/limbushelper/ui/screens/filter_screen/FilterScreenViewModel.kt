@@ -10,6 +10,10 @@ import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
+import ua.blackwind.limbushelper.ui.util.FilterDamageStateBundle
+import ua.blackwind.limbushelper.ui.util.FilterSinStateBundle
+import ua.blackwind.limbushelper.ui.util.FilterSkillBlockState
+import ua.blackwind.limbushelper.ui.util.StateType
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,17 +25,16 @@ class FilterScreenViewModel @Inject constructor(
 
     private val _filterSkillsState = MutableStateFlow(
         FilterSkillBlockState(
-            first = FilterSkillButtonState(null, null),
-            second = FilterSkillButtonState(null, null),
-            third = FilterSkillButtonState(null, null)
+            FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
+            FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
         )
     )
     val filterSkillsState: StateFlow<FilterSkillBlockState> = _filterSkillsState
 
     private val _filterResistState = MutableStateFlow(
-        FilterResistBlockState(null, null, null)
+        FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
     )
-    val filterResistState: StateFlow<FilterResistBlockState> = _filterResistState
+    val filterResistState: StateFlow<FilterDamageStateBundle> = _filterResistState
 
     init {
         viewModelScope.launch {
@@ -69,70 +72,40 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onFilterSkillButtonClick(id: Int) {
-        val newSkillState: (FilterSkillButtonState, DamageType?) -> FilterSkillButtonState =
-            { oldState, type ->
-                FilterSkillButtonState(type, oldState.sin)
-            }
         _filterSkillsState.update { state ->
-            when (id) {
-                1 -> FilterSkillBlockState(
-                    newSkillState(
-                        state.first, cycleSkillDamageTypes(state.first.type)
-                    ),
-                    state.second,
-                    state.third
-                )
-                2 -> FilterSkillBlockState(
-                    state.first,
-                    newSkillState(
-                        state.second, cycleSkillDamageTypes(state.second.type)
-                    ),
-                    state.third
-                )
-                3 -> FilterSkillBlockState(
-                    state.first,
-                    state.second,
-                    newSkillState(
-                        state.third, cycleSkillDamageTypes(state.third.type)
-                    )
-                )
-                else -> throw IllegalArgumentException(
-                    "Skill button id: $id out of range 1..3"
-                )
-            }
+            FilterSkillBlockState(
+                updateDamageStateBundle(id, state.damage),
+                state.sin
+            )
         }
     }
 
     fun onFilterResistButtonClick(id: Int) {
-        _filterResistState.update { oldState ->
-            when (id) {
-                1 -> FilterResistBlockState(
-                    cycleSkillDamageTypes(oldState.ineffective),
-                    oldState.normal,
-                    oldState.fatal
-                )
-                2 -> FilterResistBlockState(
-                    oldState.ineffective,
-                    cycleSkillDamageTypes(oldState.normal),
-                    oldState.fatal
-                )
-                3 -> FilterResistBlockState(
-                    oldState.ineffective,
-                    oldState.normal,
-                    cycleSkillDamageTypes(oldState.fatal)
-                )
-                else ->
-                    throw java.lang.IllegalArgumentException("Resist button id: $id out of range 1..3")
-            }
+        _filterResistState.update { state ->
+            updateDamageStateBundle(id, state)
         }
     }
 
-    private fun cycleSkillDamageTypes(type: DamageType?): DamageType? {
-        return when (type) {
-            DamageType.SLASH -> DamageType.PIERCE
-            DamageType.PIERCE -> DamageType.BLUNT
-            DamageType.BLUNT -> null
-            null -> DamageType.SLASH
+    private fun updateDamageStateBundle(
+        buttonId: Int,
+        input: FilterDamageStateBundle
+    ): FilterDamageStateBundle {
+        var (first, second, third) = input
+        when (buttonId) {
+            1 -> first = cycleSkillDamageTypes(first)
+            2 -> second = cycleSkillDamageTypes(second)
+            3 -> third = cycleSkillDamageTypes(third)
+        }
+        return FilterDamageStateBundle(first, second, third)
+    }
+
+    private fun cycleSkillDamageTypes(type: StateType<DamageType>): StateType<DamageType> {
+        if (type is StateType.Empty) return StateType.Value(DamageType.SLASH)
+        val value = type as StateType.Value<DamageType>
+        return when (value.value) {
+            DamageType.SLASH -> StateType.Value(DamageType.PIERCE)
+            DamageType.PIERCE -> StateType.Value(DamageType.BLUNT)
+            DamageType.BLUNT -> StateType.Empty
         }
     }
 }

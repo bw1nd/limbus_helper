@@ -26,9 +26,7 @@ import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.common.IdentityItem
-import ua.blackwind.limbushelper.ui.util.StateType
-import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
-import ua.blackwind.limbushelper.ui.util.getSinColor
+import ua.blackwind.limbushelper.ui.util.*
 
 @RootNavGraph(start = true)
 @Destination
@@ -59,7 +57,7 @@ fun FilterScreen() {
 fun FilterScreenUi(
     identities: List<Identity>,
     skillState: FilterSkillBlockState,
-    resistState: FilterResistBlockState,
+    resistState: FilterDamageStateBundle,
     resistLabels: FilterResistButtonLabels,
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
@@ -92,7 +90,7 @@ fun FilterScreenUi(
 @Composable
 fun FilterDrawerSheet(
     skillState: FilterSkillBlockState,
-    resistState: FilterResistBlockState,
+    resistState: FilterDamageStateBundle,
     resistLabels: FilterResistButtonLabels,
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
@@ -140,7 +138,7 @@ fun FilterDrawerSheet(
 @Composable
 fun FilterBlock(
     skillState: FilterSkillBlockState,
-    resistState: FilterResistBlockState,
+    resistState: FilterDamageStateBundle,
     resistLabels: FilterResistButtonLabels,
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
@@ -171,30 +169,47 @@ fun FilterBlock(
 @Composable
 fun FilterSkillBlock(state: FilterSkillBlockState, onButtonClick: (Int) -> Unit) {
     Row() {
-        FilterSkillButton(id = 1, state = state.first, onClick = onButtonClick)
-        FilterSkillButton(id = 2, state = state.second, onClick = onButtonClick)
-        FilterSkillButton(id = 3, state = state.third, onClick = onButtonClick)
+        FilterSkillButton(
+            id = 1,
+            damage = state.damage.first,
+            sin = state.sin.first,
+            onClick = onButtonClick
+        )
+        FilterSkillButton(
+            id = 2,
+            damage = state.damage.second,
+            sin = state.sin.second,
+            onClick = onButtonClick
+        )
+        FilterSkillButton(
+            id = 3,
+            damage = state.damage.third,
+            sin = state.sin.third,
+            onClick = onButtonClick
+        )
     }
 }
 
-data class FilterSkillBlockState(
-    val first: FilterSkillButtonState,
-    val second: FilterSkillButtonState,
-    val third: FilterSkillButtonState
-)
-
 
 @Composable
-fun FilterSkillButton(id: Int, state: FilterSkillButtonState, onClick: (Int) -> Unit) {
+fun FilterSkillButton(
+    id: Int,
+    damage: StateType<DamageType>,
+    sin: StateType<Sin>,
+    onClick: (Int) -> Unit
+) {
     Surface(
         shape = CircleShape,
-        color = state.sin?.let { getSinColor(it) } ?: Color.White,
+        color = when (sin) {
+            StateType.Empty -> Color.White
+            is StateType.Value -> getSinColor(sin.value)
+        },
         modifier = Modifier.padding(5.dp)
     ) {
         Image(painter = painterResource(
-            id = when (state.type) {
+            id = when (damage) {
                 is StateType.Empty -> R.drawable.bleed_ic
-                is StateType.Value<DamageType> -> getDamageTypeIcon(state.type.value)
+                is StateType.Value<DamageType> -> getDamageTypeIcon(damage.value)
             }
         ), contentDescription = null,
             modifier = Modifier
@@ -205,7 +220,7 @@ fun FilterSkillButton(id: Int, state: FilterSkillButtonState, onClick: (Int) -> 
 
 @Composable
 fun FilterResistBlock(
-    labels: FilterResistButtonLabels, state: FilterResistBlockState,
+    labels: FilterResistButtonLabels, state: FilterDamageStateBundle,
     onButtonClick: (Int) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -217,75 +232,68 @@ fun FilterResistBlock(
         FilterResistButton(
             1,
             label = labels.ineffective,
-            state = state.ineffective,
+            state = state.first,
             onClick = onButtonClick
         )
         FilterResistButton(
             2,
             label = labels.normal,
-            state = state.normal,
+            state = state.second,
             onClick = onButtonClick
         )
         FilterResistButton(
             3,
             label = labels.fatal,
-            state = state.fatal,
+            state = state.third,
             onClick = onButtonClick
         )
     }
 }
 
 @Composable
-fun FilterResistButton(id: Int, label: String, state: StateType<Sin>, onClick: (Int) -> Unit) {
-//TODO fix icons bug
+fun FilterResistButton(
+    id: Int,
+    label: String,
+    state: StateType<DamageType>,
+    onClick: (Int) -> Unit
+) {
     Column() {
-//        Image(painter = painterResource(id = state?.let {
-//            Log.d("BUTTON", "Button id: $id - $it")
-//            getDamageTypeIcon(it)
-//        } ?: R.drawable.charge_ic
-//        ), contentDescription = null,
-//            modifier = Modifier
-//                .size(40.dp)
-//                .clickable {
-//                    onClick(id)
-//                })
-//        Text(text = label)
+        Image(painter = painterResource(
+            id = when (state) {
+                is StateType.Empty -> R.drawable.bleed_ic
+                is StateType.Value<DamageType> -> getDamageTypeIcon(state.value)
+            }
+        ), contentDescription = null,
+            modifier = Modifier
+                .size(40.dp)
+                .clickable {
+                    onClick(id)
+                })
+        Text(text = label)
     }
 }
 
-data class FilterResistBlockState(
-    val ineffective: StateType<Sin>,
-    val normal: StateType<Sin>,
-    val fatal: StateType<Sin>
-)
-
-data class FilterResistButtonLabels(
-    val ineffective: String,
-    val normal: String,
-    val fatal: String
-)
-
-data class FilterSkillButtonState(val type: StateType<DamageType>, val sin: Sin?)
-
-private sealed class FilterDrawerState() {
-    object Open: FilterDrawerState()
-    object Closed: FilterDrawerState()
+@Preview
+@Composable
+fun PreviewFilterBlock() {
+    FilterDrawerSheet(
+        FilterSkillBlockState(
+            FilterDamageStateBundle(
+                StateType.Value(DamageType.BLUNT),
+                StateType.Value(DamageType.BLUNT),
+                StateType.Empty
+            ),
+            FilterSinStateBundle(StateType.Value(Sin.LUST), StateType.Empty, StateType.Empty)
+        ),
+        FilterDamageStateBundle(
+            StateType.Value(DamageType.BLUNT),
+            StateType.Value(DamageType.BLUNT),
+            StateType.Empty
+        ),
+        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"),
+        {}, {}, {}
+    )
 }
-
-//@Preview
-//@Composable
-//fun PreviewFilterBlock() {
-//    FilterDrawerSheet(
-//        FilterSkillBlockState(
-//            FilterSkillButtonState(StateDamageType.Blunt, Sin.LUST),
-//            FilterSkillButtonState(StateDamageType.Slash, null),
-//            FilterSkillButtonState(StateDamageType.Empty, null)
-//        ),
-//        FilterResistBlockState(StateDamageType.Empty, StateDamageType.Blunt, StateDamageType.Empty),
-//        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"),
-//        {}, {}, {}
-//    )
-//}
 
 //@Preview(showSystemUi = true, widthDp = 412, heightDp = 846)
 //@Composable
