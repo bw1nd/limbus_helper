@@ -1,8 +1,10 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -36,6 +38,7 @@ fun FilterScreen() {
     val identities by viewModel.filteredIdentities.collectAsState()
     val filterSkillState by viewModel.filterSkillsState.collectAsState()
     val filterResistState by viewModel.filterResistState.collectAsState()
+    val sinPickerVisible by viewModel.sinPickerVisible.collectAsState()
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
         stringResource(R.string.res_normal),
@@ -47,8 +50,11 @@ fun FilterScreen() {
         filterSkillState,
         filterResistState,
         labels,
+        sinPickerVisible,
         viewModel::onFilterModeSwitch,
         viewModel::onFilterSkillButtonClick,
+        viewModel::onFilterSkillButtonLongPress,
+        viewModel::onFilterSinPickerPress,
         viewModel::onFilterResistButtonClick
     )
 }
@@ -59,8 +65,11 @@ fun FilterScreenUi(
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
     resistLabels: FilterResistButtonLabels,
+    sinPickerVisible: Boolean,
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
+    onSkillButtonLongPress: (Int) -> Unit,
+    onSinPickerClick: (StateType<Sin>) -> Unit,
     onResistButtonClick: (Int) -> Unit
 ) {
     Box(contentAlignment = Alignment.BottomCenter) {
@@ -80,9 +89,12 @@ fun FilterScreenUi(
             skillState = skillState,
             resistState = resistState,
             resistLabels = resistLabels,
+            sinPickerVisible = sinPickerVisible,
             onSwitchChange = onSwitchChange,
             onSkillButtonClick = onSkillButtonClick,
-            onResistButtonClick = onResistButtonClick
+            onSkillButtonLongPress = onSkillButtonLongPress,
+            onResistButtonClick = onResistButtonClick,
+            onSinPickerClick = onSinPickerClick
         )
     }
 }
@@ -92,8 +104,11 @@ fun FilterDrawerSheet(
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
     resistLabels: FilterResistButtonLabels,
+    sinPickerVisible: Boolean,
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
+    onSkillButtonLongPress: (Int) -> Unit,
+    onSinPickerClick: (StateType<Sin>) -> Unit,
     onResistButtonClick: (Int) -> Unit
 ) {
     var drawerState by remember { mutableStateOf<FilterDrawerState>(FilterDrawerState.Open) }
@@ -127,9 +142,12 @@ fun FilterDrawerSheet(
                 skillState = skillState,
                 resistState = resistState,
                 resistLabels = resistLabels,
+                sinPickerVisible = sinPickerVisible,
                 onSwitchChange = onSwitchChange,
                 onSkillButtonClick = onSkillButtonClick,
-                onResistButtonClick = onResistButtonClick
+                onSkillButtonLongPress = onSkillButtonLongPress,
+                onResistButtonClick = onResistButtonClick,
+                onSinPickerClick = onSinPickerClick
             )
         }
     }
@@ -140,9 +158,12 @@ fun FilterBlock(
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
     resistLabels: FilterResistButtonLabels,
+    sinPickerVisible: Boolean,
     onSwitchChange: (Boolean) -> Unit,
     onSkillButtonClick: (Int) -> Unit,
-    onResistButtonClick: (Int) -> Unit
+    onSkillButtonLongPress: (Int) -> Unit,
+    onSinPickerClick: (StateType<Sin>) -> Unit,
+    onResistButtonClick: (Int) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -155,7 +176,15 @@ fun FilterBlock(
             Spacer(modifier = Modifier.width(10.dp))
             Text(text = "Effects")
         }
-        FilterSkillBlock(state = skillState, onButtonClick = onSkillButtonClick)
+        if (sinPickerVisible) {
+            SinPicker(onClick = onSinPickerClick)
+        } else {
+            FilterSkillBlock(
+                state = skillState,
+                onButtonClick = onSkillButtonClick,
+                onButtonLongPress = onSkillButtonLongPress
+            )
+        }
         Divider(
             thickness = 2.dp,
             color = MaterialTheme.colorScheme.onPrimary,
@@ -167,36 +196,45 @@ fun FilterBlock(
 }
 
 @Composable
-fun FilterSkillBlock(state: FilterSkillBlockState, onButtonClick: (Int) -> Unit) {
+fun FilterSkillBlock(
+    state: FilterSkillBlockState,
+    onButtonClick: (Int) -> Unit,
+    onButtonLongPress: (Int) -> Unit
+) {
     Row() {
         FilterSkillButton(
             id = 1,
             damage = state.damage.first,
             sin = state.sin.first,
-            onClick = onButtonClick
+            onClick = onButtonClick,
+            onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
             id = 2,
             damage = state.damage.second,
             sin = state.sin.second,
-            onClick = onButtonClick
+            onClick = onButtonClick,
+            onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
             id = 3,
             damage = state.damage.third,
             sin = state.sin.third,
-            onClick = onButtonClick
+            onClick = onButtonClick,
+            onButtonLongPress = onButtonLongPress
         )
     }
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterSkillButton(
     id: Int,
     damage: StateType<DamageType>,
     sin: StateType<Sin>,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
+    onButtonLongPress: (Int) -> Unit
 ) {
     Surface(
         shape = CircleShape,
@@ -214,7 +252,12 @@ fun FilterSkillButton(
         ), contentDescription = null,
             modifier = Modifier
                 .size(50.dp)
-                .clickable { onClick(id) })
+                .combinedClickable(
+                    enabled = true,
+                    onClick = { onClick(id) },
+                    onLongClick = { onButtonLongPress(id) }
+                )
+        )
     }
 }
 
@@ -273,6 +316,31 @@ fun FilterResistButton(
     }
 }
 
+@Composable
+fun SinPicker(onClick: (StateType<Sin>) -> Unit) {
+    Row() {
+        SinPickerButton(state = StateType.Empty, onClick = onClick)
+        Sin.values().forEach { sin ->
+            SinPickerButton(state = StateType.Value(sin), onClick = onClick)
+        }
+    }
+}
+
+@Composable
+fun SinPickerButton(state: StateType<Sin>, onClick: (StateType<Sin>) -> Unit) {
+    Image(
+        painter = painterResource(
+            id = when (state) {
+                StateType.Empty -> R.drawable.poise_ic
+                is StateType.Value -> getSinIcon(state.value)
+            }
+        ), contentDescription = null,
+        modifier = Modifier
+            .size(50.dp)
+            .clickable { onClick(state) }
+    )
+}
+
 @Preview
 @Composable
 fun PreviewFilterBlock() {
@@ -290,9 +358,15 @@ fun PreviewFilterBlock() {
             StateType.Value(DamageType.BLUNT),
             StateType.Empty
         ),
-        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"),
-        {}, {}, {}
+        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"), false,
+        {}, {}, {}, {}, {}
     )
+}
+
+@Preview
+@Composable
+fun PreviewSinPicker() {
+    SinPicker(onClick = {})
 }
 
 //@Preview(showSystemUi = true, widthDp = 412, heightDp = 846)

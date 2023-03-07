@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.DamageType
+import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
 import ua.blackwind.limbushelper.ui.util.FilterDamageStateBundle
@@ -35,6 +36,11 @@ class FilterScreenViewModel @Inject constructor(
         FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
     )
     val filterResistState: StateFlow<FilterDamageStateBundle> = _filterResistState
+
+    private val _sinPickerVisible = MutableStateFlow(false)
+    val sinPickerVisible: StateFlow<Boolean> = _sinPickerVisible
+
+    private var selectedSkillButtonId = 0
 
     init {
         viewModelScope.launch {
@@ -71,6 +77,23 @@ class FilterScreenViewModel @Inject constructor(
         //TODO add mode switch logic
     }
 
+    fun onFilterSkillButtonLongPress(id: Int) {
+        selectedSkillButtonId = id
+        _sinPickerVisible.update { true }
+    }
+
+    fun onFilterSinPickerPress(sin: StateType<Sin>) {
+        _sinPickerVisible.update { false }
+
+        _filterSkillsState.update { old ->
+            FilterSkillBlockState(
+                old.damage,
+                updateSinStateBundle(selectedSkillButtonId, sin, old.sin)
+            )
+        }
+        selectedSkillButtonId = 0
+    }
+
     fun onFilterSkillButtonClick(id: Int) {
         _filterSkillsState.update { state ->
             FilterSkillBlockState(
@@ -97,6 +120,20 @@ class FilterScreenViewModel @Inject constructor(
             3 -> third = cycleSkillDamageTypes(third)
         }
         return FilterDamageStateBundle(first, second, third)
+    }
+
+    private fun updateSinStateBundle(
+        buttonId: Int,
+        sin: StateType<Sin>,
+        input: FilterSinStateBundle
+    ): FilterSinStateBundle {
+        var (first, second, third) = input
+        when (buttonId) {
+            1 -> first = sin
+            2 -> second = sin
+            3 -> third = sin
+        }
+        return FilterSinStateBundle(first, second, third)
     }
 
     private fun cycleSkillDamageTypes(type: StateType<DamageType>): StateType<DamageType> {

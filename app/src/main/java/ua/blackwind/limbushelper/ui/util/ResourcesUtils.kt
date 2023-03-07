@@ -28,6 +28,18 @@ fun getDamageTypeIcon(damageType: DamageType): Int {
     }
 }
 
+fun getSinIcon(sin: Sin): Int {
+    return when (sin) {
+        Sin.WRATH -> R.drawable.wrath_ic
+        Sin.LUST -> R.drawable.lust_ic
+        Sin.SLOTH -> R.drawable.sloth_ic
+        Sin.GLUTTONY -> R.drawable.gluttony_ic
+        Sin.GLOOM -> R.drawable.gloom_ic
+        Sin.PRIDE -> R.drawable.pride_ic
+        Sin.ENVY -> R.drawable.envy_ic
+    }
+}
+
 fun getEffectIcon(effect: Effect): Int {
     //TODO add other icons
     return when (effect) {
