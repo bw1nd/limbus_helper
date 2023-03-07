@@ -3,6 +3,7 @@ package ua.blackwind.limbushelper.ui.screens.filter_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FilterScreenViewModel @Inject constructor(
-    getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase
+    private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase
 ): ViewModel() {
     private val _filteredIdentities = MutableStateFlow<List<Identity>>(emptyList())
     val filteredIdentities: StateFlow<List<Identity>> = _filteredIdentities
@@ -39,39 +40,16 @@ class FilterScreenViewModel @Inject constructor(
 
     private var selectedSkillButtonId = 0
 
-    init {
-        viewModelScope.launch {
+    fun onFilterButtonClick() {
+        viewModelScope.launch(Dispatchers.Default) {
             _filteredIdentities.update {
+                val skillState = _filterSkillsState.value
+                val resistState = _filterResistState.value
                 getFilteredIdentitiesUseCase(
-                    IdentityFilter(
-                        resist = FilterResistSetArg(
-                            ineffective = FilterDamageTypeArg.Empty,
-                            normal = FilterDamageTypeArg.Empty,
-                            fatal = FilterDamageTypeArg.Empty
-                        ),
-                        skills = FilterSkillsSetArg(
-                            first = FilterSkillArg(
-                                FilterDamageTypeArg.Empty,
-                                FilterSinTypeArg.Empty
-                            ),
-                            second = FilterSkillArg(
-                                FilterDamageTypeArg.Empty,
-                                FilterSinTypeArg.Empty
-                            ),
-                            third = FilterSkillArg(
-                                FilterDamageTypeArg.Empty,
-                                FilterSinTypeArg.Empty
-                            )
-                        ),
-                        effects = emptyList()
-                    )
+                    formIdentityFilter(resistState, skillState)
                 )
             }
         }
-    }
-
-    fun onFilterButtonClick(){
-        //TODO implement filtering
     }
 
     fun onFilterModeSwitch(checked: Boolean) {
@@ -155,4 +133,31 @@ class FilterScreenViewModel @Inject constructor(
             DamageType.BLUNT -> StateType.Empty
         }
     }
+
+    private fun formIdentityFilter(
+        resistState: FilterDamageStateBundle,
+        skillState: FilterSkillBlockState
+    ) = IdentityFilter(
+        resist = FilterResistSetArg(
+            ineffective = resistState.first.toFilterDamageTypeArg(),
+            normal = resistState.second.toFilterDamageTypeArg(),
+            fatal = resistState.third.toFilterDamageTypeArg()
+        ),
+        skills = FilterSkillsSetArg(
+            FilterSkillArg(
+                skillState.damage.first.toFilterDamageTypeArg(),
+                skillState.sin.first.toFilterSinTypeArg()
+            ),
+            FilterSkillArg(
+                skillState.damage.second.toFilterDamageTypeArg(),
+                skillState.sin.second.toFilterSinTypeArg()
+            ),
+            FilterSkillArg(
+                skillState.damage.third.toFilterDamageTypeArg(),
+                skillState.sin.third.toFilterSinTypeArg()
+            ),
+        ),
+        effects = emptyList()
+    )
+
 }
