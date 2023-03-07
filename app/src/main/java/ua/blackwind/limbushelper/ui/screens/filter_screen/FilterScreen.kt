@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -27,6 +26,7 @@ import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.common.IdentityItem
+import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinColor
 
@@ -183,6 +183,7 @@ data class FilterSkillBlockState(
     val third: FilterSkillButtonState
 )
 
+
 @Composable
 fun FilterSkillButton(id: Int, state: FilterSkillButtonState, onClick: (Int) -> Unit) {
     Surface(
@@ -190,11 +191,11 @@ fun FilterSkillButton(id: Int, state: FilterSkillButtonState, onClick: (Int) -> 
         color = state.sin?.let { getSinColor(it) } ?: Color.White,
         modifier = Modifier.padding(5.dp)
     ) {
-        Image(painter = painterResource(id = state.type?.let {
-            getDamageTypeIcon(
-                it
-            )
-        } ?: R.drawable.charge_ic
+        Image(painter = painterResource(
+            id = when (state.type) {
+                is StateType.Empty -> R.drawable.bleed_ic
+                is StateType.Value<DamageType> -> getDamageTypeIcon(state.type.value)
+            }
         ), contentDescription = null,
             modifier = Modifier
                 .size(50.dp)
@@ -235,27 +236,27 @@ fun FilterResistBlock(
 }
 
 @Composable
-fun FilterResistButton(id: Int, label: String, state: DamageType?, onClick: (Int) -> Unit) {
+fun FilterResistButton(id: Int, label: String, state: StateType<Sin>, onClick: (Int) -> Unit) {
 //TODO fix icons bug
     Column() {
-        Image(painter = painterResource(id = state?.let {
-            Log.d("BUTTON", "Button id: $id - $it")
-            getDamageTypeIcon(it)
-        } ?: R.drawable.charge_ic
-        ), contentDescription = null,
-            modifier = Modifier
-                .size(40.dp)
-                .clickable {
-                    onClick(id)
-                })
-        Text(text = label)
+//        Image(painter = painterResource(id = state?.let {
+//            Log.d("BUTTON", "Button id: $id - $it")
+//            getDamageTypeIcon(it)
+//        } ?: R.drawable.charge_ic
+//        ), contentDescription = null,
+//            modifier = Modifier
+//                .size(40.dp)
+//                .clickable {
+//                    onClick(id)
+//                })
+//        Text(text = label)
     }
 }
 
 data class FilterResistBlockState(
-    val ineffective: DamageType?,
-    val normal: DamageType?,
-    val fatal: DamageType?
+    val ineffective: StateType<Sin>,
+    val normal: StateType<Sin>,
+    val fatal: StateType<Sin>
 )
 
 data class FilterResistButtonLabels(
@@ -264,27 +265,27 @@ data class FilterResistButtonLabels(
     val fatal: String
 )
 
-data class FilterSkillButtonState(val type: DamageType?, val sin: Sin?)
+data class FilterSkillButtonState(val type: StateType<DamageType>, val sin: Sin?)
 
 private sealed class FilterDrawerState() {
     object Open: FilterDrawerState()
     object Closed: FilterDrawerState()
 }
 
-@Preview
-@Composable
-fun PreviewFilterBlock() {
-    FilterDrawerSheet(
-        FilterSkillBlockState(
-            FilterSkillButtonState(DamageType.BLUNT, Sin.LUST),
-            FilterSkillButtonState(DamageType.SLASH, null),
-            FilterSkillButtonState(null, null)
-        ),
-        FilterResistBlockState(null, DamageType.BLUNT, null),
-        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"),
-        {}, {}, {}
-    )
-}
+//@Preview
+//@Composable
+//fun PreviewFilterBlock() {
+//    FilterDrawerSheet(
+//        FilterSkillBlockState(
+//            FilterSkillButtonState(StateDamageType.Blunt, Sin.LUST),
+//            FilterSkillButtonState(StateDamageType.Slash, null),
+//            FilterSkillButtonState(StateDamageType.Empty, null)
+//        ),
+//        FilterResistBlockState(StateDamageType.Empty, StateDamageType.Blunt, StateDamageType.Empty),
+//        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"),
+//        {}, {}, {}
+//    )
+//}
 
 //@Preview(showSystemUi = true, widthDp = 412, heightDp = 846)
 //@Composable
