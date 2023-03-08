@@ -26,11 +26,11 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         filterSkillsSetArg: FilterSkillsSetArg
     ): List<Identity> {
         return identities.filter { identity ->
-            identityPassFilter(identity, filterSkillsSetArg)
+            checkIfIdentityPassFilter(identity, filterSkillsSetArg)
         }
     }
 
-    private fun identityPassFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
+    private fun checkIfIdentityPassFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
         val filterSkills = filter.toSkillList().toMutableList()
@@ -55,6 +55,9 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         ) && checkSinImprint(skillsAfterStrictFilter, looseSinFilter)
     }
 
+    /**
+     * Performs loose filtering by skill damage
+     */
     private fun checkDamageImprint(
         skills: List<Skill>,
         filterImprint: List<DamageType?>
@@ -70,6 +73,9 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         return true
     }
 
+    /**
+     * Performs loose filtering by skill sin
+     */
     private fun checkSinImprint(
         sins: List<Skill>,
         filterImprint: List<Sin?>
