@@ -23,3 +23,5 @@ data class Identity(
     val support: Support,
     val imageUrl: String
 )
+
+fun Identity.skillList() = listOf(this.firstSkill, this.secondSkill, this.thirdSkill)
