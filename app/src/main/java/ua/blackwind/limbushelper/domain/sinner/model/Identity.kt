@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.domain.sinner.model
 
+import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
 
 //TODO this item missing damage attribute, must be added here and in other missing places
@@ -24,4 +25,11 @@ data class Identity(
     val imageUrl: String
 )
 
-fun Identity.skillList() = listOf(this.firstSkill, this.secondSkill, this.thirdSkill)
+fun Identity.getDamageImprint(): List<DamageType> {
+    return listOf(
+        this.firstSkill.dmgType,
+        this.secondSkill.dmgType,
+        this.thirdSkill.dmgType
+    ).sorted()
+}
+

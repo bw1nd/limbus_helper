@@ -7,7 +7,7 @@ import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
-import ua.blackwind.limbushelper.domain.sinner.model.skillList
+import ua.blackwind.limbushelper.domain.sinner.model.getDamageImprint
 import javax.inject.Inject
 
 class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: ISinnerRepository) {
@@ -26,16 +26,24 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         identities: List<Identity>,
         filterSkillsSetArg: FilterSkillsSetArg
     ): List<Identity> {
+        val skillDamageImprint = filterSkillsSetArg.getDamageImprint()
         return identities.filter { identity ->
-            val skillList = identity.skillList()
-            val first = skillList
-                .any { skill -> checkIdentitySkill(skill, filterSkillsSetArg.first) }
-            val second = skillList
-                .any { skill -> checkIdentitySkill(skill, filterSkillsSetArg.second) }
-            val third = skillList
-                .any { skill -> checkIdentitySkill(skill, filterSkillsSetArg.third) }
-            first && second && third
+            checkDamageImprint(identity, skillDamageImprint)
         }
+    }
+
+    private fun checkDamageImprint(
+        identity: Identity,
+        filterDamageImprint: List<DamageType>
+    ): Boolean {
+        val skillImprint = identity.getDamageImprint().toMutableList()
+        filterDamageImprint.forEach { filter ->
+            if (skillImprint.none { it == filter }) {
+                return false
+            }
+            skillImprint.remove(filter)
+        }
+        return true
     }
 
     private fun checkIdentitySkill(skill: Skill, filterArg: FilterSkillArg): Boolean {
@@ -123,11 +131,23 @@ data class FilterSkillArg(
     val sin: FilterSinTypeArg
 )
 
+fun FilterSkillsSetArg.getDamageImprint() =
+    listOfNotNull(
+        this.first.damageType.toDamageType(),
+        this.second.damageType.toDamageType(),
+        this.third.damageType.toDamageType()
+    ).sorted()
+
 sealed class FilterDamageTypeArg {
     object Empty: FilterDamageTypeArg()
     data class Type(
         val type: DamageType
     ): FilterDamageTypeArg()
+}
+
+fun FilterDamageTypeArg.toDamageType() = when (this) {
+    is FilterDamageTypeArg.Empty -> null
+    is FilterDamageTypeArg.Type -> this.type
 }
 
 sealed class FilterSinTypeArg {
