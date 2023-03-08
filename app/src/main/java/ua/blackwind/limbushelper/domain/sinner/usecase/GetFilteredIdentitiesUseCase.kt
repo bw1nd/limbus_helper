@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.domain.sinner.usecase
 
-import android.util.Log
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
@@ -8,8 +7,6 @@ import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
-import ua.blackwind.limbushelper.domain.sinner.model.getDamageImprint
-import ua.blackwind.limbushelper.domain.sinner.model.getSinImprint
 import javax.inject.Inject
 
 class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: ISinnerRepository) {
@@ -28,30 +25,44 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         identities: List<Identity>,
         filterSkillsSetArg: FilterSkillsSetArg
     ): List<Identity> {
-        val skillDamageImprint = filterSkillsSetArg.getDamageImprint()
-        val skillSinImprint = filterSkillsSetArg.getSinImprint()
-        val filtered = identities.filter { identity ->
-            Log.d("FILTER", "Filtering skill")
-            checkDamageImprint(identity, skillDamageImprint)
-        }.filter { identity ->
-            Log.d("FILTER", "Filtering sin")
-            checkSinImprint(
-                identity,
-                skillSinImprint
-            )
+        return identities.filter { identity ->
+            identityPassFilter(identity, filterSkillsSetArg)
         }
+    }
 
-        return filtered
+    private fun identityPassFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
+        val identitySkills =
+            listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
+        val filterSkills = filter.toSkillList().toMutableList()
+        filterSkills.toList().forEach { skillFilter ->
+            if (skillFilter.isStrict()) {
+                val correspondingSkill =
+                    identitySkills.find {
+                        it.dmgType == skillFilter.damageType.toDamageType()
+                                && it.sin == skillFilter.sin.toSin()
+                    }
+                        ?: return false
+                filterSkills.remove(skillFilter)
+                identitySkills.remove(correspondingSkill)
+            }
+        }
+        val skillsAfterStrictFilter = identitySkills.toList()
+        val looseDamageFilter = filterSkills.map { it.damageType.toDamageType() }.toList()
+        val looseSinFilter = filterSkills.map { it.sin.toSin() }.toList()
+        return checkDamageImprint(
+            skillsAfterStrictFilter,
+            looseDamageFilter
+        ) && checkSinImprint(skillsAfterStrictFilter, looseSinFilter)
     }
 
     private fun checkDamageImprint(
-        identity: Identity,
-        filterDamageImprint: List<DamageType>
+        skills: List<Skill>,
+        filterImprint: List<DamageType?>
     ): Boolean {
-        if (filterDamageImprint.isEmpty()) return true
-        val skillImprint = identity.getDamageImprint().toMutableList()
-        filterDamageImprint.forEach { filter ->
-            if (skillImprint.none { it == filter }) {
+        if (filterImprint.isEmpty()) return true
+        val skillImprint = skills.map { it.dmgType }.toMutableList()
+        filterImprint.forEach { filter ->
+            if (filter != null && skillImprint.none { it == filter }) {
                 return false
             }
             skillImprint.remove(filter)
@@ -60,32 +71,18 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
     }
 
     private fun checkSinImprint(
-        identity: Identity,
-        filterSinImprint: List<Sin>
+        sins: List<Skill>,
+        filterImprint: List<Sin?>
     ): Boolean {
-        if (filterSinImprint.isEmpty()) return true
-        val sinImprint = identity.getSinImprint().toMutableList()
-        filterSinImprint.forEach { filter ->
-            if (sinImprint.none { it == filter }) {
+        if (filterImprint.isEmpty()) return true
+        val sinImprint = sins.map { it.sin }.toMutableList()
+        filterImprint.forEach { filter ->
+            if (filter != null && sinImprint.none { it == filter }) {
                 return false
             }
             sinImprint.remove(filter)
         }
         return true
-    }
-
-    private fun checkIdentitySkill(skill: Skill, filterArg: FilterSkillArg): Boolean {
-        if (filterArg.damageType is FilterDamageTypeArg.Empty
-            && filterArg.sin is FilterSinTypeArg.Empty
-        ) return true
-        if (filterArg.damageType
-                    is FilterDamageTypeArg.Empty
-        ) return skill.sin == (filterArg.sin as FilterSinTypeArg.Type).type
-        if (filterArg.sin
-                    is FilterSinTypeArg.Empty
-        ) return skill.dmgType == (filterArg.damageType as FilterDamageTypeArg.Type).type
-        return skill.dmgType == (filterArg.damageType as FilterDamageTypeArg.Type).type &&
-                skill.sin == (filterArg.sin as FilterSinTypeArg.Type).type
     }
 
     private fun filterByResistance(
@@ -149,6 +146,8 @@ data class FilterSkillsSetArg(
     val third: FilterSkillArg
 )
 
+fun FilterSkillsSetArg.toSkillList() = listOf(first, second, third)
+
 fun FilterSkillsSetArg.skillFilterIsEmpty() =
     this.first.damageType == FilterDamageTypeArg.Empty
             && first.sin == FilterSinTypeArg.Empty
@@ -162,15 +161,8 @@ data class FilterSkillArg(
     val sin: FilterSinTypeArg
 )
 
-fun FilterSkillsSetArg.getDamageImprint() =
-    listOfNotNull(
-        first.damageType.toDamageType(),
-        second.damageType.toDamageType(),
-        third.damageType.toDamageType()
-    )
-
-fun FilterSkillsSetArg.getSinImprint() =
-    listOfNotNull(first.sin.toSin(), second.sin.toSin(), third.sin.toSin())
+fun FilterSkillArg.isStrict() = this.damageType !is FilterDamageTypeArg.Empty &&
+        this.sin !is FilterSinTypeArg.Empty
 
 sealed class FilterDamageTypeArg {
     object Empty: FilterDamageTypeArg()
