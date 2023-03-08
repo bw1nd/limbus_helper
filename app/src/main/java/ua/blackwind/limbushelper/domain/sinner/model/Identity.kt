@@ -2,9 +2,8 @@ package ua.blackwind.limbushelper.domain.sinner.model
 
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.Sin
 
-//TODO this item missing damage attribute, must be added here and in other missing places
-//TODO replace skills fields with actual skill objects
 data class Identity(
     val id: Int,
     val name: String,
@@ -27,9 +26,17 @@ data class Identity(
 
 fun Identity.getDamageImprint(): List<DamageType> {
     return listOf(
-        this.firstSkill.dmgType,
-        this.secondSkill.dmgType,
-        this.thirdSkill.dmgType
-    ).sorted()
+        firstSkill.dmgType,
+        secondSkill.dmgType,
+        thirdSkill.dmgType
+    )
+}
+
+fun Identity.getSinImprint(): List<Sin> {
+    return listOf(
+        firstSkill.sin,
+        secondSkill.sin,
+        thirdSkill.sin
+    )
 }
 
