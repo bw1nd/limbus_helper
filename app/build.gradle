@@ -47,6 +47,11 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
 
     applicationVariants.all { variant ->
         kotlin.sourceSets {
@@ -68,6 +73,8 @@ dependencies {
 
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Room
@@ -81,12 +88,17 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:$compose_hilt_navigation_version"
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation "io.mockk:mockk:$mockkVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.9.2"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 }
+
+
 
 kapt {
     correctErrorTypes true

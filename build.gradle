@@ -5,6 +5,8 @@ buildscript {
         room_version = '2.5.0'
         nav_version = '1.8.35-beta'
         compose_hilt_navigation_version = '1.0.0'
+
+        mockkVersion = '1.13.4'
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
