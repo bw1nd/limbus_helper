@@ -378,6 +378,44 @@ class GetFilteredIdentitiesUseCaseTest {
         return testBase(expected, skillArgs, resistArguments, emptyList())
     }
 
+    @Test
+    fun `filter with fatal blunt resist and skill with lust sin returns identity #1 #3`() {
+        val expected = listOf(firstIdentity, thirdIdentity)
+
+        val skillArgs = FilterSkillsSetArg(
+            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        val resistArguments = FilterResistSetArg(
+            ineffective = FilterDamageTypeArg.Empty,
+            normal = FilterDamageTypeArg.Empty,
+            fatal = FilterDamageTypeArg.Type(DamageType.BLUNT)
+        )
+
+        return testBase(expected, skillArgs, resistArguments, emptyList())
+    }
+
+    @Test
+    fun `filter with normal slash resist and skill with two blunt returns identity #3`() {
+        val expected = listOf(thirdIdentity)
+
+        val skillArgs = FilterSkillsSetArg(
+            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            emptySkillArg,
+        )
+
+        val resistArguments = FilterResistSetArg(
+            ineffective = FilterDamageTypeArg.Empty,
+            normal = FilterDamageTypeArg.Type(DamageType.SLASH),
+            fatal = FilterDamageTypeArg.Empty
+        )
+
+        return testBase(expected, skillArgs, resistArguments, emptyList())
+    }
+
     //TODO write more tests for combined damage/sin types cases
     //TODO write tests with combined resistances and skills
     private fun testBase(
