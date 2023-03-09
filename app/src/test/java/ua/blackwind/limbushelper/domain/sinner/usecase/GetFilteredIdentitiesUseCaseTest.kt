@@ -417,7 +417,6 @@ class GetFilteredIdentitiesUseCaseTest {
     }
 
     //TODO write more tests for combined damage/sin types cases
-    //TODO write tests with combined resistances and skills
     private fun testBase(
         expected: List<Identity>,
         skillArgs: FilterSkillsSetArg,
