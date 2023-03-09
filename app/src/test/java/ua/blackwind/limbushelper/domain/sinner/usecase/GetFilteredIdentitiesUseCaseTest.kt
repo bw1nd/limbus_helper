@@ -26,50 +26,50 @@ class GetFilteredIdentitiesUseCaseTest {
     private val repository = mockk<SinnerRepository>()
 
     private val firstIdentity = generateIdentity(
-        "TEST IDENTITY #1",
-        IdentityDamageResistType.INEFFECTIVE,
-        IdentityDamageResistType.NORMAL,
-        IdentityDamageResistType.FATAL,
-        generateSkill(DamageType.SLASH, Sin.LUST, listOf(Effect.BURN)),
-        generateSkill(DamageType.SLASH, Sin.ENVY, listOf(Effect.BLEED)),
-        generateSkill(DamageType.BLUNT, Sin.WRATH, emptyList()),
-        dummyPassive,
-        dummySupport
+        name = "TEST IDENTITY #1",
+        slashResist = IdentityDamageResistType.INEFFECTIVE,
+        pierceResist = IdentityDamageResistType.NORMAL,
+        bluntResist = IdentityDamageResistType.FATAL,
+        firstSkill = generateSkill(DamageType.SLASH, Sin.LUST, listOf(Effect.BURN)),
+        secondSkill = generateSkill(DamageType.SLASH, Sin.ENVY, listOf(Effect.BLEED)),
+        thirdSkill = generateSkill(DamageType.BLUNT, Sin.WRATH, emptyList()),
+        passive = dummyPassive,
+        support = dummySupport
     )
     private val secondIdentity = generateIdentity(
-        "TEST IDENTITY #2",
-        IdentityDamageResistType.NORMAL,
-        IdentityDamageResistType.INEFFECTIVE,
-        IdentityDamageResistType.FATAL,
-        generateSkill(DamageType.PIERCE, Sin.PRIDE, listOf(Effect.POISE)),
-        generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
-        generateSkill(DamageType.PIERCE, Sin.ENVY, emptyList()),
-        dummyPassive,
-        dummySupport
+        name = "TEST IDENTITY #2",
+        slashResist = IdentityDamageResistType.NORMAL,
+        pierceResist = IdentityDamageResistType.INEFFECTIVE,
+        bluntResist = IdentityDamageResistType.FATAL,
+        firstSkill = generateSkill(DamageType.PIERCE, Sin.PRIDE, listOf(Effect.POISE)),
+        secondSkill = generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
+        thirdSkill = generateSkill(DamageType.PIERCE, Sin.ENVY, emptyList()),
+        passive = dummyPassive,
+        support = dummySupport
     )
 
     private val thirdIdentity = generateIdentity(
-        "TEST IDENTITY #3",
-        IdentityDamageResistType.NORMAL,
-        IdentityDamageResistType.FATAL,
-        IdentityDamageResistType.INEFFECTIVE,
-        generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.POISE)),
-        generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
-        generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
-        dummyPassive,
-        dummySupport
+        name = "TEST IDENTITY #3",
+        slashResist = IdentityDamageResistType.NORMAL,
+        pierceResist = IdentityDamageResistType.INEFFECTIVE,
+        bluntResist = IdentityDamageResistType.FATAL,
+        firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.POISE)),
+        secondSkill = generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
+        thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
+        passive = dummyPassive,
+        support = dummySupport
     )
 
     private val fourthIdentity = generateIdentity(
-        "TEST IDENTITY #4",
-        IdentityDamageResistType.NORMAL,
-        IdentityDamageResistType.FATAL,
-        IdentityDamageResistType.INEFFECTIVE,
-        generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),
-        generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
-        generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
-        dummyPassive,
-        dummySupport
+        name = "TEST IDENTITY #4",
+        slashResist = IdentityDamageResistType.INEFFECTIVE,
+        pierceResist = IdentityDamageResistType.FATAL,
+        bluntResist = IdentityDamageResistType.NORMAL,
+        firstSkill = generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),
+        secondSkill = generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
+        thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
+        passive = dummyPassive,
+        support = dummySupport
     )
 
     private val testData = listOf(
@@ -103,7 +103,7 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -119,7 +119,7 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -135,7 +135,7 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -150,7 +150,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -165,7 +165,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -178,7 +178,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -193,7 +193,7 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -210,7 +210,7 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -226,7 +226,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -241,7 +241,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -254,7 +254,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -270,7 +270,7 @@ class GetFilteredIdentitiesUseCaseTest {
             ),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -286,7 +286,7 @@ class GetFilteredIdentitiesUseCaseTest {
             ),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -302,7 +302,7 @@ class GetFilteredIdentitiesUseCaseTest {
             ),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
     }
 
     @Test
@@ -318,16 +318,77 @@ class GetFilteredIdentitiesUseCaseTest {
             ),
         )
 
-        return testBase(expected, skillArgs)
+        return testBase(expected, skillArgs, emptyResistArgs, emptyList())
+    }
+
+    @Test
+    fun `filter with ineffective slash resist returns identities #1 #4`() {
+        val expected = listOf(firstIdentity, fourthIdentity)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        val resistArguments = FilterResistSetArg(
+            FilterDamageTypeArg.Type(DamageType.SLASH),
+            FilterDamageTypeArg.Empty,
+            FilterDamageTypeArg.Empty
+        )
+
+        return testBase(expected, skillArgs, resistArguments, emptyList())
+    }
+
+    @Test
+    fun `filter with ineffective pierce fatal blunt resist returns identities #2 #3`() {
+        val expected = listOf(secondIdentity, thirdIdentity)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        val resistArguments = FilterResistSetArg(
+            ineffective = FilterDamageTypeArg.Type(DamageType.PIERCE),
+            normal = FilterDamageTypeArg.Empty,
+            fatal = FilterDamageTypeArg.Type(DamageType.BLUNT)
+        )
+
+        return testBase(expected, skillArgs, resistArguments, emptyList())
+    }
+
+    @Test
+    fun `filter with ineffective slash fatal pierce normal blunt resist returns identity #4`() {
+        val expected = listOf(fourthIdentity)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        val resistArguments = FilterResistSetArg(
+            ineffective = FilterDamageTypeArg.Type(DamageType.SLASH),
+            normal = FilterDamageTypeArg.Type(DamageType.BLUNT),
+            fatal = FilterDamageTypeArg.Type(DamageType.PIERCE)
+        )
+
+        return testBase(expected, skillArgs, resistArguments, emptyList())
     }
 
     //TODO write more tests for combined damage/sin types cases
-    //TODO write test with resistances
     //TODO write tests with combined resistances and skills
-    private fun testBase(expected: List<Identity>, skillArgs: FilterSkillsSetArg) {
+    private fun testBase(
+        expected: List<Identity>,
+        skillArgs: FilterSkillsSetArg,
+        resistSetArg: FilterResistSetArg,
+        effects: List<Effect>
+    ) {
         val useCase = GetFilteredIdentitiesUseCase(repository)
 
-        val filter = IdentityFilter(emptyResistArgs, skillArgs, emptyList())
+        val filter = IdentityFilter(resistSetArg, skillArgs, effects)
 
         return runTest {
             val result = useCase.invoke(filter).sortedBy { it.name }
