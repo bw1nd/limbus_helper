@@ -11,26 +11,22 @@ import javax.inject.Inject
 
 class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: ISinnerRepository) {
     suspend operator fun invoke(filter: IdentityFilter): List<Identity> {
-        var identities = repository.getAllIdentities()
-        if (!filter.resist.isEmpty()) {
-            identities = filterByResistance(identities, filter.resist)
-        }
-        if (identities.isNotEmpty() && !filter.skills.skillFilterIsEmpty()) {
-            identities = filterBySkill(identities, filter.skills)
-        }
-        return identities
-    }
+        val identities = repository.getAllIdentities()
 
-    private fun filterBySkill(
-        identities: List<Identity>,
-        filterSkillsSetArg: FilterSkillsSetArg
-    ): List<Identity> {
         return identities.filter { identity ->
-            checkIfIdentityPassFilter(identity, filterSkillsSetArg)
+            val byResistance =
+                filter.resist.isEmpty() || identityPassResistanceFilter(identity, filter.resist)
+            val bySkill =
+                (byResistance && filter.skills.skillFilterIsEmpty()) || identityPassSkillFilter(
+                    identity,
+                    filter.skills
+                )
+
+            byResistance && bySkill
         }
     }
 
-    private fun checkIfIdentityPassFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
+    private fun identityPassSkillFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
         val filterSkills = filter.toSkillList().toMutableList()
@@ -91,28 +87,28 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         return true
     }
 
-    private fun filterByResistance(
-        identities: List<Identity>,
+    private fun identityPassResistanceFilter(
+        identity: Identity,
         filter: FilterResistSetArg
-    ): List<Identity> {
-        return identities.filter { identity ->
-            val ineffective = checkIdentityResistance(
-                identity,
-                IdentityDamageResistType.INEFFECTIVE,
-                filter.ineffective
-            )
-            val normal = checkIdentityResistance(
-                identity,
-                IdentityDamageResistType.NORMAL,
-                filter.normal
-            )
-            val fatal = checkIdentityResistance(
-                identity,
-                IdentityDamageResistType.FATAL,
-                filter.fatal
-            )
-            ineffective && normal && fatal
-        }
+    ): Boolean {
+
+        val ineffective = checkIdentityResistance(
+            identity,
+            IdentityDamageResistType.INEFFECTIVE,
+            filter.ineffective
+        )
+        val normal = checkIdentityResistance(
+            identity,
+            IdentityDamageResistType.NORMAL,
+            filter.normal
+        )
+        val fatal = checkIdentityResistance(
+            identity,
+            IdentityDamageResistType.FATAL,
+            filter.fatal
+        )
+        return ineffective && normal && fatal
+
     }
 
     private fun checkIdentityResistance(
