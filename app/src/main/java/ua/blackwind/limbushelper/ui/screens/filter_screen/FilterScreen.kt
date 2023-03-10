@@ -25,6 +25,8 @@ import ua.blackwind.limbushelper.ui.common.IdentityItem
 import ua.blackwind.limbushelper.ui.common.SegmentedButton
 import ua.blackwind.limbushelper.ui.util.*
 
+private const val NUMBER_OF_EFFECTS_IN_ROW = 4
+
 @RootNavGraph(start = true)
 @Destination
 @Composable
@@ -34,6 +36,7 @@ fun FilterScreen() {
     val filterSheetMode by viewModel.filterSheetMode.collectAsState()
     val filterSkillState by viewModel.filterSkillsState.collectAsState()
     val filterResistState by viewModel.filterResistState.collectAsState()
+    val filterEffectsState by viewModel.filterEffectBlockState.collectAsState()
     val sinPickerVisible by viewModel.sinPickerVisible.collectAsState()
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
@@ -46,6 +49,7 @@ fun FilterScreen() {
         filterSheetMode,
         filterSkillState,
         filterResistState,
+        filterEffectsState,
         labels,
         sinPickerVisible,
         viewModel::onFilterModeSwitch,
@@ -53,7 +57,8 @@ fun FilterScreen() {
         viewModel::onFilterSkillButtonClick,
         viewModel::onFilterSkillButtonLongPress,
         viewModel::onFilterSinPickerPress,
-        viewModel::onFilterResistButtonClick
+        viewModel::onFilterResistButtonClick,
+        viewModel::onEffectCheckedChange
     )
 }
 
@@ -64,6 +69,7 @@ fun FilterScreenUi(
     filterSheetMode: FilterSheetMode,
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
+    effectsState: FilterEffectBlockState,
     resistLabels: FilterResistButtonLabels,
     sinPickerVisible: Boolean,
     onSwitchChange: (Int) -> Unit,
@@ -71,7 +77,8 @@ fun FilterScreenUi(
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (Int) -> Unit
+    onResistButtonClick: (Int) -> Unit,
+    onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {
     BottomSheetScaffold(
         scaffoldState = rememberBottomSheetScaffoldState(),
@@ -80,6 +87,7 @@ fun FilterScreenUi(
                 filterSheetMode = filterSheetMode,
                 skillState = skillState,
                 resistState = resistState,
+                effectsState = effectsState,
                 resistLabels = resistLabels,
                 sinPickerVisible = sinPickerVisible,
                 onSwitchChange = onSwitchChange,
@@ -87,7 +95,8 @@ fun FilterScreenUi(
                 onSkillButtonClick = onSkillButtonClick,
                 onSkillButtonLongPress = onSkillButtonLongPress,
                 onResistButtonClick = onResistButtonClick,
-                onSinPickerClick = onSinPickerClick
+                onSinPickerClick = onSinPickerClick,
+                onEffectCheckedChange = onEffectCheckedChange
             )
         }
     ) { padding ->
@@ -123,6 +132,7 @@ fun FilterDrawerSheet(
     filterSheetMode: FilterSheetMode,
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
+    effectsState: FilterEffectBlockState,
     resistLabels: FilterResistButtonLabels,
     sinPickerVisible: Boolean,
     onSwitchChange: (Int) -> Unit,
@@ -130,7 +140,8 @@ fun FilterDrawerSheet(
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (Int) -> Unit
+    onResistButtonClick: (Int) -> Unit,
+    onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -147,15 +158,17 @@ fun FilterDrawerSheet(
             )
         }
         FilterBlock(
-            filterSheetMode,
+            filterSheetMode = filterSheetMode,
             skillState = skillState,
             resistState = resistState,
+            effectsState = effectsState,
             resistLabels = resistLabels,
             sinPickerVisible = sinPickerVisible,
             onSkillButtonClick = onSkillButtonClick,
             onSkillButtonLongPress = onSkillButtonLongPress,
             onResistButtonClick = onResistButtonClick,
-            onSinPickerClick = onSinPickerClick
+            onSinPickerClick = onSinPickerClick,
+            onEffectCheckedChange = onEffectCheckedChange
         )
         OutlinedButton(onClick = { onFilterButtonClick() }) {
             Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
@@ -168,12 +181,14 @@ fun FilterBlock(
     filterSheetMode: FilterSheetMode,
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
+    effectsState: FilterEffectBlockState,
     resistLabels: FilterResistButtonLabels,
     sinPickerVisible: Boolean,
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     onResistButtonClick: (Int) -> Unit,
+    onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -183,7 +198,10 @@ fun FilterBlock(
 
     ) {
         when (filterSheetMode) {
-            FilterSheetMode.Effects -> FilterEffectsBlock(onCheckedChange = { _, _ -> })
+            FilterSheetMode.Effects -> FilterEffectsBlock(
+                effectsState,
+                onEffectCheckedChange
+            )
             FilterSheetMode.Type -> FilterTypeBlock(
                 sinPickerVisible,
                 onSinPickerClick,
@@ -235,22 +253,19 @@ private fun FilterTypeBlock(
 }
 
 @Composable
-fun FilterEffectsBlock(onCheckedChange: (Boolean, Effect) -> Unit) {
-    val validEffects = listOf(
-        Effect.BLEED,
-        Effect.BURN,
-        Effect.POISE,
-        Effect.RUPTURE,
-        Effect.PARALYSIS,
-        Effect.BIND,
-        Effect.SINKING,
-        Effect.TREMOR
-    )
+fun FilterEffectsBlock(
+    state: FilterEffectBlockState,
+    onEffectCheckedChange: (Boolean, Effect) -> Unit
+) {
     Column() {
-        validEffects.chunked(3).forEach { triplet ->
+        state.effects.keys.chunked(NUMBER_OF_EFFECTS_IN_ROW).forEach { triplet ->
             Row() {
                 triplet.forEach { effect ->
-                    EffectItem(effect = effect, checked = false, onCheckedChange = onCheckedChange)
+                    EffectItem(
+                        effect = effect,
+                        checked = state.effects[effect] ?: false,
+                        onEffectCheckedChange = onEffectCheckedChange
+                    )
                 }
             }
         }
@@ -258,9 +273,11 @@ fun FilterEffectsBlock(onCheckedChange: (Boolean, Effect) -> Unit) {
 }
 
 @Composable
-fun EffectItem(effect: Effect, checked: Boolean, onCheckedChange: (Boolean, Effect) -> Unit) {
+fun EffectItem(effect: Effect, checked: Boolean, onEffectCheckedChange: (Boolean, Effect) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(checked = checked, onCheckedChange = { state -> onCheckedChange(state, effect) })
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { state -> onEffectCheckedChange(state, effect) })
         Image(painter = painterResource(id = getEffectIcon(effect)), contentDescription = null)
     }
 }
@@ -459,8 +476,11 @@ fun PreviewFilterBlock() {
             StateType.Value(DamageType.BLUNT),
             StateType.Empty
         ),
-        FilterResistButtonLabels("Ineff.", "Normal", "Fatal"), false,
-        {}, {}, {}, {}, {}, {}
+        FilterEffectBlockState(mapOf(Effect.BLEED to false)),
+        FilterResistButtonLabels(
+            "Ineff.", "Normal", "Fatal"
+        ), false,
+        {}, {}, {}, {}, {}, {}, { _, _ -> }
     )
 }
 
@@ -470,11 +490,11 @@ fun PreviewSinPicker() {
     SinPicker(onClick = {})
 }
 
-@Preview
-@Composable
-fun PreviewEffectSheet() {
-    FilterEffectsBlock({ _, _ -> })
-}
+//@Preview
+//@Composable
+//fun PreviewEffectSheet() {
+//    FilterEffectsBlock({ _, _ -> })
+//}
 //@Preview(showSystemUi = true, widthDp = 412, heightDp = 846)
 //@Composable
 //fun PreviewFilterScreen() {

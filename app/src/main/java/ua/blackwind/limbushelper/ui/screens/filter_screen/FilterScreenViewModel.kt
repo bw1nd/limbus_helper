@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.DamageType
+import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
@@ -41,6 +42,22 @@ class FilterScreenViewModel @Inject constructor(
     private val _filterSheetMode = MutableStateFlow<FilterSheetMode>(FilterSheetMode.Type)
     val filterSheetMode: StateFlow<FilterSheetMode> = _filterSheetMode
 
+    private val _filterEffectBlockState = MutableStateFlow(
+        FilterEffectBlockState(
+            mapOf(
+                Effect.BLEED to false,
+                Effect.BURN to false,
+                Effect.POISE to false,
+                Effect.RUPTURE to false,
+                Effect.PARALYSIS to false,
+                Effect.BIND to false,
+                Effect.SINKING to false,
+                Effect.TREMOR to false
+            )
+        )
+    )
+    val filterEffectBlockState: StateFlow<FilterEffectBlockState> = _filterEffectBlockState
+
     private var selectedSkillButtonId = 0
 
     fun onFilterButtonClick() {
@@ -48,8 +65,9 @@ class FilterScreenViewModel @Inject constructor(
             _filteredIdentities.update {
                 val skillState = _filterSkillsState.value
                 val resistState = _filterResistState.value
+                val effectState = _filterEffectBlockState.value
                 getFilteredIdentitiesUseCase(
-                    formIdentityFilter(resistState, skillState)
+                    formIdentityFilter(resistState, skillState, effectState)
                 )
             }
         }
@@ -60,6 +78,16 @@ class FilterScreenViewModel @Inject constructor(
             0 -> _filterSheetMode.update { FilterSheetMode.Type }
             1 -> _filterSheetMode.update { FilterSheetMode.Effects }
             else -> throw IllegalArgumentException("Wrong switch button id: $id")
+        }
+    }
+
+    fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
+        _filterEffectBlockState.update { state ->
+            val new = state.effects.toMutableMap()
+            new[effect] = checked
+            FilterEffectBlockState(
+                new
+            )
         }
     }
 
@@ -143,7 +171,8 @@ class FilterScreenViewModel @Inject constructor(
 
     private fun formIdentityFilter(
         resistState: FilterDamageStateBundle,
-        skillState: FilterSkillBlockState
+        skillState: FilterSkillBlockState,
+        effectState: FilterEffectBlockState
     ) = IdentityFilter(
         resist = FilterResistSetArg(
             ineffective = resistState.first.toFilterDamageTypeArg(),
@@ -164,7 +193,6 @@ class FilterScreenViewModel @Inject constructor(
                 skillState.sin.third.toFilterSinTypeArg()
             ),
         ),
-        effects = emptyList()
+        effects = effectState.effects.filter { it.value }.keys.toList()
     )
-
 }

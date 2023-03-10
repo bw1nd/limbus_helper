@@ -1,6 +1,7 @@
 package ua.blackwind.limbushelper.ui.util
 
 import ua.blackwind.limbushelper.domain.DamageType
+import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.usecase.FilterDamageTypeArg
 import ua.blackwind.limbushelper.domain.sinner.usecase.FilterSinTypeArg
@@ -68,3 +69,7 @@ sealed class FilterSheetMode {
     object Type: FilterSheetMode()
     object Effects: FilterSheetMode()
 }
+
+data class FilterEffectBlockState(
+    val effects: Map<Effect, Boolean>
+)
