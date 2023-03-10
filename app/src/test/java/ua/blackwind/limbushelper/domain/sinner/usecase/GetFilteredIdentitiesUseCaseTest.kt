@@ -31,7 +31,11 @@ class GetFilteredIdentitiesUseCaseTest {
         pierceResist = IdentityDamageResistType.NORMAL,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.SLASH, Sin.LUST, listOf(Effect.BURN)),
-        secondSkill = generateSkill(DamageType.SLASH, Sin.ENVY, listOf(Effect.BLEED)),
+        secondSkill = generateSkill(
+            DamageType.SLASH,
+            Sin.ENVY,
+            listOf(Effect.BLEED, Effect.PARALYSIS)
+        ),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.WRATH, emptyList()),
         passive = dummyPassive,
         support = dummySupport
@@ -42,7 +46,11 @@ class GetFilteredIdentitiesUseCaseTest {
         pierceResist = IdentityDamageResistType.INEFFECTIVE,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.PIERCE, Sin.PRIDE, listOf(Effect.POISE)),
-        secondSkill = generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
+        secondSkill = generateSkill(
+            DamageType.PIERCE,
+            Sin.SLOTH,
+            listOf(Effect.POISE, Effect.FRAGILE)
+        ),
         thirdSkill = generateSkill(DamageType.PIERCE, Sin.ENVY, emptyList()),
         passive = dummyPassive,
         support = dummySupport
@@ -53,7 +61,7 @@ class GetFilteredIdentitiesUseCaseTest {
         slashResist = IdentityDamageResistType.NORMAL,
         pierceResist = IdentityDamageResistType.INEFFECTIVE,
         bluntResist = IdentityDamageResistType.FATAL,
-        firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.POISE)),
+        firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.BLEED)),
         secondSkill = generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
         passive = dummyPassive,
@@ -416,7 +424,78 @@ class GetFilteredIdentitiesUseCaseTest {
         return testBase(expected, skillArgs, resistArguments, emptyList())
     }
 
-    //TODO write more tests for combined damage/sin types cases
+    @Test
+    fun `filter with rupture effect returns empty list`() {
+        val expected = emptyList<Identity>()
+
+        val effects = listOf(Effect.RUPTURE)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        return testBase(expected, skillArgs, emptyResistArgs, effects)
+    }
+
+    @Test
+    fun `filter with poise effect returns identity #2 #3 #4`() {
+        val expected = listOf(secondIdentity, thirdIdentity, fourthIdentity)
+
+        val effects = listOf(Effect.POISE)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        return testBase(expected, skillArgs, emptyResistArgs, effects)
+    }
+
+    @Test
+    fun `filter with burn bleed effect returns identity #1`() {
+        val expected = listOf(firstIdentity)
+
+        val effects = listOf(Effect.BURN, Effect.BLEED)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            emptySkillArg,
+            emptySkillArg,
+        )
+
+        return testBase(expected, skillArgs, emptyResistArgs, effects)
+    }
+
+    @Test
+    fun `filter with bleed effect fatal blunt resist and slash lust skill returns identity #1 #3`() {
+        val expected = listOf(firstIdentity, thirdIdentity)
+
+        val effects = listOf(Effect.BLEED)
+
+        val skillArgs = FilterSkillsSetArg(
+            emptySkillArg,
+            FilterSkillArg(
+                FilterDamageTypeArg.Type(DamageType.SLASH),
+                FilterSinTypeArg.Empty
+            ),
+            FilterSkillArg(
+                FilterDamageTypeArg.Empty,
+                FilterSinTypeArg.Type(Sin.LUST)
+            ),
+        )
+
+        val resistArguments = FilterResistSetArg(
+            ineffective = FilterDamageTypeArg.Empty,
+            normal = FilterDamageTypeArg.Empty,
+            fatal = FilterDamageTypeArg.Type(DamageType.BLUNT)
+        )
+
+        return testBase(expected, skillArgs, resistArguments, effects)
+    }
+
     private fun testBase(
         expected: List<Identity>,
         skillArgs: FilterSkillsSetArg,
