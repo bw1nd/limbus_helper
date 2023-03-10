@@ -21,6 +21,7 @@ import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.common.IdentityItem
+import ua.blackwind.limbushelper.ui.common.SegmentedButton
 import ua.blackwind.limbushelper.ui.util.*
 
 @RootNavGraph(start = true)
@@ -168,11 +169,12 @@ fun FilterBlock(
 
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Skills/Resistances")
             Spacer(modifier = Modifier.width(10.dp))
-            Switch(checked = false, onCheckedChange = onSwitchChange)
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(text = "Effects")
+            SegmentedButton(
+                items = listOf("Type", "Effects"),
+                onItemSelection = {},
+                color = MaterialTheme.colorScheme.primary
+            )
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
