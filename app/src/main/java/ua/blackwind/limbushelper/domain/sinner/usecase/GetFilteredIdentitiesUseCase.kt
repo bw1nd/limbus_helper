@@ -21,8 +21,12 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
                     identity,
                     filter.skills
                 )
-
-            byResistance && bySkill
+            val byEffects =
+                (byResistance && bySkill && filter.effects.isEmpty()) || identityPassEffectsFilter(
+                    identity,
+                    filter.effects
+                )
+            byResistance && bySkill && byEffects
         }
     }
 
@@ -122,6 +126,14 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
             DamageType.PIERCE -> identity.pierceRes == resistanceType
             DamageType.BLUNT -> identity.bluntRes == resistanceType
         }
+    }
+
+    private fun identityPassEffectsFilter(identity: Identity, filter: List<Effect>): Boolean {
+        return listOf(
+            identity.firstSkill.effects,
+            identity.secondSkill.effects,
+            identity.thirdSkill.effects
+        ).flatten().containsAll(filter)
     }
 }
 
