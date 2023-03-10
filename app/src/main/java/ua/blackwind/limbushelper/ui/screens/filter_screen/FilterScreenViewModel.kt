@@ -38,6 +38,9 @@ class FilterScreenViewModel @Inject constructor(
     private val _sinPickerVisible = MutableStateFlow(false)
     val sinPickerVisible: StateFlow<Boolean> = _sinPickerVisible
 
+    private val _filterSheetMode = MutableStateFlow<FilterSheetMode>(FilterSheetMode.Type)
+    val filterSheetMode: StateFlow<FilterSheetMode> = _filterSheetMode
+
     private var selectedSkillButtonId = 0
 
     fun onFilterButtonClick() {
@@ -52,8 +55,12 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
-    fun onFilterModeSwitch(checked: Boolean) {
-        //TODO add mode switch logic
+    fun onFilterModeSwitch(id: Int) {
+        when (id) {
+            0 -> _filterSheetMode.update { FilterSheetMode.Type }
+            1 -> _filterSheetMode.update { FilterSheetMode.Effects }
+            else -> throw IllegalArgumentException("Wrong switch button id: $id")
+        }
     }
 
     fun onFilterSkillButtonLongPress(id: Int) {

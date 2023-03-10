@@ -64,7 +64,7 @@ data class FilterResistButtonLabels(
     val fatal: String
 )
 
-sealed class FilterDrawerState() {
-    object Open: FilterDrawerState()
-    object Closed: FilterDrawerState()
+sealed class FilterSheetMode {
+    object Type: FilterSheetMode()
+    object Effects: FilterSheetMode()
 }
