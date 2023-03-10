@@ -32,7 +32,10 @@ fun SkillEntity.toSkill() = Skill(
     baseDie = this.baseDie,
     coinBonus = this.coinBonus,
     coinCount = this.coinCount,
-    effects = this.effects.split(EFFECTS_SEPARATOR).map { it.parseStringToEffectsList() }
+    effects = if (this.effects.isEmpty()) emptyList() else
+        this.effects.split(EFFECTS_SEPARATOR).map {
+            it.parseStringToEffectsList()
+        }
 )
 
 private const val EFFECTS_SEPARATOR = ","
