@@ -50,9 +50,19 @@ class FilterScreenViewModel @Inject constructor(
                 Effect.POISE to false,
                 Effect.RUPTURE to false,
                 Effect.PARALYSIS to false,
+                Effect.HASTE to false,
                 Effect.BIND to false,
                 Effect.SINKING to false,
-                Effect.TREMOR to false
+                Effect.TREMOR to false,
+                Effect.FRAGILE to false,
+                Effect.PROTECT to false,
+                Effect.HEAL to false,
+                Effect.AMMO to false,
+                Effect.CHARGE to false,
+                Effect.ATTACK_UP to false,
+                Effect.ATTACK_DOWN to false,
+                Effect.DEFENSE_UP to false,
+                Effect.DEFENSE_DOWN to false,
             )
         )
     )
