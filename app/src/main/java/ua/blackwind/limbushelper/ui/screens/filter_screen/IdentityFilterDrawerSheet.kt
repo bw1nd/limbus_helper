@@ -42,13 +42,14 @@ fun FilterDrawerSheet(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
+            .padding(5.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.width(10.dp))
             SegmentedButton(
                 items = listOf("Type", "Effects"),
                 onItemSelection = onSwitchChange,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
         FilterBlock(

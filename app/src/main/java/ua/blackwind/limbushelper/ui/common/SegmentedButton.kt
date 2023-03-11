@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -129,7 +130,7 @@ fun SegmentedButton(
                     text = item,
                     fontWeight = FontWeight.Normal,
                     color = if (selectedIndex.value == index) {
-                        Color.White
+                        MaterialTheme.colorScheme.primary
                     } else {
                        color.copy(alpha = 0.9f)
                     },
