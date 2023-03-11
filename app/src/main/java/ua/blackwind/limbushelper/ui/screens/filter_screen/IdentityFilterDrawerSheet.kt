@@ -44,14 +44,11 @@ fun FilterDrawerSheet(
             .background(MaterialTheme.colorScheme.primary)
             .padding(5.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.width(10.dp))
-            SegmentedButton(
-                items = listOf("Type", "Effects"),
-                onItemSelection = onSwitchChange,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
+        SegmentedButton(
+            items = listOf("Type", "Effects"),
+            onItemSelection = onSwitchChange,
+            color = MaterialTheme.colorScheme.onPrimary
+        )
         FilterBlock(
             filterSheetMode = filterSheetMode,
             skillState = skillState,
@@ -140,7 +137,9 @@ private fun FilterTypeBlock(
     Divider(
         thickness = 2.dp,
         color = MaterialTheme.colorScheme.onPrimary,
-        modifier = Modifier.width(300.dp)
+        modifier = Modifier
+            .width(300.dp)
+            .padding(5.dp)
     )
     FilterResistBlock(labels = resistLabels, state = resistState, onResistButtonClick)
 }
