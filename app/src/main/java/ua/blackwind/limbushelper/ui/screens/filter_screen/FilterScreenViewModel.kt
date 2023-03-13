@@ -24,17 +24,20 @@ class FilterScreenViewModel @Inject constructor(
     val filteredIdentities: StateFlow<List<Identity>> = _filteredIdentities
 
     private val _filterSkillsState = MutableStateFlow(
-        FilterSkillBlockState(
-            FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
-            FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
-        )
+        emptyFilterSkillBlockState()
     )
+
     val filterSkillsState: StateFlow<FilterSkillBlockState> = _filterSkillsState
 
     private val _filterResistState = MutableStateFlow(
-        FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+        emptyFilterResistStateBundle()
     )
     val filterResistState: StateFlow<FilterDamageStateBundle> = _filterResistState
+
+    private val _filterEffectBlockState = MutableStateFlow(
+        emptyFilterEffectBlockState()
+    )
+    val filterEffectBlockState: StateFlow<FilterEffectBlockState> = _filterEffectBlockState
 
     private val _sinPickerVisible = MutableStateFlow(false)
     val sinPickerVisible: StateFlow<Boolean> = _sinPickerVisible
@@ -42,31 +45,6 @@ class FilterScreenViewModel @Inject constructor(
     private val _filterSheetMode = MutableStateFlow<FilterSheetMode>(FilterSheetMode.Type)
     val filterSheetMode: StateFlow<FilterSheetMode> = _filterSheetMode
 
-    private val _filterEffectBlockState = MutableStateFlow(
-        FilterEffectBlockState(
-            mapOf(
-                Effect.BLEED to false,
-                Effect.BURN to false,
-                Effect.POISE to false,
-                Effect.RUPTURE to false,
-                Effect.PARALYSIS to false,
-                Effect.HASTE to false,
-                Effect.BIND to false,
-                Effect.SINKING to false,
-                Effect.TREMOR to false,
-                Effect.FRAGILE to false,
-                Effect.PROTECT to false,
-                Effect.HEAL to false,
-                Effect.AMMO to false,
-                Effect.CHARGE to false,
-                Effect.ATTACK_UP to false,
-                Effect.ATTACK_DOWN to false,
-                Effect.DEFENSE_UP to false,
-                Effect.DEFENSE_DOWN to false,
-            )
-        )
-    )
-    val filterEffectBlockState: StateFlow<FilterEffectBlockState> = _filterEffectBlockState
 
     private var selectedSkillButtonId = 0
 
@@ -89,6 +67,15 @@ class FilterScreenViewModel @Inject constructor(
             1 -> _filterSheetMode.update { FilterSheetMode.Effects }
             else -> throw IllegalArgumentException("Wrong switch button id: $id")
         }
+    }
+
+    fun onClearFilterButtonPress() {
+        viewModelScope.launch {
+            _filterSkillsState.update { emptyFilterSkillBlockState() }
+            _filterResistState.update { emptyFilterResistStateBundle() }
+            _filterEffectBlockState.update { emptyFilterEffectBlockState() }
+        }
+
     }
 
     fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
@@ -204,5 +191,36 @@ class FilterScreenViewModel @Inject constructor(
             ),
         ),
         effects = effectState.effects.filter { it.value }.keys.toList()
+    )
+
+    private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
+        FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
+        FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+    )
+
+    private fun emptyFilterResistStateBundle() =
+        FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+
+    private fun emptyFilterEffectBlockState() = FilterEffectBlockState(
+        mapOf(
+            Effect.BLEED to false,
+            Effect.BURN to false,
+            Effect.POISE to false,
+            Effect.RUPTURE to false,
+            Effect.PARALYSIS to false,
+            Effect.HASTE to false,
+            Effect.BIND to false,
+            Effect.SINKING to false,
+            Effect.TREMOR to false,
+            Effect.FRAGILE to false,
+            Effect.PROTECT to false,
+            Effect.HEAL to false,
+            Effect.AMMO to false,
+            Effect.CHARGE to false,
+            Effect.ATTACK_UP to false,
+            Effect.ATTACK_DOWN to false,
+            Effect.DEFENSE_UP to false,
+            Effect.DEFENSE_DOWN to false,
+        )
     )
 }

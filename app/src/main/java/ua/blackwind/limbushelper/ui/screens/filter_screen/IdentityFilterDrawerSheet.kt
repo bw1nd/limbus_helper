@@ -4,6 +4,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import ua.blackwind.limbushelper.ui.util.*
 
 private const val NUMBER_OF_EFFECTS_IN_COLUMN = 3
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterDrawerSheet(
     filterSheetMode: FilterSheetMode,
@@ -31,6 +34,7 @@ fun FilterDrawerSheet(
     sinPickerVisible: Boolean,
     onSwitchChange: (Int) -> Unit,
     onFilterButtonClick: () -> Unit,
+    onClearFilterButtonPress: () -> Unit,
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
@@ -44,11 +48,36 @@ fun FilterDrawerSheet(
             .background(MaterialTheme.colorScheme.primary)
             .padding(5.dp)
     ) {
-        SegmentedButton(
-            items = listOf("Type", "Effects"),
-            onItemSelection = onSwitchChange,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.width(10.dp))
+            Surface(
+                color = MaterialTheme.colorScheme.primary,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary),
+                shape = CircleShape,
+                modifier = Modifier
+                    .size(30.dp)
+                    .combinedClickable(
+                        enabled = true,
+                        onClick = {},
+                        onLongClick = { onClearFilterButtonPress() },
+                    )
+            ) {
+                Icon(
+                    Icons.Rounded.Close,
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    contentDescription = null,
+                    modifier = Modifier
+
+                )
+            }
+            Spacer(modifier = Modifier.weight(.4f))
+            SegmentedButton(
+                items = listOf("Type", "Effects"),
+                onItemSelection = onSwitchChange,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            Spacer(modifier = Modifier.weight(.6f))
+        }
         FilterBlock(
             filterSheetMode = filterSheetMode,
             skillState = skillState,
@@ -375,7 +404,7 @@ fun PreviewFilterBlock() {
         FilterResistButtonLabels(
             "Ineff.", "Normal", "Fatal"
         ), false,
-        {}, {}, {}, {}, {}, {}, { _, _ -> }
+        {}, {}, {}, {}, {}, {}, {}, { _, _ -> }
     )
 }
 

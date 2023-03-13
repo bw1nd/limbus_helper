@@ -37,20 +37,21 @@ fun FilterScreen() {
     )
 
     FilterScreenUi(
-        identities,
-        filterSheetMode,
-        filterSkillState,
-        filterResistState,
-        filterEffectsState,
-        labels,
-        sinPickerVisible,
-        viewModel::onFilterModeSwitch,
-        viewModel::onFilterButtonClick,
-        viewModel::onFilterSkillButtonClick,
-        viewModel::onFilterSkillButtonLongPress,
-        viewModel::onFilterSinPickerPress,
-        viewModel::onFilterResistButtonClick,
-        viewModel::onEffectCheckedChange
+        identities = identities,
+        filterSheetMode = filterSheetMode,
+        skillState = filterSkillState,
+        resistState = filterResistState,
+        effectsState = filterEffectsState,
+        resistLabels = labels,
+        sinPickerVisible = sinPickerVisible,
+        onSwitchChange = viewModel::onFilterModeSwitch,
+        onFilterButtonPress = viewModel::onFilterButtonClick,
+        onClearFilterButtonPress = viewModel::onClearFilterButtonPress,
+        onSkillButtonClick = viewModel::onFilterSkillButtonClick,
+        onSkillButtonLongPress = viewModel::onFilterSkillButtonLongPress,
+        onSinPickerClick = viewModel::onFilterSinPickerPress,
+        onResistButtonClick = viewModel::onFilterResistButtonClick,
+        onEffectCheckedChange = viewModel::onEffectCheckedChange
     )
 }
 
@@ -65,7 +66,8 @@ fun FilterScreenUi(
     resistLabels: FilterResistButtonLabels,
     sinPickerVisible: Boolean,
     onSwitchChange: (Int) -> Unit,
-    onFilterButtonClick: () -> Unit,
+    onFilterButtonPress: () -> Unit,
+    onClearFilterButtonPress: () -> Unit,
     onSkillButtonClick: (Int) -> Unit,
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
@@ -83,7 +85,8 @@ fun FilterScreenUi(
                 resistLabels = resistLabels,
                 sinPickerVisible = sinPickerVisible,
                 onSwitchChange = onSwitchChange,
-                onFilterButtonClick = onFilterButtonClick,
+                onFilterButtonClick = onFilterButtonPress,
+                onClearFilterButtonPress = onClearFilterButtonPress,
                 onSkillButtonClick = onSkillButtonClick,
                 onSkillButtonLongPress = onSkillButtonLongPress,
                 onResistButtonClick = onResistButtonClick,
