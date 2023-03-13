@@ -116,7 +116,7 @@ fun FilterBlock(
         modifier = Modifier
             .width(400.dp)
             .height(170.dp)
-            .padding(bottom = 10.dp)
+            .padding(bottom = 5.dp)
     ) {
         when (filterSheetMode) {
             FilterSheetMode.Effects -> FilterEffectsBlock(
