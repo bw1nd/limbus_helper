@@ -1,4 +1,4 @@
-package ua.blackwind.limbushelper.data
+package ua.blackwind.limbushelper.data.party
 
 import ua.blackwind.limbushelper.data.db.AppDatabase
 import ua.blackwind.limbushelper.data.db.model.PartyEntity

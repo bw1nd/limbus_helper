@@ -4,7 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ua.blackwind.limbushelper.data.PartyRepository
+import ua.blackwind.limbushelper.data.party.PartyRepository
 import ua.blackwind.limbushelper.data.SinnerRepository
 import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
