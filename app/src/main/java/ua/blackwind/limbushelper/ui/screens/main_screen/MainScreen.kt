@@ -13,7 +13,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.navigate
 import ua.blackwind.limbushelper.ui.screens.NavGraphs
 import ua.blackwind.limbushelper.ui.screens.destinations.FilterScreenDestination
-import ua.blackwind.limbushelper.ui.screens.destinations.PartyBuilderScreenDestination
+import ua.blackwind.limbushelper.ui.screens.destinations.PartyBuildingScreenDestination
 
 
 @Composable
@@ -23,8 +23,8 @@ fun MainScreen(navController: NavHostController) {
             BottomAppBar() {
                 NavigationBarItem(selected = false,
                     onClick = {
-                        if (navController.currentDestination?.route != PartyBuilderScreenDestination.route) {
-                            navController.navigate(PartyBuilderScreenDestination)
+                        if (navController.currentDestination?.route != PartyBuildingScreenDestination.route) {
+                            navController.navigate(PartyBuildingScreenDestination)
                         }
                     },
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
