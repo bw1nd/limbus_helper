@@ -24,11 +24,17 @@ class PartyRepository @Inject constructor(
      * this method is used for both adding new identities and changing status of old with replace.
      */
     override suspend fun addIdentityToParty(identity: Pair<Int, Boolean>) {
-        dao.addIdentityToParty(PartyEntity(identity.first, identity.second))
+        dao.addIdentityToParty(PartyEntity(identity.first, PartyItemType.IDENTITY, identity.second))
     }
 
     override suspend fun deleteIdentityFromParty(identity: Pair<Int, Boolean>) {
-        dao.deleteIdentityFromParty(PartyEntity(identity.first, identity.second))
+        dao.deleteIdentityFromParty(
+            PartyEntity(
+                identity.first,
+                PartyItemType.IDENTITY,
+                identity.second
+            )
+        )
     }
 
     companion object {
