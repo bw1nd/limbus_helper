@@ -34,8 +34,8 @@ class SinnerRepository @Inject constructor(
         return identityEntityToIdentity(dao.getIdentityById(id))
     }
 
-    override suspend fun getIdentityBySinnerId(id: Int): Identity {
-        return identityEntityToIdentity(dao.getIdentityById(id))
+    override suspend fun getIdentityBySinnerId(id: Int): List<Identity> {
+        return dao.getIdentityBySinnerId(id).map { identityEntityToIdentity(it) }
     }
 
     override suspend fun getSkillById(id: Int): Skill {

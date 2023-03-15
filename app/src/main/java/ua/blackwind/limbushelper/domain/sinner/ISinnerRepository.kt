@@ -13,7 +13,7 @@ interface ISinnerRepository {
 
     suspend fun getIdentityById(id: Int): Identity
 
-    suspend fun getIdentityBySinnerId(id: Int): Identity
+    suspend fun getIdentityBySinnerId(id: Int): List<Identity>
 
     suspend fun getSkillById(id: Int): Skill
 

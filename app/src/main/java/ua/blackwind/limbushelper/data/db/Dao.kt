@@ -32,7 +32,7 @@ interface Dao {
     suspend fun getIdentityById(id: Int): IdentityEntity
 
     @Query("SELECT * FROM identity WHERE sinnerId = :id")
-    suspend fun getIdentityBySinnerId(id: Int): IdentityEntity
+    suspend fun getIdentityBySinnerId(id: Int): List<IdentityEntity>
 
     @Query("SELECT * FROM skill WHERE id = :id")
     suspend fun getSkillById(id: Int): SkillEntity
