@@ -2,22 +2,34 @@ package ua.blackwind.limbushelper.data.db
 
 import androidx.room.*
 import androidx.room.Dao
-import ua.blackwind.limbushelper.data.db.model.IdentityEntity
-import ua.blackwind.limbushelper.data.db.model.PartyEntity
-import ua.blackwind.limbushelper.data.db.model.SinnerEntity
-import ua.blackwind.limbushelper.data.db.model.SkillEntity
 import kotlinx.coroutines.flow.Flow
+import ua.blackwind.limbushelper.data.db.model.*
 
 @Dao
 interface Dao {
-    @Query("SELECT * FROM party")
-    fun getParty(): Flow<List<PartyEntity>>
+    @Query("SELECT * FROM party WHERE id = :id")
+    suspend fun getParty(id: Int): PartyEntity
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addIdentityToParty(partyEntity: PartyEntity)
+    @Query("SELECT * FROM party_identity WHERE partyId = :id")
+    fun getIdentityListByPartyId(id: Int): Flow<List<PartyIdentityEntity>>
+
+    @Insert
+    suspend fun addIdentityToParty(entity: PartyIdentityEntity)
 
     @Delete
-    fun deleteIdentityFromParty(partyEntity: PartyEntity)
+    fun deleteIdentityFromParty(partyId: Int, identityId: Int)
+
+    @Query("SELECT * FROM party_identity WHERE identityId = :identityId AND partyId = :partyId")
+    fun getPartyIdentityByIdentityId(identityId: Int, partyId: Int): PartyIdentityEntity
+
+    @Query("SELECT * FROM party_active WHERE partyId = :partyId AND sinnerId = :sinnerId")
+    suspend fun getActiveIdentityBySinnerAndPartyId(
+        partyId: Int,
+        sinnerId: Int
+    ): PartyActiveIdentityEntity
+
+    @Insert
+    suspend fun changeActiveIdentity(active: PartyActiveIdentityEntity)
 
     @Query("SELECT * FROM sinner ORDER BY id ASC")
     suspend fun getAllSinners(): List<SinnerEntity>
