@@ -1,8 +1,9 @@
 package ua.blackwind.limbushelper.domain.party
 
-import android.provider.ContactsContract.CommonDataKinds.Identity
+
 import ua.blackwind.limbushelper.domain.party.model.Party
 import kotlinx.coroutines.flow.Flow
+import ua.blackwind.limbushelper.domain.sinner.model.Identity
 
 interface IPartyRepository {
 

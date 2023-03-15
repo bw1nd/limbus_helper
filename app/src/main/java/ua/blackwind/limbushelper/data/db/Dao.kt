@@ -17,7 +17,7 @@ interface Dao {
     suspend fun addIdentityToParty(entity: PartyIdentityEntity)
 
     @Delete
-    fun deleteIdentityFromParty(partyId: Int, identityId: Int)
+    fun deleteIdentityFromParty(entity: PartyIdentityEntity)
 
     @Query("SELECT * FROM party_identity WHERE identityId = :identityId AND partyId = :partyId")
     fun getPartyIdentityByIdentityId(identityId: Int, partyId: Int): PartyIdentityEntity
