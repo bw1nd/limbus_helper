@@ -51,7 +51,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
         sinners: List<Sinner>
     ): List<PartySinnerModel> {
         val partyIdentities = list.map { identity ->
-            val isActive = party.identityList.find { it.first == identity.id }?.second
+            val isActive = false
             PartyIdentityModel(
                 identity,
                 isActive

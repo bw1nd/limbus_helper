@@ -38,7 +38,11 @@ fun PartyBuildingScreenUi(party: List<PartySinnerModel>) {
     } else {
         LazyColumn() {
             items(party.size) { index ->
-                PartySinnerModel(sinner = party[index].sinner, identities = party[index].identities)
+                val sinner = party[index].sinner
+                val identities = party[index].identities
+                if (identities.isNotEmpty()) {
+                    PartySinnerItem(sinner = sinner, identities = identities)
+                }
             }
         }
     }

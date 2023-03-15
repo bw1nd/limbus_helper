@@ -27,26 +27,11 @@ class FilterScreenViewModel @Inject constructor(
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
+    private val checkIfPartyHasIdentitiesWithSameSinner: CheckIfPartyHasIdentitiesWithSameSinner,
     private val getPartyUseCase: GetPartyUseCase
 ): ViewModel() {
 
-    init {
-        viewModelScope.launch {
-            getPartyUseCase().collectLatest {
-                party.update { it }
-                if (_filteredIdentities.value.isNotEmpty()) {
-                    _filteredIdentities.update { list ->
-                        identityListToFilterIdentityList(
-                            list.map { it.identity },
-                            it
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private val party = MutableStateFlow(Party(0, emptyList()))
+    private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
     //TODO implement adding identity to party
     private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
@@ -77,6 +62,22 @@ class FilterScreenViewModel @Inject constructor(
 
     private var selectedSkillButtonId = 0
 
+    init {
+        viewModelScope.launch {
+            getPartyUseCase().collectLatest {
+                party.update { it }
+                if (_filteredIdentities.value.isNotEmpty()) {
+                    _filteredIdentities.update { list ->
+                        identityListToFilterIdentityList(
+                            list.map { it.identity },
+                            it
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onFilterButtonClick() {
         viewModelScope.launch(Dispatchers.Default) {
             _filteredIdentities.update {
@@ -89,6 +90,22 @@ class FilterScreenViewModel @Inject constructor(
                     ), party.value
                 )
             }
+        }
+    }
+
+    fun onIdentityItemInPartyChecked(identity: Identity) {
+        viewModelScope.launch {
+            addIdentityToPartyUseCase(
+                identity,
+                party.value
+            )
+        }
+    }
+
+    fun onIdentityItemInPartyUnChecked(identity: Identity) {
+
+        viewModelScope.launch {
+            deleteIdentityFromPartyUseCase(identity, party.value)
         }
     }
 
@@ -155,7 +172,12 @@ class FilterScreenViewModel @Inject constructor(
         list: List<Identity>,
         party: Party
     ): List<FilterIdentityModel> {
-        return list.map { identity -> FilterIdentityModel(identity, false) }
+        return list.map { identity ->
+            FilterIdentityModel(
+                identity,
+                false
+            )
+        }
     }
 
     /**

@@ -27,6 +27,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private val firstIdentity = generateIdentity(
         name = "TEST IDENTITY #1",
+        sinnerId = 0,
         slashResist = IdentityDamageResistType.INEFFECTIVE,
         pierceResist = IdentityDamageResistType.NORMAL,
         bluntResist = IdentityDamageResistType.FATAL,
@@ -42,6 +43,7 @@ class GetFilteredIdentitiesUseCaseTest {
     )
     private val secondIdentity = generateIdentity(
         name = "TEST IDENTITY #2",
+        sinnerId = 0,
         slashResist = IdentityDamageResistType.NORMAL,
         pierceResist = IdentityDamageResistType.INEFFECTIVE,
         bluntResist = IdentityDamageResistType.FATAL,
@@ -58,6 +60,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private val thirdIdentity = generateIdentity(
         name = "TEST IDENTITY #3",
+        sinnerId = 0,
         slashResist = IdentityDamageResistType.NORMAL,
         pierceResist = IdentityDamageResistType.INEFFECTIVE,
         bluntResist = IdentityDamageResistType.FATAL,
@@ -70,6 +73,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private val fourthIdentity = generateIdentity(
         name = "TEST IDENTITY #4",
+        sinnerId = 0,
         slashResist = IdentityDamageResistType.INEFFECTIVE,
         pierceResist = IdentityDamageResistType.FATAL,
         bluntResist = IdentityDamageResistType.NORMAL,
@@ -515,11 +519,13 @@ class GetFilteredIdentitiesUseCaseTest {
         }
     }
 
+
     private fun generateSkill(damage: DamageType, sin: Sin, effects: List<Effect>) =
         Skill(0, "test skill", 0, damage, sin, 3, 3, 2, 2, effects)
 
     private fun generateIdentity(
         name: String,
+        sinnerId: Int,
         slashResist: IdentityDamageResistType,
         pierceResist: IdentityDamageResistType,
         bluntResist: IdentityDamageResistType,
@@ -531,7 +537,7 @@ class GetFilteredIdentitiesUseCaseTest {
     ) = Identity(
         id = 0,
         name = name,
-        sinnerId = 1,
+        sinnerId = sinnerId,
         rarity = 0,
         slashRes = slashResist,
         pierceRes = pierceResist,

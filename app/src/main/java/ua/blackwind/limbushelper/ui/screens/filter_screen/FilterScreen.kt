@@ -15,6 +15,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.util.*
 
@@ -50,7 +51,9 @@ fun FilterScreen() {
         onSkillButtonLongPress = viewModel::onFilterSkillButtonLongPress,
         onSinPickerClick = viewModel::onFilterSinPickerPress,
         onResistButtonClick = viewModel::onFilterResistButtonClick,
-        onEffectCheckedChange = viewModel::onEffectCheckedChange
+        onEffectCheckedChange = viewModel::onEffectCheckedChange,
+        onInPartyChecked = viewModel::onIdentityItemInPartyChecked,
+        onInPartyUnChecked = viewModel::onIdentityItemInPartyUnChecked
     )
 }
 
@@ -71,7 +74,9 @@ fun FilterScreenUi(
     onSkillButtonLongPress: (Int) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     onResistButtonClick: (Int) -> Unit,
-    onEffectCheckedChange: (Boolean, Effect) -> Unit
+    onEffectCheckedChange: (Boolean, Effect) -> Unit,
+    onInPartyChecked: (Identity) -> Unit,
+    onInPartyUnChecked: (Identity) -> Unit
 ) {
     BottomSheetScaffold(
         scaffoldState = rememberBottomSheetScaffoldState(),
@@ -108,7 +113,11 @@ fun FilterScreenUi(
                         .fillMaxHeight(0.9f)
                 ) {
                     items(identities.size) {
-                        FilterIdentityItem(identities[it])
+                        FilterIdentityItem(
+                            viewIdentity = identities[it],
+                            onInPartyChecked = onInPartyChecked,
+                            onInPartyUnChecked = onInPartyUnChecked
+                        )
                     }
                 }
             }

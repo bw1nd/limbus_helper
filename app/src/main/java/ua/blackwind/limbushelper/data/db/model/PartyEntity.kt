@@ -10,5 +10,3 @@ data class PartyEntity(
     val id: Int,
     val name: String
 )
-
-//fun PartyEntity.toPartyIdentityPair() = Pair(this.id, this.isActive)

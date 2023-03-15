@@ -9,8 +9,9 @@ class GetIdentitiesFromParty @Inject constructor(
     private val identityRepository: SinnerRepository
 ) {
     suspend operator fun invoke(party: Party): List<Identity> {
-        val identities = identityRepository.getAllIdentities()
-        return identities
-            .filter { identity -> party.identityList.any { it.first == identity.id } }
+//        val identities = identityRepository.getAllIdentities()
+//        return identities
+//            .filter { identity -> party.identityList.any { it.first == identity.id } }
+        return emptyList()
     }
 }

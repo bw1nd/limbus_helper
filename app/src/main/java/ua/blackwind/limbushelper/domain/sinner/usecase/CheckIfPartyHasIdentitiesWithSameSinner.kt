@@ -12,9 +12,9 @@ class CheckIfPartyHasIdentitiesWithSameSinner @Inject constructor(
     private val sinnerRepository: SinnerRepository
 ) {
     suspend operator fun invoke(party: Party, identity: Identity): Boolean {
-        val identitiesBySinner = sinnerRepository.getIdentityBySinnerId(identity.sinnerId)
-            .filter { filteredIdentity -> party.identityList.any { it.first == filteredIdentity.id } }
+//        val identitiesBySinner = sinnerRepository.getIdentityBySinnerId(identity.sinnerId)
+//            .filter { filteredIdentity -> party.identityList.any { it.first == filteredIdentity.id } }
 
-        return identitiesBySinner.isNotEmpty()
+        return false
     }
 }
