@@ -6,10 +6,9 @@ import ua.blackwind.limbushelper.data.party.PartyItemType
 
 @Entity(tableName = "party")
 data class PartyEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val type: PartyItemType,
-    val isActive: Boolean
+    val name: String
 )
 
-fun PartyEntity.toPartyIdentityPair() = Pair(this.id, this.isActive)
+//fun PartyEntity.toPartyIdentityPair() = Pair(this.id, this.isActive)
