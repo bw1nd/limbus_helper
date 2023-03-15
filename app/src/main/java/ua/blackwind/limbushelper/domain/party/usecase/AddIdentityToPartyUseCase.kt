@@ -12,11 +12,18 @@ class AddIdentityToPartyUseCase @Inject constructor(
     private val sinnerRepository: SinnerRepository
 ) {
     suspend operator fun invoke(identity: Identity, party: Party) {
-//        val isActive = sinnerRepository.getIdentityBySinnerId(identity.sinnerId)
-//            .any { filteredIdentity -> party.identityList.any { it.first == filteredIdentity.id } }
-//
-//        partyRepository.addIdentityToParty(
-//            Pair(identity.id, isActive)
-//        )
+        val activeIdentity =
+            partyRepository.getActiveIdentityIdForPartyAndSinner(party.id, identity.sinnerId)
+
+        partyRepository.addIdentityToParty(
+            party.id, identity
+        )
+        if (activeIdentity == 0) {
+            partyRepository.changeSinnerActiveIdentityForParty(
+                partyId = party.id,
+                sinnerId = identity.sinnerId,
+                identityId = identity.id
+            )
+        }
     }
 }

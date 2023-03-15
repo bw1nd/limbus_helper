@@ -9,7 +9,24 @@ class DeleteIdentityFromPartyUseCase @Inject constructor(
     private val repository: IPartyRepository
 ) {
     suspend operator fun invoke(identity: Identity, party: Party) {
-//        val isActive = party.identityList.find { it.first == identity.id }?.second
-//        repository.deleteIdentityFromParty(Pair(identity.id, isActive!!))
+        val activeIdentity =
+            repository.getActiveIdentityIdForPartyAndSinner(party.id, identity.sinnerId)
+        val otherIdentitiesForThisSinner =
+            party.identityList.filter { it.sinnerId == identity.sinnerId && it.id != identity.id }
+
+        if (activeIdentity == identity.id) {
+            repository.changeSinnerActiveIdentityForParty(
+                partyId = party.id,
+                sinnerId = identity.sinnerId,
+                identityId = if (otherIdentitiesForThisSinner.isNotEmpty())
+                    otherIdentitiesForThisSinner.first().id else NO_ACTIVE_SINNER_IDENTITY_IN_PARTY
+            )
+        }
+
+        repository.deleteIdentityFromParty(party.id, identity)
+    }
+
+    companion object {
+        private const val NO_ACTIVE_SINNER_IDENTITY_IN_PARTY = 0
     }
 }

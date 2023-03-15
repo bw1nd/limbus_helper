@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +34,6 @@ class FilterScreenViewModel @Inject constructor(
 
     private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
-    //TODO implement adding identity to party
     private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
     val filteredIdentities: StateFlow<List<FilterIdentityModel>> = _filteredIdentities
 
@@ -64,13 +64,13 @@ class FilterScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getPartyUseCase().collectLatest {
-                party.update { it }
-                if (_filteredIdentities.value.isNotEmpty()) {
+            getPartyUseCase().collectLatest { newParty ->
+                party.update { newParty }
+                if (_filteredIdentities.value.isNotEmpty() && party.value.id != 0) {
                     _filteredIdentities.update { list ->
                         identityListToFilterIdentityList(
                             list.map { it.identity },
-                            it
+                            newParty
                         )
                     }
                 }
@@ -95,6 +95,7 @@ class FilterScreenViewModel @Inject constructor(
 
     fun onIdentityItemInPartyChecked(identity: Identity) {
         viewModelScope.launch {
+            Log.d("PARTY", "Using party ${party.value}")
             addIdentityToPartyUseCase(
                 identity,
                 party.value
@@ -175,7 +176,7 @@ class FilterScreenViewModel @Inject constructor(
         return list.map { identity ->
             FilterIdentityModel(
                 identity,
-                false
+                party.identityList.any { it.id == identity.id }
             )
         }
     }

@@ -17,10 +17,10 @@ interface Dao {
     suspend fun addIdentityToParty(entity: PartyIdentityEntity)
 
     @Delete
-    fun deleteIdentityFromParty(entity: PartyIdentityEntity)
+    suspend fun deleteIdentityFromParty(entity: PartyIdentityEntity)
 
     @Query("SELECT * FROM party_identity WHERE identityId = :identityId AND partyId = :partyId")
-    fun getPartyIdentityByIdentityId(identityId: Int, partyId: Int): PartyIdentityEntity
+    suspend fun getPartyIdentityByIdentityId(identityId: Int, partyId: Int): PartyIdentityEntity
 
     @Query("SELECT * FROM party_active WHERE partyId = :partyId AND sinnerId = :sinnerId")
     suspend fun getActiveIdentityBySinnerAndPartyId(
@@ -28,7 +28,7 @@ interface Dao {
         sinnerId: Int
     ): PartyActiveIdentityEntity
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun changeActiveIdentity(active: PartyActiveIdentityEntity)
 
     @Query("SELECT * FROM sinner ORDER BY id ASC")

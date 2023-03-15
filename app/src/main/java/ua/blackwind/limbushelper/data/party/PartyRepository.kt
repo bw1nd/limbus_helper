@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.data.party
 
+import android.util.Log
 import ua.blackwind.limbushelper.data.db.AppDatabase
 import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.party.model.Party
@@ -18,7 +19,8 @@ class PartyRepository @Inject constructor(
     override fun getParty(id: Int): Flow<Party> {
         return dao.getIdentityListByPartyId(DEFAULT_PARTY_ID).map { identities ->
             val party = dao.getParty(DEFAULT_PARTY_ID)
-            Party(DEFAULT_PARTY_ID, party.name, identities.map {
+            Log.d("PARTY", "Got party from db $party")
+            Party(party.id, party.name, identities.map {
                 val identity = dao.getIdentityById(it.identityId)
                 identityEntityToIdentity(identity)
             })
@@ -26,7 +28,7 @@ class PartyRepository @Inject constructor(
     }
 
     override suspend fun addIdentityToParty(partyId: Int, identity: Identity) {
-        val entity = PartyIdentityEntity(DEFAULT_PARTY_ID, partyId, identity.id)
+        val entity = PartyIdentityEntity(NEW_VALUE_ID, partyId, identity.id)
         dao.addIdentityToParty(entity)
     }
 
@@ -42,10 +44,15 @@ class PartyRepository @Inject constructor(
         sinnerId: Int,
         identityId: Int
     ) {
+        Log.d("PARTY", "partyId: $partyId sinner: $sinnerId identity: $identityId")
         val current = dao.getActiveIdentityBySinnerAndPartyId(partyId, sinnerId)
         dao.changeActiveIdentity(
             current.copy(identityId = identityId)
         )
+    }
+
+    override suspend fun getActiveIdentityIdForPartyAndSinner(partyId: Int, sinnerId: Int): Int {
+        return dao.getActiveIdentityBySinnerAndPartyId(partyId, sinnerId).identityId
     }
 
     private suspend fun identityEntityToIdentity(identityEntity: IdentityEntity): Identity {
@@ -63,5 +70,6 @@ class PartyRepository @Inject constructor(
 
     companion object {
         private const val DEFAULT_PARTY_ID = 1
+        private const val NEW_VALUE_ID = 0
     }
 }

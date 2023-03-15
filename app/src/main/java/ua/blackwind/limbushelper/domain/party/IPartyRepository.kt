@@ -19,5 +19,7 @@ interface IPartyRepository {
      */
     suspend fun deleteIdentityFromParty(partyId: Int, identity: Identity)
 
+    suspend fun getActiveIdentityIdForPartyAndSinner(partyId: Int,sinnerId: Int): Int
+
     suspend fun changeSinnerActiveIdentityForParty(partyId: Int, sinnerId: Int, identityId: Int)
 }
