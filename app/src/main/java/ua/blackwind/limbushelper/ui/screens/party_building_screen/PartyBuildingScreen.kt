@@ -8,18 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import ua.blackwind.limbushelper.domain.party.model.Party
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
-import ua.blackwind.limbushelper.ui.common.IdentityItem
-import ua.blackwind.limbushelper.ui.previewIdentity
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyIdentityItem
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerItem
+
+import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyIdentityModel
+import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
 
 @Destination
 @Composable
@@ -36,20 +32,20 @@ fun PartyBuildingScreen() {
 }
 
 @Composable
-fun PartyBuildingScreenUi(party: List<PartySinnerItem>) {
+fun PartyBuildingScreenUi(party: List<PartySinnerModel>) {
     if (party.isEmpty()) {
         Text(text = "Your party is empty.\nStart with filter screen and something here.")
     } else {
         LazyColumn() {
             items(party.size) { index ->
-                PartySinnerItem(sinner = party[index].sinner, identities = party[index].identities)
+                PartySinnerModel(sinner = party[index].sinner, identities = party[index].identities)
             }
         }
     }
 }
 
 @Composable
-fun PartySinnerItem(sinner: Sinner, identities: List<PartyIdentityItem>) {
+fun PartySinnerItem(sinner: Sinner, identities: List<PartyIdentityModel>) {
     Card(border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.primary)) {
         Column(Modifier.padding(5.dp)) {
             Text(fontSize = 24.sp, text = sinner.name)
@@ -57,7 +53,7 @@ fun PartySinnerItem(sinner: Sinner, identities: List<PartyIdentityItem>) {
                 Modifier,
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                identities.forEach { identity -> IdentityItem(identity = identity.identity) }
+                identities.forEach { identity -> PartyIdentityItem(identity) }
             }
         }
     }

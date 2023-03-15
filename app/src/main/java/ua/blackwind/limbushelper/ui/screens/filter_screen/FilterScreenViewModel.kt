@@ -6,22 +6,51 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
+import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
+import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.usecase.*
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class FilterScreenViewModel @Inject constructor(
-    private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase
+    private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
+    private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
+    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
+    private val getPartyUseCase: GetPartyUseCase
 ): ViewModel() {
-    private val _filteredIdentities = MutableStateFlow<List<Identity>>(emptyList())
-    val filteredIdentities: StateFlow<List<Identity>> = _filteredIdentities
+
+    init {
+        viewModelScope.launch {
+            getPartyUseCase().collectLatest {
+                party.update { it }
+                if (_filteredIdentities.value.isNotEmpty()) {
+                    _filteredIdentities.update { list ->
+                        identityListToFilterIdentityList(
+                            list.map { it.identity },
+                            it
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private val party = MutableStateFlow(Party(0, emptyList()))
+
+    //TODO implement adding identity to party
+    private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
+    val filteredIdentities: StateFlow<List<FilterIdentityModel>> = _filteredIdentities
 
     private val _filterSkillsState = MutableStateFlow(
         emptyFilterSkillBlockState()
@@ -54,8 +83,10 @@ class FilterScreenViewModel @Inject constructor(
                 val skillState = _filterSkillsState.value
                 val resistState = _filterResistState.value
                 val effectState = _filterEffectBlockState.value
-                getFilteredIdentitiesUseCase(
-                    formIdentityFilter(resistState, skillState, effectState)
+                identityListToFilterIdentityList(
+                    getFilteredIdentitiesUseCase(
+                        formIdentityFilter(resistState, skillState, effectState)
+                    ), party.value
                 )
             }
         }
@@ -118,6 +149,13 @@ class FilterScreenViewModel @Inject constructor(
         _filterResistState.update { state ->
             updateDamageStateBundle(id, state, true)
         }
+    }
+
+    private fun identityListToFilterIdentityList(
+        list: List<Identity>,
+        party: Party
+    ): List<FilterIdentityModel> {
+        return list.map { identity -> FilterIdentityModel(identity, false) }
     }
 
     /**

@@ -15,8 +15,9 @@ import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyIdentityItem
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerItem
+import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyIdentityModel
+import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
+import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,8 +27,8 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val getIdentitiesFromParty: GetIdentitiesFromParty,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase
 ): ViewModel() {
-    private val _party = MutableStateFlow(emptyList<PartySinnerItem>())
-    val party: StateFlow<List<PartySinnerItem>> = _party
+    private val _party = MutableStateFlow(emptyList<PartySinnerModel>())
+    val party: StateFlow<List<PartySinnerModel>> = _party
 
     init {
         viewModelScope.launch {
@@ -48,18 +49,18 @@ class PartyBuildingScreenViewModel @Inject constructor(
         list: List<Identity>,
         party: Party,
         sinners: List<Sinner>
-    ): List<PartySinnerItem> {
+    ): List<PartySinnerModel> {
         val partyIdentities = list.map { identity ->
             val isActive = party.identityList.find { it.first == identity.id }?.second
-            PartyIdentityItem(
+            PartyIdentityModel(
                 identity,
                 isActive
-                    ?: throw java.lang.IllegalArgumentException("Identity: $identity not found in party: $party")
+                    ?: throw IllegalArgumentException("Identity: $identity not found in party: $party")
             )
         }
 
         return sinners.map { sinner ->
-            PartySinnerItem(
+            PartySinnerModel(
                 sinner,
                 partyIdentities.filter { identity -> identity.identity.sinnerId == sinner.id }
             )

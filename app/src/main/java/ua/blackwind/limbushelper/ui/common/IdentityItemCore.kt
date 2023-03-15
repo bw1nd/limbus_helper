@@ -1,11 +1,9 @@
 package ua.blackwind.limbushelper.ui.common
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,60 +27,54 @@ import ua.blackwind.limbushelper.ui.util.getEffectIcon
 import ua.blackwind.limbushelper.ui.util.getSinColor
 
 @Composable
-fun IdentityItem(identity: Identity) {
-    Card(
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-        modifier = Modifier.width(380.dp)
-    ) {
-        Row {
-            //this box is image placeholder
-            Box(Modifier.size(50.dp, 100.dp))
-            Column(Modifier.width(290.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = identity.name, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Row {
-                        repeat(identity.rarity + 1) {
-                            Image(
-                                painter = painterResource(R.drawable.rarity_ic),
-                                contentDescription = null,
-                                modifier = Modifier.size(10.dp, 25.dp)
-                            )
-                        }
+fun identityItemCore(identity: Identity): @Composable() (RowScope.() -> Unit) =
+    {
+        //this box is image placeholder
+        Box(Modifier.size(50.dp, 100.dp))
+        Column(Modifier.width(290.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = identity.name, fontSize = 16.sp)
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    repeat(identity.rarity + 1) {
+                        Image(
+                            painter = painterResource(R.drawable.rarity_ic),
+                            contentDescription = null,
+                            modifier = Modifier.size(10.dp, 25.dp)
+                        )
                     }
                 }
-                Row(Modifier.padding(bottom = 5.dp)) {
-                    ResistanceBlock(
-                        slashRes = identity.slashRes,
-                        pierceRes = identity.pierceRes,
-                        bluntRes = identity.bluntRes
-                    )
-                    Divider(
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(2.dp, 45.dp)
-                    )
-                    SkillBlock(
-                        firstSkill = identity.firstSkill,
-                        secondSkill = identity.secondSkill,
-                        thirdSkill = identity.thirdSkill
-                    )
-                }
-                Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
-                EffectsBlock(
-                    effects = listOf(
-                        identity.firstSkill.effects,
-                        identity.secondSkill.effects,
-                        identity.thirdSkill.effects
-                    ).flatten()
+            }
+            Row(Modifier.padding(bottom = 5.dp)) {
+                ResistanceBlock(
+                    slashRes = identity.slashRes,
+                    pierceRes = identity.pierceRes,
+                    bluntRes = identity.bluntRes
+                )
+                Divider(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(2.dp, 45.dp)
+                )
+                SkillBlock(
+                    firstSkill = identity.firstSkill,
+                    secondSkill = identity.secondSkill,
+                    thirdSkill = identity.thirdSkill
                 )
             }
+            Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
+            EffectsBlock(
+                effects = listOf(
+                    identity.firstSkill.effects,
+                    identity.secondSkill.effects,
+                    identity.thirdSkill.effects
+                ).flatten()
+            )
         }
     }
-}
 
 @Composable
 fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
@@ -165,7 +157,5 @@ fun EffectsBlock(effects: List<Effect>) {
 @Preview
 @Composable
 private fun IdentityItemPreview() {
-    IdentityItem(
-        identity = previewIdentity
-    )
+    identityItemCore(identity = previewIdentity)
 }

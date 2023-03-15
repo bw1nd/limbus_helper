@@ -15,8 +15,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.Sin
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.ui.common.IdentityItem
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.util.*
 
 @RootNavGraph(start = true)
@@ -58,7 +57,7 @@ fun FilterScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreenUi(
-    identities: List<Identity>,
+    identities: List<FilterIdentityModel>,
     filterSheetMode: FilterSheetMode,
     skillState: FilterSkillBlockState,
     resistState: FilterDamageStateBundle,
@@ -109,7 +108,7 @@ fun FilterScreenUi(
                         .fillMaxHeight(0.9f)
                 ) {
                     items(identities.size) {
-                        IdentityItem(identity = identities[it])
+                        FilterIdentityItem(identities[it])
                     }
                 }
             }
