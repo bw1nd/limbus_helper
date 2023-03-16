@@ -7,3 +7,4 @@ data class PartyIdentityModel(
     val identity: Identity,
     val isActive: Boolean
 )
+
