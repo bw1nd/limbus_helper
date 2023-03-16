@@ -36,10 +36,13 @@ fun PartyBuildingScreenUi(party: List<PartySinnerModel>) {
     if (party.isEmpty()) {
         Text(text = "Your party is empty.\nStart with filter screen and something here.")
     } else {
-        LazyColumn() {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+            modifier = Modifier.padding(5.dp)
+        ) {
             items(party.size) { index ->
                 val sinner = party[index].sinner
-                val identities = party[index].identities
+                val identities = party[index].identities.sortedBy { it.isActive }
                 if (identities.isNotEmpty()) {
                     PartySinnerItem(sinner = sinner, identities = identities)
                 }
@@ -55,7 +58,8 @@ fun PartySinnerItem(sinner: Sinner, identities: List<PartyIdentityModel>) {
             Text(fontSize = 24.sp, text = sinner.name)
             Column(
                 Modifier,
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalAlignment = Alignment.End
             ) {
                 identities.forEach { identity -> PartyIdentityItem(identity) }
             }

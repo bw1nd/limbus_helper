@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.usecase.ChangeSinnerActiveIdentityForParty
 import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetSinnerActiveIdentityIdForParty
@@ -23,7 +24,8 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val getPartyUseCase: GetPartyUseCase,
     private val getAllSinners: GetAllSinners,
     private val getSinnerActiveIdentityIdForParty: GetSinnerActiveIdentityIdForParty,
-    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase
+    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
+    private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
 ): ViewModel() {
     private val _party = MutableStateFlow(emptyList<PartySinnerModel>())
     val party: StateFlow<List<PartySinnerModel>> = _party
@@ -40,6 +42,11 @@ class PartyBuildingScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    //TODO implement this. think about this screen data models
+    fun onIdentityPortraitClick(identityId: Int, sinnerId: Int, partyId: Int) {
+        viewModelScope.launch { changeActiveIdentityIdForParty(partyId, sinnerId, identityId) }
     }
 
     private suspend fun parseIdentityListToSinnerList(
