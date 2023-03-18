@@ -3,16 +3,14 @@ package ua.blackwind.limbushelper.ui.screens.party_building_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.ChangeSinnerActiveIdentityForParty
 import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
+import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
@@ -25,19 +23,22 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
     private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
 ): ViewModel() {
-    private val _party = MutableStateFlow(emptyList<PartySinnerModel>())
+    private val rawParty = MutableStateFlow(Party(0, "empty", emptyList()))
+    private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
     val party: StateFlow<List<PartySinnerModel>> = _party
 
     init {
         viewModelScope.launch {
             getPartyUseCase().collectLatest { party ->
-                val sinners = getAllSinners()
+                rawParty.update { party }
                 _party.update {
+                    val sinners = getAllSinners()
                     parseIdentityListToSinnerList(
                         party,
                         sinners
                     )
                 }
+
             }
         }
     }
@@ -56,7 +57,11 @@ class PartyBuildingScreenViewModel @Inject constructor(
 
     }
 
-    private suspend fun parseIdentityListToSinnerList(
+    fun onIdentitySwipe(identity: Identity) {
+        viewModelScope.launch { deleteIdentityFromPartyUseCase(identity, rawParty.value) }
+    }
+
+    private fun parseIdentityListToSinnerList(
         party: Party,
         sinners: List<Sinner>
     ): List<PartySinnerModel> {
