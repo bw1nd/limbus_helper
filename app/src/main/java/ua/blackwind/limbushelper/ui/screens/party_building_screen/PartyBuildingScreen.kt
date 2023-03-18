@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyIdentityModel
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
 
 @Destination
@@ -25,14 +25,22 @@ fun PartyBuildingScreen() {
     Surface(modifier = Modifier.fillMaxSize()) {
         Box(contentAlignment = Alignment.Center) {
 
-            PartyBuildingScreenUi(party.value)
+            PartyBuildingScreenUi(
+                party.value,
+                viewModel::onIdentityClick,
+                viewModel::onIdentityLongPress
+            )
 
         }
     }
 }
 
 @Composable
-fun PartyBuildingScreenUi(party: List<PartySinnerModel>) {
+fun PartyBuildingScreenUi(
+    party: List<PartySinnerModel>,
+    onIdentityItemClick: (Int) -> Unit,
+    onIdentityItemLongPress: (Int, Int) -> Unit
+) {
     if (party.isEmpty()) {
         Text(text = "Your party is empty.\nStart with filter screen and something here.")
     } else {
@@ -42,9 +50,14 @@ fun PartyBuildingScreenUi(party: List<PartySinnerModel>) {
         ) {
             items(party.size) { index ->
                 val sinner = party[index].sinner
-                val identities = party[index].identities.sortedBy { it.isActive }
+                val identities = party[index].identities.sortedBy { it.identity.id }
                 if (identities.isNotEmpty()) {
-                    PartySinnerItem(sinner = sinner, identities = identities)
+                    PartySinnerItem(
+                        sinner = sinner,
+                        identities = identities,
+                        onIdentityItemClick,
+                        onIdentityItemLongPress
+                    )
                 }
             }
         }
@@ -52,7 +65,11 @@ fun PartyBuildingScreenUi(party: List<PartySinnerModel>) {
 }
 
 @Composable
-fun PartySinnerItem(sinner: Sinner, identities: List<PartyIdentityModel>) {
+fun PartySinnerItem(
+    sinner: Sinner, identities: List<PartyIdentity>,
+    onIdentityItemClick: (Int) -> Unit,
+    onIdentityItemLongPress: (Int, Int) -> Unit
+) {
     Card(border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.primary)) {
         Column(Modifier.padding(5.dp)) {
             Text(fontSize = 24.sp, text = sinner.name)
@@ -61,7 +78,13 @@ fun PartySinnerItem(sinner: Sinner, identities: List<PartyIdentityModel>) {
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                identities.forEach { identity -> PartyIdentityItem(identity) }
+                identities.forEach { identity ->
+                    PartyIdentityItem(
+                        identity,
+                        onIdentityItemClick,
+                        onIdentityItemLongPress
+                    )
+                }
             }
         }
     }

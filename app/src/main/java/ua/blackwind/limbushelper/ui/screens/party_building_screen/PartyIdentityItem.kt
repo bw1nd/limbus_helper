@@ -1,6 +1,8 @@
 package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
@@ -10,18 +12,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.ui.common.identityItemCore
 import ua.blackwind.limbushelper.ui.previewIdentity
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyIdentityModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PartyIdentityItem(viewIdentity: PartyIdentityModel) {
+fun PartyIdentityItem(
+    viewIdentity: PartyIdentity,
+    onClick: (Int) -> Unit,
+    onLongClick: (Int, Int) -> Unit
+) {
     Card(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .width(
                 if (viewIdentity.isActive) ACTIVE_ITEM_WIDTH_DP.dp
                 else NON_ACTIVE_ITEM_WIDTH_DP.dp
+            )
+            .combinedClickable(
+                enabled = true,
+                onClick = { onClick(viewIdentity.identity.id) },
+                onLongClick = {
+                    onLongClick(
+                        viewIdentity.identity.id,
+                        viewIdentity.identity.sinnerId
+                    )
+                }
             )
     ) {
         val identity = viewIdentity.identity
@@ -33,8 +50,13 @@ fun PartyIdentityItem(viewIdentity: PartyIdentityModel) {
 @Composable
 fun PreviewPartyIdentityItem() {
     Column() {
-        PartyIdentityItem(viewIdentity = PartyIdentityModel(previewIdentity, true))
-        PartyIdentityItem(viewIdentity = PartyIdentityModel(previewIdentity, false))
+        PartyIdentityItem(
+            viewIdentity = PartyIdentity(previewIdentity, true),
+            {},
+            { _, _ -> })
+        PartyIdentityItem(
+            viewIdentity = PartyIdentity(previewIdentity, false),
+            {}, { _, _ -> })
     }
 }
 

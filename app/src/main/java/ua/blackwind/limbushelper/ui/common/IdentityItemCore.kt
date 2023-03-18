@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
@@ -39,15 +38,6 @@ fun identityItemCore(identity: Identity): @Composable() (RowScope.() -> Unit) =
             ) {
                 Text(text = identity.name, fontSize = 16.sp)
                 Spacer(modifier = Modifier.weight(1f))
-                Row {
-                    repeat(identity.rarity + 1) {
-                        Image(
-                            painter = painterResource(R.drawable.rarity_ic),
-                            contentDescription = null,
-                            modifier = Modifier.size(10.dp, 25.dp)
-                        )
-                    }
-                }
             }
             Row(Modifier.padding(bottom = 5.dp)) {
                 ResistanceBlock(

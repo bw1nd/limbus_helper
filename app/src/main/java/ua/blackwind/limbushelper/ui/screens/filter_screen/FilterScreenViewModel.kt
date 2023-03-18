@@ -176,7 +176,7 @@ class FilterScreenViewModel @Inject constructor(
         return list.map { identity ->
             FilterIdentityModel(
                 identity,
-                party.identityList.any { it.id == identity.id }
+                party.identityList.any { it.identity.id == identity.id }
             )
         }
     }

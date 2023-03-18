@@ -1,13 +1,18 @@
 package ua.blackwind.limbushelper.data.party
 
 import android.util.Log
-import ua.blackwind.limbushelper.data.db.AppDatabase
-import ua.blackwind.limbushelper.domain.party.IPartyRepository
-import ua.blackwind.limbushelper.domain.party.model.Party
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import ua.blackwind.limbushelper.data.db.model.*
+import kotlinx.coroutines.flow.combine
+import ua.blackwind.limbushelper.data.db.AppDatabase
+import ua.blackwind.limbushelper.data.db.model.IdentityEntity
+import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
+import ua.blackwind.limbushelper.data.db.model.toIdentity
+import ua.blackwind.limbushelper.data.db.model.toSkill
 import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.party.IPartyRepository
+import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
+import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.domain.sinner.model.*
 import javax.inject.Inject
 
@@ -17,14 +22,22 @@ class PartyRepository @Inject constructor(
     private val dao = db.dao
 
     override fun getParty(id: Int): Flow<Party> {
-        return dao.getIdentityListByPartyId(DEFAULT_PARTY_ID).map { identities ->
-            val party = dao.getParty(DEFAULT_PARTY_ID)
-            Log.d("PARTY", "Got party from db $party")
-            Party(party.id, party.name, identities.map {
-                val identity = dao.getIdentityById(it.identityId)
-                identityEntityToIdentity(identity)
-            })
-        }
+        return dao.getIdentityListByPartyId(DEFAULT_PARTY_ID)
+            .combine(
+                dao.getActiveIdentityListForParty(
+                    DEFAULT_PARTY_ID
+                )
+            ) { identities, activeIdentities ->
+                val party = dao.getParty(DEFAULT_PARTY_ID)
+
+                Party(party.id, party.name, identities.map { entity ->
+                    val identity = dao.getIdentityById(entity.identityId)
+                    PartyIdentity(
+                        identityEntityToIdentity(identity),
+                        identity.id in activeIdentities.map { it.identityId }
+                    )
+                })
+            }
     }
 
     override suspend fun addIdentityToParty(partyId: Int, identity: Identity) {
@@ -69,7 +82,6 @@ class PartyRepository @Inject constructor(
     }
 
     companion object {
-        private const val DEFAULT_PARTY_ID = 1
         private const val NEW_VALUE_ID = 0
     }
 }

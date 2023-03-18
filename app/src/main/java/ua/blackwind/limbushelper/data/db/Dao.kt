@@ -28,6 +28,11 @@ interface Dao {
         sinnerId: Int
     ): PartyActiveIdentityEntity
 
+    @Query("SELECT * FROM party_active WHERE partyId = :partyId")
+    fun getActiveIdentityListForParty(
+        partyId: Int
+    ): Flow<List<PartyActiveIdentityEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun changeActiveIdentity(active: PartyActiveIdentityEntity)
 
