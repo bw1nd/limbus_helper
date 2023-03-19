@@ -3,4 +3,6 @@
     <string name="res_ineff">Ineff.</string>
     <string name="res_normal">Normal</string>
     <string name="res_fatal">Fatal</string>
+    <string name="undo_delete">UNDO</string>
+    <string name="removed_from_party">removed from party</string>
 </resources>

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.ChangeSinnerActiveIdentityForParty
 import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class PartyBuildingScreenViewModel @Inject constructor(
     private val getPartyUseCase: GetPartyUseCase,
     private val getAllSinners: GetAllSinners,
+    private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
     private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
 ): ViewModel() {
@@ -57,6 +59,10 @@ class PartyBuildingScreenViewModel @Inject constructor(
 
     }
 
+    fun undoDelete(identity: Identity) {
+        viewModelScope.launch { addIdentityToPartyUseCase(identity, rawParty.value) }
+    }
+
     fun onIdentitySwipe(identity: Identity) {
         viewModelScope.launch { deleteIdentityFromPartyUseCase(identity, rawParty.value) }
     }
@@ -71,6 +77,6 @@ class PartyBuildingScreenViewModel @Inject constructor(
                 sinners.find { it.id == pair.key }!!,
                 pair.value
             )
-        }
+        }.sortedBy { it.sinner.id }
     }
 }
