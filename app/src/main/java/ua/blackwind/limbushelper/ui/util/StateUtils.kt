@@ -73,3 +73,4 @@ sealed class FilterSheetMode {
 data class FilterEffectBlockState(
     val effects: Map<Effect, Boolean>
 )
+
