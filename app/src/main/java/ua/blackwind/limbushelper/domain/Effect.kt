@@ -9,7 +9,7 @@ enum class Effect {
     BURN,
     BIND,
     FRAGILE,
-    //CURSE,
+    GAZE,
     DEFENSE_UP,
     DEFENSE_DOWN,
     ATTACK_UP,

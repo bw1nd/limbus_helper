@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +27,6 @@ class FilterScreenViewModel @Inject constructor(
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
-    private val checkIfPartyHasIdentitiesWithSameSinner: CheckIfPartyHasIdentitiesWithSameSinner,
     private val getPartyUseCase: GetPartyUseCase
 ): ViewModel() {
 
@@ -95,7 +93,6 @@ class FilterScreenViewModel @Inject constructor(
 
     fun onIdentityItemInPartyChecked(identity: Identity) {
         viewModelScope.launch {
-            Log.d("PARTY", "Using party ${party.value}")
             addIdentityToPartyUseCase(
                 identity,
                 party.value

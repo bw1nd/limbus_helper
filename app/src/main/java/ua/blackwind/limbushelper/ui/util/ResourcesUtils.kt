@@ -50,7 +50,6 @@ fun getEffectIcon(effect: Effect): Int {
         Effect.BURN -> R.drawable.burn_ic
         Effect.BIND -> R.drawable.bind_ic
         Effect.FRAGILE -> R.drawable.fragile_ic
-        //Effect.CURSE -> R.drawable.rupture_ic
         Effect.ATTACK_UP -> R.drawable.att_up_ic
         Effect.ATTACK_DOWN -> R.drawable.att_down_ic
         Effect.POISE -> R.drawable.poise_ic
@@ -61,5 +60,6 @@ fun getEffectIcon(effect: Effect): Int {
         Effect.DEFENSE_UP -> R.drawable.def_up_ic
         Effect.DEFENSE_DOWN -> R.drawable.def_down_ic
         Effect.HEAL -> R.drawable.heal_ic
+        Effect.GAZE -> R.drawable.gaze_ic
     }
 }
