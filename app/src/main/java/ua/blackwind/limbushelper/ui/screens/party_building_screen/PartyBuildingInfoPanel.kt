@@ -4,11 +4,13 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -16,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Sin
@@ -26,10 +27,10 @@ import ua.blackwind.limbushelper.ui.util.getSinIcon
 
 @Composable
 fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
-    val size = LocalConfiguration.current.screenWidthDp / 11
+    val columnWidth = LocalConfiguration.current.screenWidthDp / 12
 
     Row(
-        Modifier.padding(10.dp)
+        Modifier.padding(5.dp)
     ) {
         val measuredDivider =
             @Composable { size: Dp, times: Int -> Divider(Modifier.width(size * times)) }
@@ -37,22 +38,16 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.att_ic), contentDescription = null,
-                Modifier.size(size.dp)
+                Modifier.size(columnWidth.dp, columnWidth.dp * 0.8f)
             )
-            measuredDivider(size.dp, 1)
-            Spacer(modifier = Modifier.size(size.dp))
-            measuredDivider(size.dp, 1)
+            Spacer(modifier = Modifier.size(columnWidth.dp))
             Image(
                 painter = painterResource(id = R.drawable.def_ic), contentDescription = null,
-                Modifier.size(size.dp)
+                Modifier.size(columnWidth.dp, columnWidth.dp * 0.8f)
             )
         }
-
-        listOf(
-            DamageType.SLASH,
-            DamageType.PIERCE,
-            DamageType.BLUNT
-        ).forEach { type ->
+        Spacer(modifier = Modifier.width(5.dp))
+        DamageType.values().forEach { type ->
             @DrawableRes val res = getDamageTypeIcon(type)
             val (damageCount, defencePotency) = when (type) {
                 DamageType.SLASH -> state.attackByDamage.slash to state.defenceByDamage.slash
@@ -65,7 +60,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(size.dp)
+                    modifier = Modifier.size(columnWidth.dp)
                 ) {
                     Text(
                         text = damageCount.toString(),
@@ -77,30 +72,35 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                 Image(
                     painter = painterResource(id = res),
                     contentDescription = null,
-                    Modifier.size(size.dp)
+                    Modifier.size(columnWidth.dp)
                 )
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(size.dp)
+                    modifier = Modifier.size(columnWidth.dp)
                 ) {
-                    Text(
-                        text = defencePotency.toString(),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        textAlign = TextAlign.Center,
-                        fontSize = 12.sp,
-                    )
+                    //TODO make custom colors for this statuses
+                    val (iconResId, color) = when (defencePotency) {
+                        InfoPanelDamageResist.NA -> 0 to Color.Transparent
+                        InfoPanelDamageResist.Bad -> R.drawable.info_warning_ic to Color.Red
+                        InfoPanelDamageResist.Poor -> R.drawable.info_down_ic to Color.Yellow
+                        InfoPanelDamageResist.Normal -> R.drawable.info_normal_ic to Color.Cyan
+                        InfoPanelDamageResist.Good -> R.drawable.info_up_ic to Color.Green
+                        InfoPanelDamageResist.Perfect -> R.drawable.info_perfect_ic to Color.Green
+                    }
+                    if (iconResId != 0) {
+                        Icon(
+                            painterResource(id = iconResId),
+                            contentDescription = null,
+                            tint = color,
+                            modifier = Modifier.size(columnWidth.dp * 0.6f)
+                        )
+                    }
+
                 }
             }
         }
-        listOf(
-            Sin.WRATH,
-            Sin.LUST,
-            Sin.SLOTH,
-            Sin.GLUTTONY,
-            Sin.GLOOM,
-            Sin.PRIDE,
-            Sin.ENVY
-        ).forEach { sin ->
+        Spacer(modifier = Modifier.width(5.dp))
+        Sin.values().forEach { sin ->
             @DrawableRes val res = getSinIcon(sin)
             val text = when (sin) {
                 Sin.WRATH -> state.attackBySin.wrath
@@ -116,7 +116,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(size.dp)
+                    modifier = Modifier.size(columnWidth.dp)
                 ) {
                     Text(
                         text = text.toString(),
@@ -128,7 +128,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                 Image(
                     painter = painterResource(id = res),
                     contentDescription = null,
-                    Modifier.size(size.dp)
+                    Modifier.size(columnWidth.dp)
                 )
             }
         }

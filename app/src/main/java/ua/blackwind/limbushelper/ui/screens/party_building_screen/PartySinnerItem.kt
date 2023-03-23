@@ -70,6 +70,7 @@ fun PartySinnerItem(
                             SWIPE_DISTANCE_TO_DELETE_IDENTITY_DP.dp.toPx()
                         }
                     )
+                    //TODO need to fix bug in snapTo function which throws IllegalArgument and crashes app
                     LaunchedEffect(key1 = Unit) {
                         try {
                             coroutineScope.launch { dismissState.snapTo(DismissValue.Default) }
