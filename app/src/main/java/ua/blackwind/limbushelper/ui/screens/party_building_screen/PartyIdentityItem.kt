@@ -16,6 +16,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.ui.common.identityItemCore
+import ua.blackwind.limbushelper.ui.theme.activeIdentityBorderColor
+import ua.blackwind.limbushelper.ui.theme.inactiveIdentityBorderColor
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -26,7 +28,11 @@ fun PartyIdentityItem(
     onLongClick: (Int, Int) -> Unit
 ) {
     Card(
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary),
+        border = BorderStroke(
+            2.dp,
+            if (viewIdentity.isActive) activeIdentityBorderColor
+            else inactiveIdentityBorderColor
+        ),
         shape = CutCornerShape(topStart = 10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
