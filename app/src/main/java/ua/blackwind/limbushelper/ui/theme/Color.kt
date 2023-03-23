@@ -13,7 +13,7 @@ val wrath = Color(0xFFA0392B)
 val lust = Color(0xFFBB521F)
 val sloth = Color(0xFFDC8401)
 val gluttony = Color(0xFF5E7D28)
-val gloom = Color(0xFF2C5D68)
+val gloom = Color(0xFF356D7A)
 val pride = Color(0xFF15497B)
 val envy = Color(0xFF744888)
 
