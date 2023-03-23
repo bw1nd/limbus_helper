@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key.Companion.U
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,10 +44,7 @@ fun identityItemCore(identity: Identity): @Composable() (RowScope.() -> Unit) =
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
-            Row(
-                Modifier.padding(bottom = 5.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.Top) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(vertical = 3.dp)
@@ -77,7 +76,9 @@ fun identityItemCore(identity: Identity): @Composable() (RowScope.() -> Unit) =
 fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.width(185.dp)
+        modifier = Modifier
+            .width(185.dp)
+            .padding(vertical = 3.dp)
     ) {
         SkillItem(skill = firstSkill)
         SkillItem(skill = secondSkill)
@@ -87,22 +88,29 @@ fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
 
 @Composable
 fun SkillItem(skill: Skill) {
-    Column() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(60.dp)
+                .size(52.dp)
                 .background(getSinColor(skill.sin))
                 .border(2.dp, MaterialTheme.colorScheme.onPrimary)
         ) {
             Image(
                 painter = painterResource(id = getDamageTypeIcon(skill.dmgType)),
                 contentDescription = null,
-                modifier = Modifier.size(55.dp)
-
+                modifier = Modifier.size(45.dp)
             )
         }
-
+        Text(
+            color = MaterialTheme.colorScheme.onPrimary,
+            textAlign = TextAlign.Start,
+            fontSize = 15.sp,
+            modifier = Modifier.padding(vertical = 2.dp),
+            text = "${skill.baseDie}" +
+                    (if (skill.coinBonus > 0) "+" else "-") +
+                    "${skill.coinBonus}\u00D7${skill.coinCount}"
+        )
     }
 }
 
@@ -116,7 +124,7 @@ fun ResistanceBlock(
         slashRes to DamageType.SLASH, pierceRes to DamageType.PIERCE, bluntRes to DamageType.BLUNT
     )
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier.width(105.dp)
     ) {
         ResistanceItem(dmgType = (res[IdentityDamageResistType.INEFFECTIVE]!!), label = "Ineff.")
@@ -143,12 +151,12 @@ fun EffectsBlock(effects: Set<Effect>) {
         thickness = 2.dp, color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
             .width(80.dp)
-            .padding(2.dp)
+            .padding(top = 2.dp)
     )
     Row(
         horizontalArrangement = Arrangement.Start,
         modifier = Modifier
-            .padding(horizontal = 3.dp, vertical = 2.dp)
+            .padding(top = 4.dp)
     ) {
         for (effect in effects.toSet()) {
             Image(
