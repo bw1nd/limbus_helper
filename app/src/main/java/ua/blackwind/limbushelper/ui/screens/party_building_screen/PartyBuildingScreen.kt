@@ -32,7 +32,7 @@ import ua.blackwind.limbushelper.domain.Sin
 import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
-import ua.blackwind.limbushelper.ui.previewIdentity
+import ua.blackwind.limbushelper.ui.util.previewIdentity
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
@@ -158,6 +158,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                     Text(
                         text = damageCount.toString(),
                         textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -172,6 +173,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                 ) {
                     Text(
                         text = defencePotency.toString(),
+                        color = MaterialTheme.colorScheme.onPrimary,
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
                     )
@@ -206,6 +208,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                 ) {
                     Text(
                         text = text.toString(),
+                        color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
                     )
@@ -232,8 +235,8 @@ fun PartySinnerItem(
     undoDelete: (Identity) -> Unit
 ) {
     Column(Modifier.padding(5.dp)) {
-        Text(fontSize = 24.sp, text = sinner.name)
-        Divider(color = MaterialTheme.colorScheme.primary, thickness = 2.dp)
+        Text(fontSize = 24.sp, color = MaterialTheme.colorScheme.tertiary, text = sinner.name)
+        Divider(color = MaterialTheme.colorScheme.tertiary, thickness = 2.dp)
         Spacer(modifier = Modifier.size(5.dp))
         Column(
             Modifier,

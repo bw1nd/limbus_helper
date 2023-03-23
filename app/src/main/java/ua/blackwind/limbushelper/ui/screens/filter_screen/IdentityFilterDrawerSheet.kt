@@ -10,11 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
+
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.Sin
@@ -247,42 +249,42 @@ fun FilterSkillButton(
     onButtonLongPress: (Int) -> Unit
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primary,
-        shape = CircleShape,
-        modifier = Modifier
-            .combinedClickable(
-                enabled = true,
-                onClick = { onClick(id) },
-                onLongClick = { onButtonLongPress(id) }
-            )
     ) {
         Box(
             contentAlignment = Alignment.Center,
+            modifier = Modifier
+
         ) {
+            val size = with(LocalDensity.current) {
+                70.dp.toPx()
+            }
             Surface(
-                shape = CircleShape,
+                shape = HexagonShape(Size(size, size)),
                 color = when (sin) {
-                    StateType.Empty -> Color.White
+                    StateType.Empty -> MaterialTheme.colorScheme.secondary
                     is StateType.Value -> getSinColor(sin.value)
                 },
                 modifier = Modifier
-                    .size(60.dp)
-            ) {}
-            Image(
-                painter = painterResource(id = R.drawable.border_ic),
-                contentDescription = null,
-                modifier = Modifier
                     .size(70.dp)
-            )
+            ) {}
             Image(
                 painter = painterResource(
                     id = when (damage) {
-                        is StateType.Empty -> R.drawable.empty_ic
-                        is StateType.Value<DamageType> -> getDamageTypeIcon(damage.value)
+                        is StateType.Empty -> R.drawable.empty_big_ic
+                        is StateType.Value<DamageType> -> when (damage.value) {
+                            DamageType.SLASH -> R.drawable.slash_big_ic
+                            DamageType.PIERCE -> R.drawable.pierce_big_ic
+                            DamageType.BLUNT -> R.drawable.blunt_big_ic
+                        }
                     }
                 ), contentDescription = null,
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(70.dp)
+                    .combinedClickable(
+                        enabled = true,
+                        onClick = { onClick(id) },
+                        onLongClick = { onButtonLongPress(id) }
+                    )
             )
         }
     }
@@ -322,29 +324,36 @@ fun FilterResistButton(
     state: StateType<DamageType>,
     onClick: (Int) -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable {
-                onClick(id)
-            }) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Box(contentAlignment = Alignment.Center) {
-            Image(
-                painter = painterResource(id = R.drawable.resist_ic),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(60.dp)
-            )
+//            Image(
+//                painter = painterResource(id = R.drawable.resist_ic),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(60.dp)
+//            )
             Image(
                 painter = painterResource(
                     id = when (state) {
-                        is StateType.Empty -> R.drawable.empty_ic
-                        is StateType.Value<DamageType> -> getDamageTypeIcon(state.value)
+                        is StateType.Empty -> R.drawable.def_empty_ic
+                        is StateType.Value<DamageType> -> when (state.value) {
+                            DamageType.SLASH -> R.drawable.def_slash_ic
+                            DamageType.PIERCE -> R.drawable.def_pierce_ic
+                            DamageType.BLUNT -> R.drawable.def_blunt_ic
+                        }
                     }
                 ),
                 contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .clickable {
+                        onClick(id)
+                    }
             )
         }
-        Text(text = label)
+        Text(text = label, color = MaterialTheme.colorScheme.onPrimary)
     }
 }
 
@@ -367,7 +376,7 @@ fun SinPickerButton(state: StateType<Sin>, onClick: (StateType<Sin>) -> Unit) {
     Image(
         painter = painterResource(
             id = when (state) {
-                StateType.Empty -> R.drawable.empty_ic
+                StateType.Empty -> R.drawable.sin_empty_ic
                 is StateType.Value -> getSinIcon(state.value)
             }
         ), contentDescription = null,

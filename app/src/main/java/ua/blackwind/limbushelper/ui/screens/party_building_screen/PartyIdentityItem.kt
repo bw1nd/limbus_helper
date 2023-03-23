@@ -6,7 +6,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.ui.common.identityItemCore
-import ua.blackwind.limbushelper.ui.previewIdentity
+import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -24,7 +26,9 @@ fun PartyIdentityItem(
     onLongClick: (Int, Int) -> Unit
 ) {
     Card(
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary),
+        shape = CutCornerShape(topStart = 10.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
             .width(
                 if (viewIdentity.isActive) ACTIVE_ITEM_WIDTH_DP.dp

@@ -22,9 +22,9 @@ fun getSinColor(sin: Sin): Color {
 
 fun getDamageTypeIcon(damageType: DamageType): Int {
     return when (damageType) {
-        DamageType.SLASH -> R.drawable.slash_border_ic
-        DamageType.PIERCE -> R.drawable.pierce_border_ic
-        DamageType.BLUNT -> R.drawable.blunt_border_ic
+        DamageType.SLASH -> R.drawable.slash_hex_ic
+        DamageType.PIERCE -> R.drawable.pierce_hex_ic
+        DamageType.BLUNT -> R.drawable.blunt_hex_ic
     }
 }
 
