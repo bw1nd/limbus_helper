@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.ui.screens.main_screen
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
@@ -8,7 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
@@ -25,7 +26,7 @@ fun MainScreen(navController: NavHostController) {
     val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
         bottomBar = {
-            BottomAppBar() {
+            BottomAppBar(modifier = Modifier.height(80.dp)) {
                 NavigationBarItem(selected = false,
                     onClick = {
                         if (navController.currentDestination?.route != PartyBuildingScreenDestination.route) {

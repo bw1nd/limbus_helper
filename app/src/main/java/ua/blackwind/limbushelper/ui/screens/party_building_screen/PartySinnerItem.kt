@@ -32,8 +32,8 @@ fun PartySinnerItem(
     showSnackBar: suspend (String, String) -> SnackbarResult,
     undoDelete: (Identity) -> Unit
 ) {
-    Column(Modifier.padding(5.dp)) {
-        Text(fontSize = 24.sp, color = MaterialTheme.colorScheme.tertiary, text = sinner.name)
+    Column(Modifier.padding(horizontal = 5.dp)) {
+        Text(fontSize = 22.sp, color = MaterialTheme.colorScheme.tertiary, text = sinner.name)
         Divider(color = MaterialTheme.colorScheme.tertiary, thickness = 2.dp)
         Spacer(modifier = Modifier.size(5.dp))
         Column(
