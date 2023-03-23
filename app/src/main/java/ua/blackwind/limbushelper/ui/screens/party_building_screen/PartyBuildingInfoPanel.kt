@@ -16,7 +16,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.DamageType
@@ -30,20 +29,24 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
     val columnWidth = LocalConfiguration.current.screenWidthDp / 12
 
     Row(
-        Modifier.padding(5.dp)
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(5.dp)
     ) {
-        val measuredDivider =
-            @Composable { size: Dp, times: Int -> Divider(Modifier.width(size * times)) }
         Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.width(columnWidth.dp * 0.8f)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.att_ic), contentDescription = null,
-                Modifier.size(columnWidth.dp, columnWidth.dp * 0.8f)
+                Modifier.size(columnWidth.dp)
             )
-            Spacer(modifier = Modifier.size(columnWidth.dp))
+            Divider(
+                thickness = 3.dp, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(3.dp)
+            )
             Image(
                 painter = painterResource(id = R.drawable.def_ic), contentDescription = null,
-                Modifier.size(columnWidth.dp, columnWidth.dp * 0.8f)
+                Modifier.size(columnWidth.dp)
             )
         }
         Spacer(modifier = Modifier.width(5.dp))
@@ -130,6 +133,7 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                     contentDescription = null,
                     Modifier.size(columnWidth.dp)
                 )
+                Spacer(modifier = Modifier.size(columnWidth.dp))
             }
         }
     }
