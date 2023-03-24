@@ -249,6 +249,7 @@ fun FilterSkillButton(
     onButtonLongPress: (Int) -> Unit
 ) {
     Surface(
+        color = MaterialTheme.colorScheme.primary
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -328,12 +329,6 @@ fun FilterResistButton(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(contentAlignment = Alignment.Center) {
-//            Image(
-//                painter = painterResource(id = R.drawable.resist_ic),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .size(60.dp)
-//            )
             Image(
                 painter = painterResource(
                     id = when (state) {
@@ -422,9 +417,3 @@ fun PreviewFilterBlock() {
 fun PreviewSinPicker() {
     SinPicker(onClick = {})
 }
-
-//@Preview
-//@Composable
-//fun PreviewEffectSheet() {
-//    FilterEffectsBlock({ _, _ -> })
-//}

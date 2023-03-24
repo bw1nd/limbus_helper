@@ -96,6 +96,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
 
 
         _infoPanelState.update {
+            val activeIdentityCount = rawParty.value.identityList.count { it.isActive }
             PartyBuildingInfoPanelState(
                 AttackByDamageInfo(attackByDamage[0], attackByDamage[1], attackByDamage[2]),
                 AttackBySinInfo(
@@ -111,7 +112,8 @@ class PartyBuildingScreenViewModel @Inject constructor(
                     calculateDamageResistPotency(defenceByDamage[0], activeList.size),
                     calculateDamageResistPotency(defenceByDamage[1], activeList.size),
                     calculateDamageResistPotency(defenceByDamage[2], activeList.size),
-                )
+                ),
+                activeIdentityCount
             )
         }
     }
@@ -173,6 +175,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
             InfoPanelDamageResist.Normal,
             InfoPanelDamageResist.Normal,
             InfoPanelDamageResist.Normal
-        )
+        ),
+        0
     )
 }

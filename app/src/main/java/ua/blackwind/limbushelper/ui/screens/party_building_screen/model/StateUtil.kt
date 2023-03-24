@@ -4,7 +4,8 @@ package ua.blackwind.limbushelper.ui.screens.party_building_screen.model
 data class PartyBuildingInfoPanelState(
     val attackByDamage: AttackByDamageInfo,
     val attackBySin: AttackBySinInfo,
-    val defenceByDamage: DefenceByDamageInfo
+    val defenceByDamage: DefenceByDamageInfo,
+    val activeIdentityCount: Int
 )
 
 data class AttackByDamageInfo(
