@@ -34,6 +34,7 @@ import ua.blackwind.limbushelper.ui.util.getSinColor
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 private const val ITEM_VERTICAL_SIZE_DP = 100
+private const val PORTRAIT_IMAGE_WIDTH = 70
 
 @Composable
 fun identityItemCore(
@@ -49,7 +50,7 @@ fun identityItemCore(
                 .crossfade(true)
                 .size(
                     Size(
-                        Dimension(portraitWidthDp * density),
+                        Dimension(PORTRAIT_IMAGE_WIDTH * density),
                         Dimension(ITEM_VERTICAL_SIZE_DP * density)
                     )
                 )
@@ -57,7 +58,7 @@ fun identityItemCore(
             alignment = Alignment.Center,
             contentScale = ContentScale.Crop,
             contentDescription = null, modifier = Modifier
-                .size(70.dp, ITEM_VERTICAL_SIZE_DP.dp)
+                .size(portraitWidthDp.dp, ITEM_VERTICAL_SIZE_DP.dp)
         )
         Divider(
             color = when (identity.rarity) {
@@ -65,9 +66,15 @@ fun identityItemCore(
                 1 -> Color.Red
                 else -> Color.White
             },
-            modifier = Modifier.size(4.dp, ITEM_VERTICAL_SIZE_DP.dp)
+            modifier = Modifier
+                .size(4.dp, ITEM_VERTICAL_SIZE_DP.dp)
         )
-        Column(Modifier.width(265.dp)) {
+        Column(
+            Modifier
+                .width(265.dp)
+                .padding(start = 5.dp)
+                .padding(vertical = 2.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -75,7 +82,7 @@ fun identityItemCore(
             ) {
                 Text(
                     text = identity.name,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.tertiary
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -83,7 +90,7 @@ fun identityItemCore(
             Row(verticalAlignment = Alignment.Top) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(vertical = 3.dp)
+                    modifier = Modifier.padding(top = 3.dp)
                 ) {
                     ResistanceBlock(
                         slashRes = identity.slashRes,
@@ -113,8 +120,8 @@ fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .width(185.dp)
-            .padding(vertical = 3.dp)
+            .width(190.dp)
+            .padding(top = 3.dp)
     ) {
         SkillItem(skill = firstSkill)
         SkillItem(skill = secondSkill)
@@ -141,8 +148,8 @@ fun SkillItem(skill: Skill) {
         Text(
             color = MaterialTheme.colorScheme.onPrimary,
             textAlign = TextAlign.Start,
-            fontSize = 15.sp,
-            modifier = Modifier.padding(vertical = 2.dp),
+            fontSize = 14.sp,
+            modifier = Modifier.padding(top = 2.dp),
             text = "${skill.baseDie}" +
                     (if (skill.coinBonus > 0) "+" else "-") +
                     "${skill.coinBonus}\u00D7${skill.coinCount}"

@@ -16,7 +16,7 @@ import ua.blackwind.limbushelper.ui.util.previewIdentity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 
 
-private const val IDENTITY_PORTRAIT_WIDTH = 70
+private const val IDENTITY_PORTRAIT_WIDTH = 60
 
 @Composable
 fun FilterIdentityItem(
