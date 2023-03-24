@@ -20,6 +20,9 @@ import ua.blackwind.limbushelper.ui.theme.activeIdentityBorderColor
 import ua.blackwind.limbushelper.ui.theme.inactiveIdentityBorderColor
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
+private const val ACTIVE_ITEM_PORTRAIT_WIDTH_DP = 100
+private const val INACTIVE_ITEM_PORTRAIT_WIDTH_DP = 70
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PartyIdentityItem(
@@ -52,7 +55,10 @@ fun PartyIdentityItem(
             )
     ) {
         val identity = viewIdentity.identity
-        Row(content = identityItemCore(identity))
+        val portraitWidth =
+            if (viewIdentity.isActive) ACTIVE_ITEM_PORTRAIT_WIDTH_DP
+            else INACTIVE_ITEM_PORTRAIT_WIDTH_DP
+        Row(content = identityItemCore(identity, portraitWidth))
     }
 }
 

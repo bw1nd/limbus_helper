@@ -15,6 +15,9 @@ import ua.blackwind.limbushelper.ui.common.identityItemCore
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 
+
+private const val IDENTITY_PORTRAIT_WIDTH = 70
+
 @Composable
 fun FilterIdentityItem(
     viewIdentity: FilterIdentityModel,
@@ -29,7 +32,7 @@ fun FilterIdentityItem(
     ) {
         val identity = viewIdentity.identity
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Row(content = identityItemCore(identity))
+            Row(content = identityItemCore(identity, IDENTITY_PORTRAIT_WIDTH))
             Checkbox(checked = viewIdentity.inParty, onCheckedChange = { checked ->
                 if (checked) onInPartyChecked(identity) else onInPartyUnChecked(identity)
             })

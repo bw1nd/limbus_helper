@@ -10,11 +10,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Dimension
+import coil.size.Size
 import ua.blackwind.limbushelper.domain.DamageType
 import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
@@ -25,12 +33,41 @@ import ua.blackwind.limbushelper.ui.util.getEffectIcon
 import ua.blackwind.limbushelper.ui.util.getSinColor
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
+private const val ITEM_VERTICAL_SIZE_DP = 100
+
 @Composable
-fun identityItemCore(identity: Identity): @Composable() (RowScope.() -> Unit) =
+fun identityItemCore(
+    identity: Identity,
+    portraitWidthDp: Int
+): @Composable() (RowScope.() -> Unit) =
     {
-        //this box is image placeholder
-        Box(Modifier.size(50.dp, 100.dp))
-        Column(Modifier.width(290.dp)) {
+        val density = LocalConfiguration.current.densityDpi
+        AsyncImage(
+            model = ImageRequest
+                .Builder(LocalContext.current)
+                .data(identity.imageUrl)
+                .crossfade(true)
+                .size(
+                    Size(
+                        Dimension(portraitWidthDp * density),
+                        Dimension(ITEM_VERTICAL_SIZE_DP * density)
+                    )
+                )
+                .build(),
+            alignment = Alignment.Center,
+            contentScale = ContentScale.Crop,
+            contentDescription = null, modifier = Modifier
+                .size(70.dp, ITEM_VERTICAL_SIZE_DP.dp)
+        )
+        Divider(
+            color = when (identity.rarity) {
+                2 -> Color.Yellow
+                1 -> Color.Red
+                else -> Color.White
+            },
+            modifier = Modifier.size(4.dp, ITEM_VERTICAL_SIZE_DP.dp)
+        )
+        Column(Modifier.width(265.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -120,14 +157,22 @@ fun ResistanceBlock(
     bluntRes: IdentityDamageResistType
 ) {
     val res = mapOf(
-        slashRes to DamageType.SLASH, pierceRes to DamageType.PIERCE, bluntRes to DamageType.BLUNT
+        slashRes to DamageType.SLASH,
+        pierceRes to DamageType.PIERCE,
+        bluntRes to DamageType.BLUNT
     )
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.width(105.dp)
     ) {
-        ResistanceItem(dmgType = (res[IdentityDamageResistType.INEFFECTIVE]!!), label = "Ineff.")
-        ResistanceItem(dmgType = res[IdentityDamageResistType.NORMAL]!!, label = "Normal")
+        ResistanceItem(
+            dmgType = (res[IdentityDamageResistType.INEFFECTIVE]!!),
+            label = "Ineff."
+        )
+        ResistanceItem(
+            dmgType = res[IdentityDamageResistType.NORMAL]!!,
+            label = "Normal"
+        )
         ResistanceItem(dmgType = res[IdentityDamageResistType.FATAL]!!, label = "Fatal")
     }
 }
@@ -140,7 +185,11 @@ fun ResistanceItem(dmgType: DamageType, label: String) {
             contentDescription = null,
             modifier = Modifier.size(35.dp, 35.dp)
         )
-        Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onPrimary)
+        Text(
+            text = label,
+            fontSize = 10.sp,
+            color = MaterialTheme.colorScheme.onPrimary
+        )
     }
 }
 
@@ -173,7 +222,7 @@ fun EffectsBlock(effects: Set<Effect>) {
 @Composable
 private fun IdentityItemPreview() {
     Row() {
-        identityItemCore(identity = previewIdentity).invoke(this)
+        identityItemCore(identity = previewIdentity, 70).invoke(this)
     }
 
 }
