@@ -75,7 +75,7 @@ fun identityItemCore(
             Modifier
                 .width(265.dp)
                 .padding(start = 5.dp)
-                .padding(vertical = 2.dp)
+                .padding(vertical = 4.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
