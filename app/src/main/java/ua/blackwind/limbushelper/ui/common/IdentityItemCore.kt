@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +27,9 @@ import ua.blackwind.limbushelper.domain.Effect
 import ua.blackwind.limbushelper.domain.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
+import ua.blackwind.limbushelper.ui.theme.identityRarity0
+import ua.blackwind.limbushelper.ui.theme.identityRarity00
+import ua.blackwind.limbushelper.ui.theme.identityRarity000
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getEffectIcon
 import ua.blackwind.limbushelper.ui.util.getSinColor
@@ -62,9 +64,9 @@ fun identityItemCore(
         )
         Divider(
             color = when (identity.rarity) {
-                2 -> Color.Yellow
-                1 -> Color.Red
-                else -> Color.White
+                2 -> identityRarity000
+                1 -> identityRarity00
+                else -> identityRarity0
             },
             modifier = Modifier
                 .size(4.dp, ITEM_VERTICAL_SIZE_DP.dp)

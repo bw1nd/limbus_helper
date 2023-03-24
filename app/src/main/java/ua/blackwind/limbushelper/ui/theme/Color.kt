@@ -4,7 +4,9 @@ import androidx.compose.ui.graphics.Color
 
 val LighterGrey = Color(0xFF413F3F)
 val LightBlue = Color(0xFFAFDDFF)
-val LightGolden = Color(0xFFECD661)
+val Golden = Color(0xFFfff030)
+val LightGolden = Color(0xFFD6C58F)
+val DeepRed = Color(0xFFCE2517)
 
 val Black = Color(0xFF1c1b1e)
 val DarkGrey = Color(0xff1c1b1e)
@@ -20,3 +22,6 @@ val envy = Color(0xFF744888)
 //custom theme colors
 val activeIdentityBorderColor = LightBlue
 val inactiveIdentityBorderColor = LighterGrey
+val identityRarity0 = LightGolden
+val identityRarity00 = DeepRed
+val identityRarity000 = Golden
