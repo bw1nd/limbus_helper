@@ -32,6 +32,9 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
     val party: StateFlow<List<PartySinnerModel>> = _party
 
+    private val _showOnlyActiveIdentities = MutableStateFlow(false)
+    val showOnlyActiveIdentities: StateFlow<Boolean> = _showOnlyActiveIdentities
+
     private val _infoPanelState = MutableStateFlow(
         initialPartyBuildingInfoPanelState()
     )
@@ -115,6 +118,12 @@ class PartyBuildingScreenViewModel @Inject constructor(
                 ),
                 activeIdentityCount
             )
+        }
+    }
+
+    fun onShowActiveIdentitiesClick() {
+        _showOnlyActiveIdentities.update {
+            !it
         }
     }
 

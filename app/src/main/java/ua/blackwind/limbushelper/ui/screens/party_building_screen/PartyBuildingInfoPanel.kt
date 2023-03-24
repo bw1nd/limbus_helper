@@ -4,10 +4,7 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Start
@@ -15,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +25,11 @@ import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
 @Composable
-fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
+fun PartyBuildingInfoPanel(
+    state: PartyBuildingInfoPanelState,
+    isShowActiveIdentitiesChecked: Boolean,
+    onShowActiveIdentitiesClick: () -> Unit
+) {
     val columnWidth = LocalConfiguration.current.screenWidthDp / 12
     val (partySizeCheckerColor, partySizeCheckerSign) = when (true) {
         (state.activeIdentityCount < 5) -> Color.Yellow to "<"
@@ -56,6 +58,18 @@ fun PartyBuildingInfoPanel(state: PartyBuildingInfoPanelState) {
                 text = "$partySizeCheckerSign 5",
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Checkbox(
+                checked = isShowActiveIdentitiesChecked,
+                onCheckedChange = { onShowActiveIdentitiesClick() },
+                Modifier
+                    .requiredSize(18.dp)
+            )
+            Text(
+                stringResource(R.string.active_only),
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.padding(start = 5.dp)
             )
         }
         Row(
@@ -212,6 +226,6 @@ private fun PartyInfoPanelPreview() {
                 InfoPanelDamageResist.Bad
             ),
             4
-        )
+        ), true, {}
     )
 }

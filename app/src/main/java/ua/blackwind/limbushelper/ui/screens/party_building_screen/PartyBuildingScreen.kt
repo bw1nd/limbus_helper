@@ -26,6 +26,7 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
     val viewModel = hiltViewModel<PartyBuildingScreenViewModel>()
     val party = viewModel.party.collectAsState()
     val infoPanelState by viewModel.infoPanelState.collectAsState()
+    val isShowActiveChecked by viewModel.showOnlyActiveIdentities.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -35,6 +36,8 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
                 coroutineScope,
                 party.value,
                 infoPanelState,
+                isShowActiveChecked,
+                viewModel::onShowActiveIdentitiesClick,
                 viewModel::onIdentitySwipe,
                 viewModel::onIdentityClick,
                 viewModel::onIdentityLongPress,
@@ -50,6 +53,8 @@ fun PartyBuildingScreenUi(
     coroutineScope: CoroutineScope,
     party: List<PartySinnerModel>,
     infoPanelState: PartyBuildingInfoPanelState,
+    isShowActiveIdentitiesChecked: Boolean,
+    onShowActiveIdentitiesClick: () -> Unit,
     onIdentityItemSwipe: (Identity) -> Unit,
     onIdentityItemClick: (Int) -> Unit,
     onIdentityItemLongPress: (Int, Int) -> Unit,
@@ -60,7 +65,11 @@ fun PartyBuildingScreenUi(
         Text(text = "Your party is empty.\nStart with filter screen and something here.")
     } else {
         Column {
-            PartyBuildingInfoPanel(infoPanelState)
+            PartyBuildingInfoPanel(
+                infoPanelState,
+                isShowActiveIdentitiesChecked,
+                onShowActiveIdentitiesClick
+            )
             Divider(
                 thickness = 3.dp,
                 modifier = Modifier
@@ -74,7 +83,11 @@ fun PartyBuildingScreenUi(
             ) {
                 items(party.size, key = { it }) { index ->
                     val sinner = party[index].sinner
-                    val identities = party[index].identities.sortedByDescending { it.identity.id }
+                    val identities = party[index].identities
+                        .sortedByDescending { it.identity.id }.let { list ->
+                            if (isShowActiveIdentitiesChecked) list.filter { it.isActive } else list
+                        }
+
                     if (identities.isNotEmpty()) {
                         PartySinnerItem(
                             coroutineScope,
