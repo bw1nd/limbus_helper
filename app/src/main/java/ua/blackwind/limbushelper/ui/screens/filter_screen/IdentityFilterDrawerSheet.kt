@@ -31,14 +31,7 @@ fun FilterDrawerSheet(
     state: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
-    onSwitchChange: (Int) -> Unit,
-    onFilterButtonClick: () -> Unit,
-    onClearFilterButtonPress: () -> Unit,
-    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
-    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
-    onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (SelectedButtonPostion) -> Unit,
-    onEffectCheckedChange: (Boolean, Effect) -> Unit
+    methods: FilterDrawerSheetMethods
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,7 +51,7 @@ fun FilterDrawerSheet(
                     .combinedClickable(
                         enabled = true,
                         onClick = {},
-                        onLongClick = { onClearFilterButtonPress() },
+                        onLongClick = { methods.onClearFilterButtonPress() },
                     )
             ) {
                 Icon(
@@ -72,7 +65,7 @@ fun FilterDrawerSheet(
             Spacer(modifier = Modifier.weight(.4f))
             SegmentedButton(
                 items = listOf("Type", "Effects"),
-                onItemSelection = onSwitchChange,
+                onItemSelection = methods.onSwitchChange,
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.weight(.6f))
@@ -81,13 +74,13 @@ fun FilterDrawerSheet(
             state = state,
             sinPickerVisible = sinPickerVisible,
             resistLabels = resistLabels,
-            onSkillButtonClick = onSkillButtonClick,
-            onSkillButtonLongPress = onSkillButtonLongPress,
-            onResistButtonClick = onResistButtonClick,
-            onSinPickerClick = onSinPickerClick,
-            onEffectCheckedChange = onEffectCheckedChange
+            onSkillButtonClick = methods.onSkillButtonClick,
+            onSkillButtonLongPress = methods.onSkillButtonLongPress,
+            onResistButtonClick = methods.onResistButtonClick,
+            onSinPickerClick = methods.onSinPickerClick,
+            onEffectCheckedChange = methods.onEffectCheckedChange
         )
-        OutlinedButton(onClick = { onFilterButtonClick() }) {
+        OutlinedButton(onClick = { methods.onFilterButtonClick() }) {
             Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
         }
     }
@@ -98,10 +91,10 @@ fun FilterBlock(
     state: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
-    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
-    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
+    onSkillButtonClick: (SelectedButtonPosition) -> Unit,
+    onSkillButtonLongPress: (SelectedButtonPosition) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (SelectedButtonPostion) -> Unit,
+    onResistButtonClick: (SelectedButtonPosition) -> Unit,
     onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {
     Column(
@@ -135,11 +128,11 @@ private fun FilterTypeBlock(
     sinPickerVisible: Boolean,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     skillState: FilterSkillBlockState,
-    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
-    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
+    onSkillButtonClick: (SelectedButtonPosition) -> Unit,
+    onSkillButtonLongPress: (SelectedButtonPosition) -> Unit,
     resistLabels: FilterResistButtonLabels,
     resistState: FilterDamageStateBundle,
-    onResistButtonClick: (SelectedButtonPostion) -> Unit
+    onResistButtonClick: (SelectedButtonPosition) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -202,26 +195,26 @@ fun EffectItem(effect: Effect, checked: Boolean, onEffectCheckedChange: (Boolean
 @Composable
 fun FilterSkillBlock(
     state: FilterSkillBlockState,
-    onButtonClick: (SelectedButtonPostion) -> Unit,
-    onButtonLongPress: (SelectedButtonPostion) -> Unit
+    onButtonClick: (SelectedButtonPosition) -> Unit,
+    onButtonLongPress: (SelectedButtonPosition) -> Unit
 ) {
     Row {
         FilterSkillButton(
-            id = SelectedButtonPostion.First,
+            id = SelectedButtonPosition.First,
             damage = state.damage.first,
             sin = state.sin.first,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = SelectedButtonPostion.Second,
+            id = SelectedButtonPosition.Second,
             damage = state.damage.second,
             sin = state.sin.second,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = SelectedButtonPostion.Third,
+            id = SelectedButtonPosition.Third,
             damage = state.damage.third,
             sin = state.sin.third,
             onClick = onButtonClick,
@@ -233,11 +226,11 @@ fun FilterSkillBlock(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterSkillButton(
-    id: SelectedButtonPostion,
+    id: SelectedButtonPosition,
     damage: StateType<DamageType>,
     sin: StateType<Sin>,
-    onClick: (SelectedButtonPostion) -> Unit,
-    onButtonLongPress: (SelectedButtonPostion) -> Unit
+    onClick: (SelectedButtonPosition) -> Unit,
+    onButtonLongPress: (SelectedButtonPosition) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.primary
@@ -285,23 +278,23 @@ fun FilterSkillButton(
 @Composable
 fun FilterResistBlock(
     labels: FilterResistButtonLabels, state: FilterDamageStateBundle,
-    onButtonClick: (SelectedButtonPostion) -> Unit
+    onButtonClick: (SelectedButtonPosition) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilterResistButton(
-            SelectedButtonPostion.First,
+            SelectedButtonPosition.First,
             label = labels.ineffective,
             state = state.first,
             onClick = onButtonClick
         )
         FilterResistButton(
-            SelectedButtonPostion.Second,
+            SelectedButtonPosition.Second,
             label = labels.normal,
             state = state.second,
             onClick = onButtonClick
         )
         FilterResistButton(
-            SelectedButtonPostion.Third,
+            SelectedButtonPosition.Third,
             label = labels.fatal,
             state = state.third,
             onClick = onButtonClick
@@ -311,12 +304,12 @@ fun FilterResistBlock(
 
 @Composable
 fun FilterResistButton(
-    id: SelectedButtonPostion,
+    id: SelectedButtonPosition,
     label: String,
     state: StateType<DamageType>,
-    onClick: (SelectedButtonPostion) -> Unit
+    onClick: (SelectedButtonPosition) -> Unit
 ) {
-    require(id !is SelectedButtonPostion.None)
+    require(id !is SelectedButtonPosition.None)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -376,7 +369,7 @@ fun SinPickerButton(state: StateType<Sin>, onClick: (StateType<Sin>) -> Unit) {
 
 @Preview
 @Composable
-fun PreviewFilterBlock() {
+private fun PreviewFilterBlock() {
     FilterDrawerSheet(
         FilterDrawerSheetState(
             FilterSheetMode.Effects,
@@ -403,7 +396,9 @@ fun PreviewFilterBlock() {
         FilterResistButtonLabels(
             "Ineff.", "Normal", "Fatal"
         ),
-        {}, {}, {}, {}, {}, {}, {}, { _, _ -> }
+        FilterDrawerSheetMethods(
+            {},{},{},{},{},{},{},{_,_ ->}
+        )
     )
 }
 

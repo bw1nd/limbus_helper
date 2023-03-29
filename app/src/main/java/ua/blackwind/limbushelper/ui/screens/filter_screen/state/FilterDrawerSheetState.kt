@@ -12,6 +12,17 @@ data class FilterDrawerSheetState(
     val effectsState: FilterEffectBlockState,
 )
 
+data class FilterDrawerSheetMethods(
+    val onSwitchChange: (Int) -> Unit,
+    val onFilterButtonClick: () -> Unit,
+    val onClearFilterButtonPress: () -> Unit,
+    val onSkillButtonClick: (SelectedButtonPosition) -> Unit,
+    val onSkillButtonLongPress: (SelectedButtonPosition) -> Unit,
+    val onSinPickerClick: (StateType<Sin>) -> Unit,
+    val onResistButtonClick: (SelectedButtonPosition) -> Unit,
+    val onEffectCheckedChange: (Boolean, Effect) -> Unit
+)
+
 sealed class FilterSheetMode {
     object Type: FilterSheetMode()
     object Effects: FilterSheetMode()
@@ -60,10 +71,10 @@ data class FilterResistButtonLabels(
     val fatal: String
 )
 
-sealed class SelectedButtonPostion {
-    object None: SelectedButtonPostion()
-    object First: SelectedButtonPostion()
-    object Second: SelectedButtonPostion()
-    object Third: SelectedButtonPostion()
+sealed class SelectedButtonPosition {
+    object None: SelectedButtonPosition()
+    object First: SelectedButtonPosition()
+    object Second: SelectedButtonPosition()
+    object Third: SelectedButtonPosition()
 }
 

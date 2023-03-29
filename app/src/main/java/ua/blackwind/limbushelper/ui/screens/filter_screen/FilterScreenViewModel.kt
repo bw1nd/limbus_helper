@@ -47,8 +47,8 @@ class FilterScreenViewModel @Inject constructor(
     private val _sinPickerVisible = MutableStateFlow(false)
     val sinPickerVisible = _sinPickerVisible.asStateFlow()
 
-    private var selectedFilterSheetButtonPosition: SelectedButtonPostion =
-        SelectedButtonPostion.None
+    private var selectedFilterSheetButtonPosition: SelectedButtonPosition =
+        SelectedButtonPosition.None
 
     init {
         viewModelScope.launch {
@@ -67,6 +67,7 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onFilterButtonClick() {
+        //TODO add dispatchers injection
         viewModelScope.launch(Dispatchers.Default) {
             _filteredIdentities.update {
                 val skillState = _filterDrawerShitState.value.skillState
@@ -133,7 +134,7 @@ class FilterScreenViewModel @Inject constructor(
 
     }
 
-    fun onFilterSkillButtonLongPress(selected: SelectedButtonPostion) {
+    fun onFilterSkillButtonLongPress(selected: SelectedButtonPosition) {
         selectedFilterSheetButtonPosition = selected
         _sinPickerVisible.update { true }
     }
@@ -141,11 +142,11 @@ class FilterScreenViewModel @Inject constructor(
     fun onFilterSinPickerPress(sin: StateType<Sin>) {
         _sinPickerVisible.update { false }
         val oldSinState = when (selectedFilterSheetButtonPosition) {
-            SelectedButtonPostion.None ->
+            SelectedButtonPosition.None ->
                 throw IllegalStateException("Trying to update filter buttons state with none selected")
-            SelectedButtonPostion.First -> _filterDrawerShitState.value.skillState
-            SelectedButtonPostion.Second -> _filterDrawerShitState.value.skillState
-            SelectedButtonPostion.Third -> _filterDrawerShitState.value.skillState
+            SelectedButtonPosition.First -> _filterDrawerShitState.value.skillState
+            SelectedButtonPosition.Second -> _filterDrawerShitState.value.skillState
+            SelectedButtonPosition.Third -> _filterDrawerShitState.value.skillState
         }
         updateFilterDrawerSheetState(
             _filterDrawerShitState.value.copy(
@@ -156,10 +157,10 @@ class FilterScreenViewModel @Inject constructor(
             )
         )
 
-        selectedFilterSheetButtonPosition = SelectedButtonPostion.None
+        selectedFilterSheetButtonPosition = SelectedButtonPosition.None
     }
 
-    fun onFilterSkillButtonClick(button: SelectedButtonPostion) {
+    fun onFilterSkillButtonClick(button: SelectedButtonPosition) {
         _filterDrawerShitState.update { old ->
             old.copy(
                 skillState = FilterSkillBlockState(
@@ -170,7 +171,7 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
-    fun onFilterResistButtonClick(button: SelectedButtonPostion) {
+    fun onFilterResistButtonClick(button: SelectedButtonPosition) {
         val oldState = _filterDrawerShitState.value.resistState
         updateFilterDrawerSheetState(
             _filterDrawerShitState.value.copy(
@@ -201,17 +202,17 @@ class FilterScreenViewModel @Inject constructor(
      * (for resistance block) or non unique (for skills block)
      */
     private fun updateDamageStateBundle(
-        button: SelectedButtonPostion,
+        button: SelectedButtonPosition,
         input: FilterDamageStateBundle,
         unique: Boolean
     ): FilterDamageStateBundle {
         var (first, second, third) = input
         when (button) {
-            SelectedButtonPostion.First -> first = cycleSkillDamageTypes(first)
-            SelectedButtonPostion.Second -> second = cycleSkillDamageTypes(second)
-            SelectedButtonPostion.Third -> third = cycleSkillDamageTypes(third)
-            SelectedButtonPostion.None ->
-                throw IllegalStateException("Trying to update filter buttons state with none selected")
+            SelectedButtonPosition.First -> first = cycleSkillDamageTypes(first)
+            SelectedButtonPosition.Second -> second = cycleSkillDamageTypes(second)
+            SelectedButtonPosition.Third -> third = cycleSkillDamageTypes(third)
+            SelectedButtonPosition.None ->
+                throw IllegalStateException(UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED)
         }
         val result = FilterDamageStateBundle(first, second, third)
         return if (unique && !result.isUnique()) {
@@ -220,17 +221,17 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     private fun updateSinStateBundle(
-        button: SelectedButtonPostion,
+        button: SelectedButtonPosition,
         sin: StateType<Sin>,
         input: FilterSinStateBundle
     ): FilterSinStateBundle {
         var (first, second, third) = input
         when (button) {
-            SelectedButtonPostion.First -> first = sin
-            SelectedButtonPostion.Second -> second = sin
-            SelectedButtonPostion.Third -> third = sin
-            SelectedButtonPostion.None ->
-                throw IllegalStateException("Trying to update filter buttons state with none selected")
+            SelectedButtonPosition.First -> first = sin
+            SelectedButtonPosition.Second -> second = sin
+            SelectedButtonPosition.Third -> third = sin
+            SelectedButtonPosition.None ->
+                throw IllegalStateException(UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED)
         }
         return FilterSinStateBundle(first, second, third)
     }
@@ -283,4 +284,9 @@ class FilterScreenViewModel @Inject constructor(
     private fun emptyFilterEffectBlockState() = FilterEffectBlockState(
         Effect.values().associateWith { false }
     )
+
+    companion object {
+        private const val UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED =
+            "Trying to update filter buttons state with none selected"
+    }
 }
