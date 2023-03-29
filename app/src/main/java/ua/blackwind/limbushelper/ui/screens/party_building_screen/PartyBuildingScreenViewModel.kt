@@ -1,10 +1,12 @@
 package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
@@ -24,21 +26,22 @@ import javax.inject.Inject
 class PartyBuildingScreenViewModel @Inject constructor(
     private val getPartyUseCase: GetPartyUseCase,
     private val getAllSinners: GetAllSinners,
+    private val preferencesRepository: PreferencesRepository,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
     private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
 ): ViewModel() {
     private val rawParty = MutableStateFlow(Party(0, "empty", emptyList()))
     private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
-    val party: StateFlow<List<PartySinnerModel>> = _party
+    val party = _party.asStateFlow()
 
     private val _showOnlyActiveIdentities = MutableStateFlow(false)
-    val showOnlyActiveIdentities: StateFlow<Boolean> = _showOnlyActiveIdentities
+    val showOnlyActiveIdentities = _showOnlyActiveIdentities.asStateFlow()
 
     private val _infoPanelState = MutableStateFlow(
         initialPartyBuildingInfoPanelState()
     )
-    val infoPanelState: StateFlow<PartyBuildingInfoPanelState> = _infoPanelState
+    val infoPanelState = _infoPanelState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -52,6 +55,12 @@ class PartyBuildingScreenViewModel @Inject constructor(
                         sinners
                     )
                 }
+            }
+        }
+        viewModelScope.launch {
+            preferencesRepository.getPartySettings().collectLatest { settings ->
+                Log.d("DATA_STORE", "Getting $settings")
+                _showOnlyActiveIdentities.update { settings.showOnlyActive }
             }
         }
     }
@@ -121,9 +130,9 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
     }
 
-    fun onShowActiveIdentitiesClick() {
-        _showOnlyActiveIdentities.update {
-            !it
+    fun onShowActiveIdentitiesClick(state: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updatePartySettings(state)
         }
     }
 

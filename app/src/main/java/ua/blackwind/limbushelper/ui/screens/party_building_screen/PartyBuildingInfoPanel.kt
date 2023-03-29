@@ -28,7 +28,7 @@ import ua.blackwind.limbushelper.ui.util.getSinIcon
 fun PartyBuildingInfoPanel(
     state: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
-    onShowActiveIdentitiesClick: () -> Unit
+    onShowActiveIdentitiesClick: (Boolean) -> Unit
 ) {
     val columnWidth = LocalConfiguration.current.screenWidthDp / 12
     val (partySizeCheckerColor, partySizeCheckerSign) = when (true) {
@@ -62,7 +62,7 @@ fun PartyBuildingInfoPanel(
             Spacer(modifier = Modifier.weight(1f))
             Checkbox(
                 checked = isShowActiveIdentitiesChecked,
-                onCheckedChange = { onShowActiveIdentitiesClick() },
+                onCheckedChange = onShowActiveIdentitiesClick,
                 Modifier
                     .requiredSize(18.dp)
             )

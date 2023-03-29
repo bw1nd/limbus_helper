@@ -200,7 +200,7 @@ class FilterScreenViewModel @Inject constructor(
 
     private fun updateFilterDrawerSheetState(newState: FilterDrawerSheetState) {
         viewModelScope.launch {
-            preferencesRepository.updateSettings(
+            preferencesRepository.updateFilterSheetSettings(
                 newState
             )
         }
