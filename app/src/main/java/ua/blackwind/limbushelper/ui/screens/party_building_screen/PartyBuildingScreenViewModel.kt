@@ -16,7 +16,7 @@ import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUse
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
-import ua.blackwind.limbushelper.ui.util.usecase.GetAllSinners
+import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import javax.inject.Inject
 

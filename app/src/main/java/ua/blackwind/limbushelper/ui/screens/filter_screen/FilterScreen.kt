@@ -17,6 +17,7 @@ import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.*
 
 @RootNavGraph(start = true)
@@ -25,11 +26,8 @@ import ua.blackwind.limbushelper.ui.util.*
 fun FilterScreen() {
     val viewModel = hiltViewModel<FilterScreenViewModel>()
     val identities by viewModel.filteredIdentities.collectAsState()
-    val filterSheetMode by viewModel.filterSheetMode.collectAsState()
-    val filterSkillState by viewModel.filterSkillsState.collectAsState()
-    val filterResistState by viewModel.filterResistState.collectAsState()
-    val filterEffectsState by viewModel.filterEffectBlockState.collectAsState()
-    val sinPickerVisible by viewModel.sinPickerVisible.collectAsState()
+    val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
+    val filterSkillSinPickerVisible by viewModel.sinPickerVisible.collectAsState()
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
         stringResource(R.string.res_normal),
@@ -38,12 +36,9 @@ fun FilterScreen() {
 
     FilterScreenUi(
         identities = identities,
-        filterSheetMode = filterSheetMode,
-        skillState = filterSkillState,
-        resistState = filterResistState,
-        effectsState = filterEffectsState,
+        filterDrawerSheetState = filterDrawerSheetState,
+        filterSkillSinPickerVisible = filterSkillSinPickerVisible,
         resistLabels = labels,
-        sinPickerVisible = sinPickerVisible,
         onSwitchChange = viewModel::onFilterModeSwitch,
         onFilterButtonPress = viewModel::onFilterButtonClick,
         onClearFilterButtonPress = viewModel::onClearFilterButtonPress,
@@ -61,19 +56,16 @@ fun FilterScreen() {
 @Composable
 fun FilterScreenUi(
     identities: List<FilterIdentityModel>,
-    filterSheetMode: FilterSheetMode,
-    skillState: FilterSkillBlockState,
-    resistState: FilterDamageStateBundle,
-    effectsState: FilterEffectBlockState,
+    filterDrawerSheetState: FilterDrawerSheetState,
+    filterSkillSinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
-    sinPickerVisible: Boolean,
     onSwitchChange: (Int) -> Unit,
     onFilterButtonPress: () -> Unit,
     onClearFilterButtonPress: () -> Unit,
-    onSkillButtonClick: (Int) -> Unit,
-    onSkillButtonLongPress: (Int) -> Unit,
+    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
+    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (Int) -> Unit,
+    onResistButtonClick: (SelectedButtonPostion) -> Unit,
     onEffectCheckedChange: (Boolean, Effect) -> Unit,
     onInPartyChecked: (Identity) -> Unit,
     onInPartyUnChecked: (Identity) -> Unit
@@ -82,12 +74,9 @@ fun FilterScreenUi(
         scaffoldState = rememberBottomSheetScaffoldState(),
         sheetContent = {
             FilterDrawerSheet(
-                filterSheetMode = filterSheetMode,
-                skillState = skillState,
-                resistState = resistState,
-                effectsState = effectsState,
+                state = filterDrawerSheetState,
+                sinPickerVisible = filterSkillSinPickerVisible,
                 resistLabels = resistLabels,
-                sinPickerVisible = sinPickerVisible,
                 onSwitchChange = onSwitchChange,
                 onFilterButtonClick = onFilterButtonPress,
                 onClearFilterButtonPress = onClearFilterButtonPress,

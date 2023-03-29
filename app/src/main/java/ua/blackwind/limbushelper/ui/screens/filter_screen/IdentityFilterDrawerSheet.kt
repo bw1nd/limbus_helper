@@ -20,6 +20,7 @@ import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.common.SegmentedButton
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.*
 
 private const val NUMBER_OF_EFFECTS_IN_COLUMN = 3
@@ -27,19 +28,16 @@ private const val NUMBER_OF_EFFECTS_IN_COLUMN = 3
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterDrawerSheet(
-    filterSheetMode: FilterSheetMode,
-    skillState: FilterSkillBlockState,
-    resistState: FilterDamageStateBundle,
-    effectsState: FilterEffectBlockState,
-    resistLabels: FilterResistButtonLabels,
+    state: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
+    resistLabels: FilterResistButtonLabels,
     onSwitchChange: (Int) -> Unit,
     onFilterButtonClick: () -> Unit,
     onClearFilterButtonPress: () -> Unit,
-    onSkillButtonClick: (Int) -> Unit,
-    onSkillButtonLongPress: (Int) -> Unit,
+    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
+    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (Int) -> Unit,
+    onResistButtonClick: (SelectedButtonPostion) -> Unit,
     onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {
     Column(
@@ -80,12 +78,9 @@ fun FilterDrawerSheet(
             Spacer(modifier = Modifier.weight(.6f))
         }
         FilterBlock(
-            filterSheetMode = filterSheetMode,
-            skillState = skillState,
-            resistState = resistState,
-            effectsState = effectsState,
-            resistLabels = resistLabels,
+            state = state,
             sinPickerVisible = sinPickerVisible,
+            resistLabels = resistLabels,
             onSkillButtonClick = onSkillButtonClick,
             onSkillButtonLongPress = onSkillButtonLongPress,
             onResistButtonClick = onResistButtonClick,
@@ -100,16 +95,13 @@ fun FilterDrawerSheet(
 
 @Composable
 fun FilterBlock(
-    filterSheetMode: FilterSheetMode,
-    skillState: FilterSkillBlockState,
-    resistState: FilterDamageStateBundle,
-    effectsState: FilterEffectBlockState,
-    resistLabels: FilterResistButtonLabels,
+    state: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
-    onSkillButtonClick: (Int) -> Unit,
-    onSkillButtonLongPress: (Int) -> Unit,
+    resistLabels: FilterResistButtonLabels,
+    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
+    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (Int) -> Unit,
+    onResistButtonClick: (SelectedButtonPostion) -> Unit,
     onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {
     Column(
@@ -119,19 +111,19 @@ fun FilterBlock(
             .height(170.dp)
             .padding(bottom = 5.dp)
     ) {
-        when (filterSheetMode) {
+        when (state.filterSheetMode) {
             FilterSheetMode.Effects -> FilterEffectsBlock(
-                effectsState,
+                state.effectsState,
                 onEffectCheckedChange
             )
             FilterSheetMode.Type -> FilterTypeBlock(
                 sinPickerVisible,
                 onSinPickerClick,
-                skillState,
+                state.skillState,
                 onSkillButtonClick,
                 onSkillButtonLongPress,
                 resistLabels,
-                resistState,
+                state.resistState,
                 onResistButtonClick
             )
         }
@@ -143,11 +135,11 @@ private fun FilterTypeBlock(
     sinPickerVisible: Boolean,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     skillState: FilterSkillBlockState,
-    onSkillButtonClick: (Int) -> Unit,
-    onSkillButtonLongPress: (Int) -> Unit,
+    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
+    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
     resistLabels: FilterResistButtonLabels,
     resistState: FilterDamageStateBundle,
-    onResistButtonClick: (Int) -> Unit
+    onResistButtonClick: (SelectedButtonPostion) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -210,26 +202,26 @@ fun EffectItem(effect: Effect, checked: Boolean, onEffectCheckedChange: (Boolean
 @Composable
 fun FilterSkillBlock(
     state: FilterSkillBlockState,
-    onButtonClick: (Int) -> Unit,
-    onButtonLongPress: (Int) -> Unit
+    onButtonClick: (SelectedButtonPostion) -> Unit,
+    onButtonLongPress: (SelectedButtonPostion) -> Unit
 ) {
     Row {
         FilterSkillButton(
-            id = 1,
+            id = SelectedButtonPostion.First,
             damage = state.damage.first,
             sin = state.sin.first,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = 2,
+            id = SelectedButtonPostion.Second,
             damage = state.damage.second,
             sin = state.sin.second,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = 3,
+            id = SelectedButtonPostion.Third,
             damage = state.damage.third,
             sin = state.sin.third,
             onClick = onButtonClick,
@@ -241,11 +233,11 @@ fun FilterSkillBlock(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterSkillButton(
-    id: Int,
+    id: SelectedButtonPostion,
     damage: StateType<DamageType>,
     sin: StateType<Sin>,
-    onClick: (Int) -> Unit,
-    onButtonLongPress: (Int) -> Unit
+    onClick: (SelectedButtonPostion) -> Unit,
+    onButtonLongPress: (SelectedButtonPostion) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.primary
@@ -293,23 +285,23 @@ fun FilterSkillButton(
 @Composable
 fun FilterResistBlock(
     labels: FilterResistButtonLabels, state: FilterDamageStateBundle,
-    onButtonClick: (Int) -> Unit
+    onButtonClick: (SelectedButtonPostion) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilterResistButton(
-            1,
+            SelectedButtonPostion.First,
             label = labels.ineffective,
             state = state.first,
             onClick = onButtonClick
         )
         FilterResistButton(
-            2,
+            SelectedButtonPostion.Second,
             label = labels.normal,
             state = state.second,
             onClick = onButtonClick
         )
         FilterResistButton(
-            3,
+            SelectedButtonPostion.Third,
             label = labels.fatal,
             state = state.third,
             onClick = onButtonClick
@@ -319,11 +311,12 @@ fun FilterResistBlock(
 
 @Composable
 fun FilterResistButton(
-    id: Int,
+    id: SelectedButtonPostion,
     label: String,
     state: StateType<DamageType>,
-    onClick: (Int) -> Unit
+    onClick: (SelectedButtonPostion) -> Unit
 ) {
+    require(id !is SelectedButtonPostion.None)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -385,28 +378,31 @@ fun SinPickerButton(state: StateType<Sin>, onClick: (StateType<Sin>) -> Unit) {
 @Composable
 fun PreviewFilterBlock() {
     FilterDrawerSheet(
-        FilterSheetMode.Effects,
-        FilterSkillBlockState(
+        FilterDrawerSheetState(
+            FilterSheetMode.Effects,
+            FilterSkillBlockState(
+                FilterDamageStateBundle(
+                    StateType.Value(DamageType.BLUNT),
+                    StateType.Value(DamageType.SLASH),
+                    StateType.Value(DamageType.PIERCE)
+                ),
+                FilterSinStateBundle(
+                    StateType.Value(Sin.LUST),
+                    StateType.Value(Sin.GLOOM),
+                    StateType.Empty
+                )
+            ),
             FilterDamageStateBundle(
                 StateType.Value(DamageType.BLUNT),
-                StateType.Value(DamageType.SLASH),
-                StateType.Value(DamageType.PIERCE)
-            ),
-            FilterSinStateBundle(
-                StateType.Value(Sin.LUST),
-                StateType.Value(Sin.GLOOM),
+                StateType.Value(DamageType.BLUNT),
                 StateType.Empty
-            )
+            ),
+            FilterEffectBlockState(mapOf(Effect.BLEED to false))
         ),
-        FilterDamageStateBundle(
-            StateType.Value(DamageType.BLUNT),
-            StateType.Value(DamageType.BLUNT),
-            StateType.Empty
-        ),
-        FilterEffectBlockState(mapOf(Effect.BLEED to false)),
+        false,
         FilterResistButtonLabels(
             "Ineff.", "Normal", "Fatal"
-        ), false,
+        ),
         {}, {}, {}, {}, {}, {}, {}, { _, _ -> }
     )
 }
