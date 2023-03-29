@@ -12,12 +12,13 @@ import javax.inject.Inject
 class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: ISinnerRepository) {
     suspend operator fun invoke(filter: IdentityFilter): List<Identity> {
         val identities = repository.getAllIdentities()
+        if (filter.isEmpty()) return identities
 
         return identities.filter { identity ->
             val byResistance =
                 filter.resist.isEmpty() || identityPassResistanceFilter(identity, filter.resist)
             val bySkill =
-                (byResistance && filter.skills.skillFilterIsEmpty()) || identityPassSkillFilter(
+                (byResistance && filter.skills.IsEmpty()) || identityPassSkillFilter(
                     identity,
                     filter.skills
                 )
@@ -143,6 +144,9 @@ data class IdentityFilter(
     val effects: List<Effect>
 )
 
+fun IdentityFilter.isEmpty() =
+    resist.isEmpty() && skills.IsEmpty() && effects.isEmpty()
+
 data class FilterResistSetArg(
     val ineffective: FilterDamageTypeArg,
     val normal: FilterDamageTypeArg,
@@ -162,7 +166,7 @@ data class FilterSkillsSetArg(
 
 fun FilterSkillsSetArg.toSkillList() = listOf(first, second, third)
 
-fun FilterSkillsSetArg.skillFilterIsEmpty() =
+fun FilterSkillsSetArg.IsEmpty() =
     this.first.damageType == FilterDamageTypeArg.Empty
             && first.sin == FilterSinTypeArg.Empty
             && second.damageType == FilterDamageTypeArg.Empty
