@@ -6,7 +6,6 @@ import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.util.*
 
 data class FilterDrawerSheetState(
-    val filterSheetMode: FilterSheetMode,
     val skillState: FilterSkillBlockState,
     val resistState: FilterDamageStateBundle,
     val effectsState: FilterEffectBlockState
@@ -14,12 +13,10 @@ data class FilterDrawerSheetState(
     companion object {
         fun getDefaultState() =
             FilterDrawerSheetState(
-                FilterSheetMode.Type,
                 emptyFilterSkillBlockState(),
                 emptyFilterResistClockState(),
                 emptyFilterEffectBlockState()
             )
-
     }
 }
 
@@ -97,7 +94,7 @@ private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
 private fun emptyFilterResistClockState() =
     FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
 
-private fun emptyFilterEffectBlockState() = FilterEffectBlockState(
+fun emptyFilterEffectBlockState() = FilterEffectBlockState(
     Effect.values().associateWith { false }
 )
 

@@ -3,21 +3,14 @@ option java_package = "ua.blackwind.limbus_helper";
 option java_multiple_files = false;
 
 message FilterDrawerSheetSettings {
-    FilterSheetMode filterSheetMode = 1;
-    FilterSkillBlockState skillState = 2;
-    FilterDamageStateBundle resistState = 3;
-	FilterEffectBlockState effectsState = 4;
-
-enum FilterSheetMode {
-    TYPE = 0;
-    EFFECTS = 1;
-}
+    FilterSkillBlockState skillState = 1;
+    FilterDamageStateBundle resistState = 2;
+	FilterEffectBlockState effectsState = 3;
 
 message FilterSkillBlockState{
     FilterDamageStateBundle damageBundle = 1;
     FilterSinStateBundle sinBundle = 2;
 }
-
 
 message FilterDamageStateBundle{
     string first = 1;

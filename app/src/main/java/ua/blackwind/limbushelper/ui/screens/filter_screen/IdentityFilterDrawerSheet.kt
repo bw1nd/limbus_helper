@@ -28,7 +28,8 @@ private const val NUMBER_OF_EFFECTS_IN_COLUMN = 3
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterDrawerSheet(
-    state: FilterDrawerSheetState,
+    mode: FilterSheetMode,
+    filterState: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
     methods: FilterDrawerSheetMethods
@@ -71,7 +72,8 @@ fun FilterDrawerSheet(
             Spacer(modifier = Modifier.weight(.6f))
         }
         FilterBlock(
-            state = state,
+            mode = mode,
+            state = filterState,
             sinPickerVisible = sinPickerVisible,
             resistLabels = resistLabels,
             onSkillButtonClick = methods.onSkillButtonClick,
@@ -88,6 +90,7 @@ fun FilterDrawerSheet(
 
 @Composable
 fun FilterBlock(
+    mode: FilterSheetMode,
     state: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
@@ -104,7 +107,7 @@ fun FilterBlock(
             .height(170.dp)
             .padding(bottom = 5.dp)
     ) {
-        when (state.filterSheetMode) {
+        when (mode) {
             FilterSheetMode.Effects -> FilterEffectsBlock(
                 state.effectsState,
                 onEffectCheckedChange
@@ -371,8 +374,8 @@ fun SinPickerButton(state: StateType<Sin>, onClick: (StateType<Sin>) -> Unit) {
 @Composable
 private fun PreviewFilterBlock() {
     FilterDrawerSheet(
+        FilterSheetMode.Effects,
         FilterDrawerSheetState(
-            FilterSheetMode.Effects,
             FilterSkillBlockState(
                 FilterDamageStateBundle(
                     StateType.Value(DamageType.BLUNT),
@@ -397,7 +400,7 @@ private fun PreviewFilterBlock() {
             "Ineff.", "Normal", "Fatal"
         ),
         FilterDrawerSheetMethods(
-            {},{},{},{},{},{},{},{_,_ ->}
+            {}, {}, {}, {}, {}, {}, {}, { _, _ -> }
         )
     )
 }

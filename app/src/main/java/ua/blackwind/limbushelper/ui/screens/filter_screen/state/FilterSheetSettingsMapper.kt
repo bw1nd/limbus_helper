@@ -4,22 +4,15 @@ import androidx.datastore.core.CorruptionException
 import ua.blackwind.limbus_helper.FilterSettings
 
 import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.util.StateType
 
-object FilterSheetSettingsMapper {
+class FilterSheetSettingsMapper {
     fun mapFilterSheetDataStoreSettingsToState(
         settings: FilterSettings.FilterDrawerSheetSettings
     ): FilterDrawerSheetState {
-
         return FilterDrawerSheetState(
-            when (settings.filterSheetMode) {
-                FilterSettings.FilterDrawerSheetSettings.FilterSheetMode.TYPE -> FilterSheetMode.Type
-                FilterSettings.FilterDrawerSheetSettings.FilterSheetMode.EFFECTS -> FilterSheetMode.Effects
-                FilterSettings.FilterDrawerSheetSettings.FilterSheetMode.UNRECOGNIZED -> throw CorruptionException(
-                    "Filter drawer sheet settings corrupted with value ${settings.filterSheetMode}"
-                )
-            },
             FilterSkillBlockState(
                 damage = FilterDamageStateBundle(
                     first = mapToDamageType(settings.skillState.damageBundle.first),
@@ -37,9 +30,13 @@ object FilterSheetSettingsMapper {
                 second = mapToDamageType(settings.resistState.second),
                 third = mapToDamageType(settings.resistState.third)
             ),
-            FilterEffectBlockState(
-                emptyMap()
-            )
+            if (settings.effectsState.effectsCount > 1) {
+                FilterEffectBlockState(
+                    settings.effectsState.effectsMap.mapKeys { (key, _) -> Effect.valueOf(key) }
+                )
+            } else {
+                emptyFilterEffectBlockState()
+            }
         )
     }
 
@@ -68,12 +65,6 @@ object FilterSheetSettingsMapper {
         old: FilterSettings.FilterDrawerSheetSettings
     ): FilterSettings.FilterDrawerSheetSettings {
         return old.toBuilder()
-            .setFilterSheetMode(
-                when (state.filterSheetMode) {
-                    FilterSheetMode.Effects -> FilterSettings.FilterDrawerSheetSettings.FilterSheetMode.EFFECTS
-                    FilterSheetMode.Type -> FilterSettings.FilterDrawerSheetSettings.FilterSheetMode.TYPE
-                }
-            )
             .setSkillState(
                 FilterSettings.FilterDrawerSheetSettings.FilterSkillBlockState.newBuilder()
                     .setDamageBundle(
@@ -95,6 +86,13 @@ object FilterSheetSettingsMapper {
                     .setSecond(damageSkillStateToSettings(state.resistState.second))
                     .setThird(damageSkillStateToSettings(state.resistState.third))
             )
+            .setEffectsState(
+                FilterSettings.FilterDrawerSheetSettings.FilterEffectBlockState.newBuilder()
+                    .putAllEffects(
+                        state.effectsState.effects.mapKeys { (key, _) -> key.toString() }
+                            .toMutableMap()
+                    )
+            )
             .build()
     }
 
@@ -108,5 +106,7 @@ object FilterSheetSettingsMapper {
         return (stateType as StateType.Value<Sin>).value.toString()
     }
 
-    private const val EMPTY_STATE_VALUE = "Empty"
+    companion object {
+        private const val EMPTY_STATE_VALUE = "Empty"
+    }
 }

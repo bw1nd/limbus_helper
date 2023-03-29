@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ua.blackwind.limbus_helper.FilterSettings.FilterDrawerSheetSettings
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSettingsSerializer
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetSettingsMapper
 import javax.inject.Singleton
 
 @Module
@@ -36,4 +37,9 @@ object AppModule {
     fun provideDataStore(@ApplicationContext context: Context): DataStore<FilterDrawerSheetSettings> {
         return context.store
     }
+
+    @Provides
+    @Singleton
+    fun provideFilterSheetSettingsMapper() =
+        FilterSheetSettingsMapper()
 }

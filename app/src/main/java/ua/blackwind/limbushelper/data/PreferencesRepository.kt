@@ -8,14 +8,15 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetSetti
 import javax.inject.Inject
 
 class PreferencesRepository @Inject constructor(
-    private val filterSheetSettingsDataStore: DataStore<FilterDrawerSheetSettings>
+    private val filterSheetSettingsDataStore: DataStore<FilterDrawerSheetSettings>,
+    private val mapper: FilterSheetSettingsMapper
 ) {
     fun getFilterSheetSettings(): Flow<FilterDrawerSheetSettings> =
         filterSheetSettingsDataStore.data
 
     suspend fun updateSettings(state: FilterDrawerSheetState) {
         filterSheetSettingsDataStore.updateData { old ->
-            FilterSheetSettingsMapper.mapStateToSettings(state, old)
+            mapper.mapStateToSettings(state, old)
         }
     }
 }

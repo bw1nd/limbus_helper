@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,8 +29,10 @@ class FilterScreenViewModel @Inject constructor(
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
-    private val getPartyUseCase: GetPartyUseCase
+    private val getPartyUseCase: GetPartyUseCase,
+    private val filterSheetSettingsMapper: FilterSheetSettingsMapper
 ): ViewModel() {
+
     private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
     private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
@@ -42,11 +43,17 @@ class FilterScreenViewModel @Inject constructor(
     )
     val filterDrawerShitState = _filterDrawerShitState.asStateFlow()
 
+    private val _filterDrawerSheetMode = MutableStateFlow<FilterSheetMode>(FilterSheetMode.Type)
+    val filterDrawerSheetMode = _filterDrawerSheetMode.asStateFlow()
+
     private val _sinPickerVisible = MutableStateFlow(false)
     val sinPickerVisible = _sinPickerVisible.asStateFlow()
 
     private var selectedFilterSheetButtonPosition: SelectedButtonPosition =
         SelectedButtonPosition.None
+
+    //filter list if this is first settings emission after initialization
+    private var initialFilterSettingsEmission = true
 
     init {
         viewModelScope.launch {
@@ -64,12 +71,15 @@ class FilterScreenViewModel @Inject constructor(
         }
         viewModelScope.launch {
             preferencesRepository.getFilterSheetSettings().collectLatest { settings ->
-                Log.d(
-                    "DATA_STORE",
-                    "Emitting settings: ${settings.skillState.damageBundle.toString()}"
-                )
+                val newState =
+                    filterSheetSettingsMapper.mapFilterSheetDataStoreSettingsToState(settings)
+
                 _filterDrawerShitState.update {
-                    FilterSheetSettingsMapper.mapFilterSheetDataStoreSettingsToState(settings)
+                    newState
+                }
+                if (initialFilterSettingsEmission) {
+                    onFilterButtonClick()
+                    initialFilterSettingsEmission = false
                 }
             }
         }
@@ -112,11 +122,7 @@ class FilterScreenViewModel @Inject constructor(
             1 -> FilterSheetMode.Effects
             else -> throw IllegalArgumentException("Wrong switch button id: $id")
         }
-        updateFilterDrawerSheetState(
-            _filterDrawerShitState.value.copy(
-                filterSheetMode = newMode
-            )
-        )
+        _filterDrawerSheetMode.update { newMode }
     }
 
     fun onClearFilterButtonPress() {
