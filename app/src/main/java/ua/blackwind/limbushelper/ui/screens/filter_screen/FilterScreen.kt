@@ -13,8 +13,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
@@ -33,20 +31,23 @@ fun FilterScreen() {
         stringResource(R.string.res_normal),
         stringResource(R.string.res_fatal)
     )
-
-    FilterScreenUi(
-        identities = identities,
-        filterDrawerSheetState = filterDrawerSheetState,
-        filterSkillSinPickerVisible = filterSkillSinPickerVisible,
-        resistLabels = labels,
+    val filterSheetStateMethods = FilterDrawerSheetMethods(
         onSwitchChange = viewModel::onFilterModeSwitch,
-        onFilterButtonPress = viewModel::onFilterButtonClick,
+        onFilterButtonClick = viewModel::onFilterButtonClick,
         onClearFilterButtonPress = viewModel::onClearFilterButtonPress,
         onSkillButtonClick = viewModel::onFilterSkillButtonClick,
         onSkillButtonLongPress = viewModel::onFilterSkillButtonLongPress,
         onSinPickerClick = viewModel::onFilterSinPickerPress,
         onResistButtonClick = viewModel::onFilterResistButtonClick,
         onEffectCheckedChange = viewModel::onEffectCheckedChange,
+    )
+
+    FilterScreenUi(
+        identities = identities,
+        filterDrawerSheetState = filterDrawerSheetState,
+        filterSkillSinPickerVisible = filterSkillSinPickerVisible,
+        resistLabels = labels,
+        filterSheetMethods = filterSheetStateMethods,
         onInPartyChecked = viewModel::onIdentityItemInPartyChecked,
         onInPartyUnChecked = viewModel::onIdentityItemInPartyUnChecked
     )
@@ -59,14 +60,7 @@ fun FilterScreenUi(
     filterDrawerSheetState: FilterDrawerSheetState,
     filterSkillSinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
-    onSwitchChange: (Int) -> Unit,
-    onFilterButtonPress: () -> Unit,
-    onClearFilterButtonPress: () -> Unit,
-    onSkillButtonClick: (SelectedButtonPostion) -> Unit,
-    onSkillButtonLongPress: (SelectedButtonPostion) -> Unit,
-    onSinPickerClick: (StateType<Sin>) -> Unit,
-    onResistButtonClick: (SelectedButtonPostion) -> Unit,
-    onEffectCheckedChange: (Boolean, Effect) -> Unit,
+    filterSheetMethods: FilterDrawerSheetMethods,
     onInPartyChecked: (Identity) -> Unit,
     onInPartyUnChecked: (Identity) -> Unit
 ) {
@@ -77,14 +71,7 @@ fun FilterScreenUi(
                 state = filterDrawerSheetState,
                 sinPickerVisible = filterSkillSinPickerVisible,
                 resistLabels = resistLabels,
-                onSwitchChange = onSwitchChange,
-                onFilterButtonClick = onFilterButtonPress,
-                onClearFilterButtonPress = onClearFilterButtonPress,
-                onSkillButtonClick = onSkillButtonClick,
-                onSkillButtonLongPress = onSkillButtonLongPress,
-                onResistButtonClick = onResistButtonClick,
-                onSinPickerClick = onSinPickerClick,
-                onEffectCheckedChange = onEffectCheckedChange
+                methods = filterSheetMethods
             )
         }
     ) { padding ->
