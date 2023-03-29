@@ -9,8 +9,19 @@ data class FilterDrawerSheetState(
     val filterSheetMode: FilterSheetMode,
     val skillState: FilterSkillBlockState,
     val resistState: FilterDamageStateBundle,
-    val effectsState: FilterEffectBlockState,
-)
+    val effectsState: FilterEffectBlockState
+) {
+    companion object {
+        fun getDefaultState() =
+            FilterDrawerSheetState(
+                FilterSheetMode.Type,
+                emptyFilterSkillBlockState(),
+                emptyFilterResistClockState(),
+                emptyFilterEffectBlockState()
+            )
+
+    }
+}
 
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,
@@ -77,4 +88,16 @@ sealed class SelectedButtonPosition {
     object Second: SelectedButtonPosition()
     object Third: SelectedButtonPosition()
 }
+
+private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
+    FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
+    FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+)
+
+private fun emptyFilterResistClockState() =
+    FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+
+private fun emptyFilterEffectBlockState() = FilterEffectBlockState(
+    Effect.values().associateWith { false }
+)
 

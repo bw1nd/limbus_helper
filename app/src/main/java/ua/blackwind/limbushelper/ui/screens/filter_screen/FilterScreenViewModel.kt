@@ -1,14 +1,15 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
-
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
@@ -18,29 +19,26 @@ import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
-import ua.blackwind.limbushelper.ui.util.*
+import ua.blackwind.limbushelper.ui.util.StateType
+import ua.blackwind.limbushelper.ui.util.toFilterDamageTypeArg
+import ua.blackwind.limbushelper.ui.util.toFilterSinTypeArg
 import javax.inject.Inject
 
 @HiltViewModel
 class FilterScreenViewModel @Inject constructor(
+    private val preferencesRepository: PreferencesRepository,
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
     private val getPartyUseCase: GetPartyUseCase
 ): ViewModel() {
-
     private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
     private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
     val filteredIdentities: StateFlow<List<FilterIdentityModel>> = _filteredIdentities
 
     private val _filterDrawerShitState = MutableStateFlow(
-        FilterDrawerSheetState(
-            FilterSheetMode.Type,
-            emptyFilterSkillBlockState(),
-            emptyFilterResistStateBundle(),
-            emptyFilterEffectBlockState()
-        )
+        FilterDrawerSheetState.getDefaultState()
     )
     val filterDrawerShitState = _filterDrawerShitState.asStateFlow()
 
@@ -61,6 +59,17 @@ class FilterScreenViewModel @Inject constructor(
                             newParty
                         )
                     }
+                }
+            }
+        }
+        viewModelScope.launch {
+            preferencesRepository.getFilterSheetSettings().collectLatest { settings ->
+                Log.d(
+                    "DATA_STORE",
+                    "Emitting settings: ${settings.skillState.damageBundle.toString()}"
+                )
+                _filterDrawerShitState.update {
+                    FilterSheetSettingsMapper.mapFilterSheetDataStoreSettingsToState(settings)
                 }
             }
         }
@@ -111,13 +120,7 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onClearFilterButtonPress() {
-        _filterDrawerShitState.update { old ->
-            old.copy(
-                skillState = emptyFilterSkillBlockState(),
-                resistState = emptyFilterResistStateBundle(),
-                effectsState = emptyFilterEffectBlockState()
-            )
-        }
+        updateFilterDrawerSheetState(FilterDrawerSheetState.getDefaultState())
     }
 
     fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
@@ -142,12 +145,20 @@ class FilterScreenViewModel @Inject constructor(
     fun onFilterSinPickerPress(sin: StateType<Sin>) {
         _sinPickerVisible.update { false }
         val oldSinState = when (selectedFilterSheetButtonPosition) {
-            SelectedButtonPosition.None ->
+            SelectedButtonPosition.None -> {
                 throw IllegalStateException("Trying to update filter buttons state with none selected")
-            SelectedButtonPosition.First -> _filterDrawerShitState.value.skillState
-            SelectedButtonPosition.Second -> _filterDrawerShitState.value.skillState
-            SelectedButtonPosition.Third -> _filterDrawerShitState.value.skillState
+            }
+            SelectedButtonPosition.First -> {
+                _filterDrawerShitState.value.skillState
+            }
+            SelectedButtonPosition.Second -> {
+                _filterDrawerShitState.value.skillState
+            }
+            SelectedButtonPosition.Third -> {
+                _filterDrawerShitState.value.skillState
+            }
         }
+
         updateFilterDrawerSheetState(
             _filterDrawerShitState.value.copy(
                 skillState = FilterSkillBlockState(
@@ -161,14 +172,15 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onFilterSkillButtonClick(button: SelectedButtonPosition) {
-        _filterDrawerShitState.update { old ->
+        val old = _filterDrawerShitState.value
+        updateFilterDrawerSheetState(
             old.copy(
                 skillState = FilterSkillBlockState(
                     updateDamageStateBundle(button, old.skillState.damage, false),
                     old.skillState.sin
                 )
             )
-        }
+        )
     }
 
     fun onFilterResistButtonClick(button: SelectedButtonPosition) {
@@ -181,7 +193,11 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     private fun updateFilterDrawerSheetState(newState: FilterDrawerSheetState) {
-        _filterDrawerShitState.update { newState }
+        viewModelScope.launch {
+            preferencesRepository.updateSettings(
+                newState
+            )
+        }
     }
 
     private fun identityListToFilterIdentityList(
@@ -271,18 +287,6 @@ class FilterScreenViewModel @Inject constructor(
             ),
         ),
         effects = effectState.effects.filter { it.value }.keys.toList()
-    )
-
-    private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
-        FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
-        FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
-    )
-
-    private fun emptyFilterResistStateBundle() =
-        FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
-
-    private fun emptyFilterEffectBlockState() = FilterEffectBlockState(
-        Effect.values().associateWith { false }
     )
 
     companion object {
