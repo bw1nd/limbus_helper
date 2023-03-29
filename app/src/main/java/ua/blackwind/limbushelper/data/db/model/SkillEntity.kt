@@ -2,9 +2,9 @@ package ua.blackwind.limbushelper.data.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Sin
-import ua.blackwind.limbushelper.domain.parseStringToEffectsList
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.parseStringToEffectsList
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 
 @Entity(tableName = "skill")

@@ -1,8 +1,8 @@
 package ua.blackwind.limbushelper.domain.sinner.model
 
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Effect
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.Sin
 
 data class Skill(
     val id: Int,

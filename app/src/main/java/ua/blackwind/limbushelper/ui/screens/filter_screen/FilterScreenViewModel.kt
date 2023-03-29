@@ -9,15 +9,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Effect
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
+
+import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.domain.sinner.usecase.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.util.*
 import javax.inject.Inject

@@ -5,7 +5,7 @@ import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 import ua.blackwind.limbushelper.data.db.model.toIdentity
 import ua.blackwind.limbushelper.data.db.model.toSinner
 import ua.blackwind.limbushelper.data.db.model.toSkill
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.*
 import javax.inject.Inject

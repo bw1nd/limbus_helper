@@ -16,10 +16,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
-
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Effect
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.common.SegmentedButton
 import ua.blackwind.limbushelper.ui.util.*
 

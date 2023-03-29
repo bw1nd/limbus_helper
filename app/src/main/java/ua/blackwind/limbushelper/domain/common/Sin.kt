@@ -1,4 +1,4 @@
-package ua.blackwind.limbushelper.domain
+package ua.blackwind.limbushelper.domain.common
 
 enum class Sin {
     WRATH,

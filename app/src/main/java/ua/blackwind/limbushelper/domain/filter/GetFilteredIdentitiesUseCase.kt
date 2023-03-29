@@ -1,9 +1,9 @@
-package ua.blackwind.limbushelper.domain.sinner.usecase
+package ua.blackwind.limbushelper.domain.filter
 
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Effect
-import ua.blackwind.limbushelper.domain.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
