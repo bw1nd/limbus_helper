@@ -8,7 +8,7 @@ import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
 import ua.blackwind.limbushelper.data.db.model.toIdentity
 import ua.blackwind.limbushelper.data.db.model.toSkill
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party

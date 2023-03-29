@@ -2,9 +2,9 @@ package ua.blackwind.limbushelper.ui.util
 
 import androidx.compose.ui.graphics.Color
 import ua.blackwind.limbushelper.R
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Effect
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.theme.*
 
 

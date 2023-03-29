@@ -3,7 +3,7 @@ package ua.blackwind.limbushelper.data.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ua.blackwind.limbushelper.domain.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Passive
 import ua.blackwind.limbushelper.domain.sinner.model.Skill

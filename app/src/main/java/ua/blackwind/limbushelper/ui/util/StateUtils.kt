@@ -1,10 +1,10 @@
 package ua.blackwind.limbushelper.ui.util
 
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.Effect
-import ua.blackwind.limbushelper.domain.Sin
-import ua.blackwind.limbushelper.domain.sinner.usecase.FilterDamageTypeArg
-import ua.blackwind.limbushelper.domain.sinner.usecase.FilterSinTypeArg
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.filter.FilterDamageTypeArg
+import ua.blackwind.limbushelper.domain.filter.FilterSinTypeArg
 
 /**
  * State holder representing single Damage or Sin value

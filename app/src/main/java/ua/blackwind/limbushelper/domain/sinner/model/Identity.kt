@@ -1,8 +1,8 @@
 package ua.blackwind.limbushelper.domain.sinner.model
 
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.common.Sin
 
 data class Identity(
     val id: Int,
@@ -23,20 +23,3 @@ data class Identity(
     val support: Support,
     val imageUrl: String
 )
-
-fun Identity.getDamageImprint(): List<DamageType> {
-    return listOf(
-        firstSkill.dmgType,
-        secondSkill.dmgType,
-        thirdSkill.dmgType
-    )
-}
-
-fun Identity.getSinImprint(): List<Sin> {
-    return listOf(
-        firstSkill.sin,
-        secondSkill.sin,
-        thirdSkill.sin
-    )
-}
-

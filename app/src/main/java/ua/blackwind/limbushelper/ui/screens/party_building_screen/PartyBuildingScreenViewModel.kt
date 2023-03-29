@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ua.blackwind.limbushelper.domain.DamageType
-import ua.blackwind.limbushelper.domain.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.Sin
+import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
@@ -16,7 +16,7 @@ import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUse
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
-import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
+import ua.blackwind.limbushelper.ui.util.usecase.GetAllSinners
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import javax.inject.Inject
 
