@@ -25,7 +25,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private val firstIdentity = generateIdentity(
         name = "TEST IDENTITY #1",
-        sinnerId = 0,
+        sinnerId = 1,
         slashResist = IdentityDamageResistType.INEFFECTIVE,
         pierceResist = IdentityDamageResistType.NORMAL,
         bluntResist = IdentityDamageResistType.FATAL,
@@ -41,7 +41,7 @@ class GetFilteredIdentitiesUseCaseTest {
     )
     private val secondIdentity = generateIdentity(
         name = "TEST IDENTITY #2",
-        sinnerId = 0,
+        sinnerId = 2,
         slashResist = IdentityDamageResistType.NORMAL,
         pierceResist = IdentityDamageResistType.INEFFECTIVE,
         bluntResist = IdentityDamageResistType.FATAL,
@@ -58,7 +58,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private val thirdIdentity = generateIdentity(
         name = "TEST IDENTITY #3",
-        sinnerId = 0,
+        sinnerId = 3,
         slashResist = IdentityDamageResistType.NORMAL,
         pierceResist = IdentityDamageResistType.INEFFECTIVE,
         bluntResist = IdentityDamageResistType.FATAL,
@@ -71,7 +71,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private val fourthIdentity = generateIdentity(
         name = "TEST IDENTITY #4",
-        sinnerId = 0,
+        sinnerId = 1,
         slashResist = IdentityDamageResistType.INEFFECTIVE,
         pierceResist = IdentityDamageResistType.FATAL,
         bluntResist = IdentityDamageResistType.NORMAL,
@@ -456,7 +456,33 @@ class GetFilteredIdentitiesUseCaseTest {
         return testBase(expected, skillArgs, resistArguments, effects)
     }
 
+    //TODO Add more complex tests combining different data with sinners
+    @Test
+    fun `filter with one sinner with id 4 returns empty list`() {
+        val expected = emptyList<Identity>()
 
+        val sinners = listOf(Sinner(4, "TestSinner"))
+
+        return testBase(expected, sinners = sinners)
+    }
+
+    @Test
+    fun `filter with sinner id 1 returns identity #1 #4`() {
+        val expected = listOf(firstIdentity, fourthIdentity)
+
+        val sinners = listOf(Sinner(1, "TestSinner"))
+
+        return testBase(expected, sinners = sinners)
+    }
+
+    @Test
+    fun `filter with sinners id 2 and 3 returns identity #2 #3`() {
+        val expected = listOf(secondIdentity, thirdIdentity)
+
+        val sinners = listOf(Sinner(2, "TestSinner"), Sinner(3, "TestSinner"))
+
+        return testBase(expected, sinners = sinners)
+    }
 
     private fun testBase(
         expected: List<Identity>,
@@ -471,7 +497,7 @@ class GetFilteredIdentitiesUseCaseTest {
     ) {
         val useCase = GetFilteredIdentitiesUseCase(repository)
 
-        val filter = IdentityFilter(resistSetArg, skillArgs, effects, emptyList())
+        val filter = IdentityFilter(resistSetArg, skillArgs, effects, sinners)
 
         return runTest {
             val result = useCase.invoke(filter).sortedBy { it.name }
