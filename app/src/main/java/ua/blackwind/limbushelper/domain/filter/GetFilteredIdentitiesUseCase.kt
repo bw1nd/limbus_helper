@@ -6,6 +6,7 @@ import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
 
@@ -15,20 +16,33 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         if (filter.isEmpty()) return identities
 
         return identities.filter { identity ->
-            val byResistance =
-                filter.resist.isEmpty() || identityPassResistanceFilter(identity, filter.resist)
-            val bySkill =
-                (byResistance && filter.skills.IsEmpty()) || identityPassSkillFilter(
+            val bySinner = {
+                filter.sinners.isEmpty() || identityPassSinnerFilter(identity, filter.sinners)
+            }
+            val byResist = {
+                filter.resist.isEmpty() || identityPassResistanceFilter(
+                    identity,
+                    filter.resist
+                )
+            }
+            val bySkill = {
+                filter.skills.isEmpty() || identityPassSkillFilter(
                     identity,
                     filter.skills
                 )
-            val byEffects =
-                (byResistance && bySkill && filter.effects.isEmpty()) || identityPassEffectsFilter(
+            }
+            val byEffect = {
+                filter.effects.isEmpty() || identityPassEffectsFilter(
                     identity,
                     filter.effects
                 )
-            byResistance && bySkill && byEffects
+            }
+            bySinner() && byResist() && bySkill() && byEffect()
         }
+    }
+
+    private fun identityPassSinnerFilter(identity: Identity, filter: List<Sinner>): Boolean {
+        return filter.any { it.id == identity.sinnerId }
     }
 
     private fun identityPassSkillFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
@@ -141,11 +155,12 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
 data class IdentityFilter(
     val resist: FilterResistSetArg,
     val skills: FilterSkillsSetArg,
-    val effects: List<Effect>
+    val effects: List<Effect>,
+    val sinners: List<Sinner>
 )
 
 fun IdentityFilter.isEmpty() =
-    resist.isEmpty() && skills.IsEmpty() && effects.isEmpty()
+    resist.isEmpty() && skills.isEmpty() && effects.isEmpty() && sinners.isEmpty()
 
 data class FilterResistSetArg(
     val ineffective: FilterDamageTypeArg,
@@ -166,7 +181,7 @@ data class FilterSkillsSetArg(
 
 fun FilterSkillsSetArg.toSkillList() = listOf(first, second, third)
 
-fun FilterSkillsSetArg.IsEmpty() =
+fun FilterSkillsSetArg.isEmpty() =
     this.first.damageType == FilterDamageTypeArg.Empty
             && first.sin == FilterSinTypeArg.Empty
             && second.damageType == FilterDamageTypeArg.Empty
