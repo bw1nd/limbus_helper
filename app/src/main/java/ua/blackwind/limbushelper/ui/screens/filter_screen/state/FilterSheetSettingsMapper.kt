@@ -7,12 +7,20 @@ import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.util.StateType
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FilterSheetSettingsMapper {
+@Singleton
+class FilterSheetSettingsMapper @Inject constructor() {
+
+    companion object {
+        private const val EMPTY_STATE_VALUE = "Empty"
+    }
+
     fun mapFilterSheetDataStoreSettingsToState(
         settings: FilterSettings.FilterDrawerSheetSettings
-    ): FilterDrawerSheetState {
-        return FilterDrawerSheetState(
+    ): FilterDrawerSheetState =
+         FilterDrawerSheetState(
             FilterSkillBlockState(
                 damage = FilterDamageStateBundle(
                     first = mapToDamageType(settings.skillState.damageBundle.first),
@@ -38,7 +46,7 @@ class FilterSheetSettingsMapper {
                 emptyFilterEffectBlockState()
             }
         )
-    }
+
 
     private fun mapToDamageType(input: String): StateType<DamageType> {
         if (input.isBlank()) return StateType.Empty
@@ -106,7 +114,5 @@ class FilterSheetSettingsMapper {
         return (stateType as StateType.Value<Sin>).value.toString()
     }
 
-    companion object {
-        private const val EMPTY_STATE_VALUE = "Empty"
-    }
+
 }

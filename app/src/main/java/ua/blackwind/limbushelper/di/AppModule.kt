@@ -3,8 +3,6 @@ package ua.blackwind.limbushelper.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import androidx.room.Room
-import ua.blackwind.limbushelper.data.db.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +11,6 @@ import dagger.hilt.components.SingletonComponent
 import ua.blackwind.limbus_helper.FilterSettings.FilterDrawerSheetSettings
 import ua.blackwind.limbus_helper.PartySettingsOuterClass.PartySettings
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSettingsSerializer
-import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetSettingsMapper
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.state.PartySettingsSerializer
 import javax.inject.Singleton
 
@@ -31,29 +28,17 @@ object AppModule {
         serializer = PartySettingsSerializer()
     )
 
-    @Provides
-    @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DB_NAME)
-            .createFromAsset("app.db")
-            .build()
-    }
 
     @Provides
     @Singleton
-    fun provideFilterSettingsDataStore(@ApplicationContext context: Context): DataStore<FilterDrawerSheetSettings> {
-        return context.filterSheetDataStore
-    }
-
-    @Provides
-    @Singleton
-    fun providePartySettingsDataStore(@ApplicationContext context: Context): DataStore<PartySettings> {
-        return context.partyScreenDataStore
-    }
+    fun provideFilterSettingsDataStore(@ApplicationContext context: Context): DataStore<FilterDrawerSheetSettings> =
+        context.filterSheetDataStore
 
 
     @Provides
     @Singleton
-    fun provideFilterSheetSettingsMapper() =
-        FilterSheetSettingsMapper()
+    fun providePartySettingsDataStore(@ApplicationContext context: Context): DataStore<PartySettings> =
+        context.partyScreenDataStore
+
+
 }

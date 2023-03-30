@@ -3,7 +3,7 @@ package ua.blackwind.limbushelper.data.party
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import ua.blackwind.limbushelper.data.db.AppDatabase
+import ua.blackwind.limbushelper.data.db.Dao
 import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
 import ua.blackwind.limbushelper.data.db.model.toIdentity
@@ -17,9 +17,8 @@ import ua.blackwind.limbushelper.domain.sinner.model.*
 import javax.inject.Inject
 
 class PartyRepository @Inject constructor(
-    db: AppDatabase
-): IPartyRepository {
-    private val dao = db.dao
+    private val dao: Dao,
+) : IPartyRepository {
 
     override fun getParty(id: Int): Flow<Party> {
         return dao.getIdentityListByPartyId(DEFAULT_PARTY_ID)

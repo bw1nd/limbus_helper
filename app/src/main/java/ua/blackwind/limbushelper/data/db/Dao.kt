@@ -5,6 +5,7 @@ import androidx.room.Dao
 import kotlinx.coroutines.flow.Flow
 import ua.blackwind.limbushelper.data.db.model.*
 
+// TODO : Refactor this global DAO into several other DAOs (e.g: `SinnerDao`, `PartyDao`)
 @Dao
 interface Dao {
     @Query("SELECT * FROM party WHERE id = :id")
