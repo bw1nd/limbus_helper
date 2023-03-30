@@ -32,22 +32,22 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DB_NAME)
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DB_NAME)
             .createFromAsset("app.db")
             .build()
-    }
+
 
     @Provides
     @Singleton
-    fun provideFilterSettingsDataStore(@ApplicationContext context: Context): DataStore<FilterDrawerSheetSettings> {
-        return context.filterSheetDataStore
-    }
+    fun provideFilterSettingsDataStore(@ApplicationContext context: Context): DataStore<FilterDrawerSheetSettings> =
+        context.filterSheetDataStore
+
 
     @Provides
     @Singleton
-    fun providePartySettingsDataStore(@ApplicationContext context: Context): DataStore<PartySettings> {
-        return context.partyScreenDataStore
-    }
+    fun providePartySettingsDataStore(@ApplicationContext context: Context): DataStore<PartySettings> =
+        context.partyScreenDataStore
+
 
 }
