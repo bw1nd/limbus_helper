@@ -8,8 +8,10 @@ buildscript {
         nav_version = '1.8.35-beta'
         compose_hilt_navigation_version = '1.0.0'
         coil_version = '2.2.2'
-
         mockkVersion = '1.13.4'
+    }
+    dependencies {
+        classpath "com.google.dagger:hilt-android-gradle-plugin:${hilt_version}"
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
