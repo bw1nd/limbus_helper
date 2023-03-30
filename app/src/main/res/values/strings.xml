@@ -6,4 +6,5 @@
     <string name="undo_delete">UNDO</string>
     <string name="removed_from_party">removed from party</string>
     <string name="active_only">Active Only</string>
+    <string name="empty_party">"Your party is empty.\nStart with filter screen and something here."</string>
 </resources>

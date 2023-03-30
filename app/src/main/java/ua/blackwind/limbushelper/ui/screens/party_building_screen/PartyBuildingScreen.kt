@@ -2,20 +2,19 @@ package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.CoroutineScope
+import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyBuildingInfoPanelState
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
@@ -62,7 +61,10 @@ fun PartyBuildingScreenUi(
     undoDelete: (Identity) -> Unit
 ) {
     if (party.isEmpty()) {
-        Text(text = "Your party is empty.\nStart with filter screen and something here.")
+        Text(
+            text = stringResource(id = R.string.empty_party),
+            color = MaterialTheme.colorScheme.onBackground,
+        )
     } else {
         Column {
             PartyBuildingInfoPanel(
