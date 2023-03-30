@@ -25,6 +25,7 @@ fun FilterScreen() {
     val viewModel = hiltViewModel<FilterScreenViewModel>()
     val identities by viewModel.filteredIdentities.collectAsState()
     val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
+    val filterDrawerMode by viewModel.filterDrawerSheetMode.collectAsState()
     val filterSkillSinPickerVisible by viewModel.sinPickerVisible.collectAsState()
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
@@ -44,6 +45,7 @@ fun FilterScreen() {
 
     FilterScreenUi(
         identities = identities,
+        filterDrawerMode = filterDrawerMode,
         filterDrawerSheetState = filterDrawerSheetState,
         filterSkillSinPickerVisible = filterSkillSinPickerVisible,
         resistLabels = labels,
@@ -57,6 +59,7 @@ fun FilterScreen() {
 @Composable
 fun FilterScreenUi(
     identities: List<FilterIdentityModel>,
+    filterDrawerMode: FilterSheetMode,
     filterDrawerSheetState: FilterDrawerSheetState,
     filterSkillSinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
@@ -68,7 +71,8 @@ fun FilterScreenUi(
         scaffoldState = rememberBottomSheetScaffoldState(),
         sheetContent = {
             FilterDrawerSheet(
-                state = filterDrawerSheetState,
+                mode = filterDrawerMode,
+                filterState = filterDrawerSheetState,
                 sinPickerVisible = filterSkillSinPickerVisible,
                 resistLabels = resistLabels,
                 methods = filterSheetMethods

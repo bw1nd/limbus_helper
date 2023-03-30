@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
     id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
+    id 'com.google.protobuf'
 }
 
 android {
@@ -62,6 +63,30 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.20.1"
+    }
+    plugins {
+        javalite {
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+//                kotlin{
+//                    option 'lite'
+//                }
+            }
+        }
+    }
+}
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.9.0'
@@ -78,6 +103,10 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt("androidx.room:room-compiler:$room_version")
     implementation "androidx.room:room-ktx:$room_version"
+
+    //DataSore
+    implementation("androidx.datastore:datastore:$data_store_version")
+    implementation 'com.google.protobuf:protobuf-javalite:3.21.7'
 
     //navigation
     implementation("io.github.raamcosta.compose-destinations:core:$nav_version")

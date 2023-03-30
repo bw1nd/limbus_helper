@@ -54,7 +54,7 @@ fun PartyBuildingScreenUi(
     party: List<PartySinnerModel>,
     infoPanelState: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
-    onShowActiveIdentitiesClick: () -> Unit,
+    onShowActiveIdentitiesClick: (Boolean) -> Unit,
     onIdentityItemSwipe: (Identity) -> Unit,
     onIdentityItemClick: (Int) -> Unit,
     onIdentityItemLongPress: (Int, Int) -> Unit,
