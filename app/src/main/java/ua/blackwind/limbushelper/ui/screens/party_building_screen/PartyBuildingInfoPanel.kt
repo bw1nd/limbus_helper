@@ -4,7 +4,10 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Start
@@ -20,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.ui.common.AlternativeCheckbox
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
@@ -39,7 +43,7 @@ fun PartyBuildingInfoPanel(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(horizontal = 5.dp)
+            .padding(horizontal = 8.dp)
             .fillMaxWidth()
     ) {
         Row(
@@ -60,11 +64,10 @@ fun PartyBuildingInfoPanel(
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Checkbox(
+            AlternativeCheckbox(
                 checked = isShowActiveIdentitiesChecked,
                 onCheckedChange = onShowActiveIdentitiesClick,
-                Modifier
-                    .requiredSize(18.dp)
+                modifier = Modifier.requiredSize(18.dp)
             )
             Text(
                 stringResource(R.string.active_only),
@@ -72,6 +75,7 @@ fun PartyBuildingInfoPanel(
                 modifier = Modifier.padding(start = 5.dp)
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly

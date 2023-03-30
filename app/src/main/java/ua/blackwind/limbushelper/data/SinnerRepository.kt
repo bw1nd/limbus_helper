@@ -1,6 +1,6 @@
 package ua.blackwind.limbushelper.data
 
-import ua.blackwind.limbushelper.data.db.AppDatabase
+import ua.blackwind.limbushelper.data.db.Dao
 import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 import ua.blackwind.limbushelper.data.db.model.toIdentity
 import ua.blackwind.limbushelper.data.db.model.toSinner
@@ -11,10 +11,9 @@ import ua.blackwind.limbushelper.domain.sinner.model.*
 import javax.inject.Inject
 
 class SinnerRepository @Inject constructor(
-    db: AppDatabase
-): ISinnerRepository {
+    private val dao: Dao,
+) : ISinnerRepository {
 
-    private val dao = db.dao
 
     override suspend fun getAllSinners(): List<Sinner> {
         return dao.getAllSinners().map { it.toSinner() }
