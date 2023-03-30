@@ -3,6 +3,8 @@ package ua.blackwind.limbushelper.ui.screens.filter_screen
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
@@ -20,10 +22,13 @@ import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.common.SegmentedButton
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
+import ua.blackwind.limbushelper.ui.theme.selectedFilterItemBorderColor
 import ua.blackwind.limbushelper.ui.util.*
 
 private const val NUMBER_OF_EFFECTS_IN_COLUMN = 3
+private const val NUMBER_OF_SINNERS_IN_COLUMN = 3
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -65,7 +70,7 @@ fun FilterDrawerSheet(
             }
             Spacer(modifier = Modifier.weight(.4f))
             SegmentedButton(
-                items = listOf("Type", "Effects"),
+                items = listOf("Type", "Effect", "Sinner"),
                 onItemSelection = methods.onSwitchChange,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -80,7 +85,8 @@ fun FilterDrawerSheet(
             onSkillButtonLongPress = methods.onSkillButtonLongPress,
             onResistButtonClick = methods.onResistButtonClick,
             onSinPickerClick = methods.onSinPickerClick,
-            onEffectCheckedChange = methods.onEffectCheckedChange
+            onEffectCheckedChange = methods.onEffectCheckedChange,
+            onSinnerCheckedChange = methods.onSinnerCheckedChange
         )
         OutlinedButton(onClick = { methods.onFilterButtonClick() }) {
             Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
@@ -98,7 +104,8 @@ fun FilterBlock(
     onSkillButtonLongPress: (SelectedButtonPosition) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     onResistButtonClick: (SelectedButtonPosition) -> Unit,
-    onEffectCheckedChange: (Boolean, Effect) -> Unit
+    onEffectCheckedChange: (Boolean, Effect) -> Unit,
+    onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -121,6 +128,10 @@ fun FilterBlock(
                 resistLabels,
                 state.resistState,
                 onResistButtonClick
+            )
+            FilterSheetMode.Sinners -> FilterSinnersBlock(
+                state = state.sinnersState,
+                onSinnerCheckedChange = onSinnerCheckedChange
             )
         }
     }
@@ -193,6 +204,53 @@ fun EffectItem(effect: Effect, checked: Boolean, onEffectCheckedChange: (Boolean
             onCheckedChange = { state -> onEffectCheckedChange(state, effect) })
         Image(painter = painterResource(id = getEffectIcon(effect)), contentDescription = null)
     }
+}
+
+
+@Composable
+fun FilterSinnersBlock(
+    state: FilterSinnersBlockState,
+    onSinnerCheckedChange: (FilterSinnerModel) -> Unit
+) {
+    LazyHorizontalGrid(
+        rows = GridCells.Fixed(NUMBER_OF_SINNERS_IN_COLUMN), userScrollEnabled = false,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        state.sinners.forEach { entry ->
+            item {
+                SinnerItem(
+                    sinner = entry.key,
+                    checked = entry.value,
+                    onSinnerCheckedChange = onSinnerCheckedChange
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SinnerItem(
+    sinner: FilterSinnerModel,
+    checked: Boolean,
+    onSinnerCheckedChange: (FilterSinnerModel) -> Unit
+) {
+    Box(Modifier.padding(5.dp)) {
+        Surface(
+            shape = CircleShape,
+            border = BorderStroke(
+                2.dp, color =
+                if (checked) selectedFilterItemBorderColor else MaterialTheme.colorScheme.onPrimary
+            ),
+            modifier = Modifier.clickable { onSinnerCheckedChange(sinner) }
+        ) {
+            Image(
+                painter = painterResource(id = getSinnerIconById(sinner.id)),
+                contentDescription = null,
+                modifier = Modifier.size(50.dp)
+            )
+        }
+    }
+
 }
 
 @Composable
@@ -393,14 +451,15 @@ private fun PreviewFilterBlock() {
                 StateType.Value(DamageType.BLUNT),
                 StateType.Empty
             ),
-            FilterEffectBlockState(mapOf(Effect.BLEED to false))
+            FilterEffectBlockState(mapOf(Effect.BLEED to false)),
+            emptyFilterSinnerBlockState()
         ),
         false,
         FilterResistButtonLabels(
             "Ineff.", "Normal", "Fatal"
         ),
         FilterDrawerSheetMethods(
-            {}, {}, {}, {}, {}, {}, {}, { _, _ -> }
+            {}, {}, {}, {}, {}, {}, {}, { _, _ -> }, {  }
         )
     )
 }

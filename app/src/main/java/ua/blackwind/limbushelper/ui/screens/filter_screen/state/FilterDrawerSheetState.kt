@@ -3,19 +3,25 @@ package ua.blackwind.limbushelper.ui.screens.filter_screen.state
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
-import ua.blackwind.limbushelper.ui.util.*
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
+import ua.blackwind.limbushelper.ui.util.StateType
+
+private const val FIRST_SINNER_ID = 1
+private const val LAST_SINNER_ID = 12
 
 data class FilterDrawerSheetState(
     val skillState: FilterSkillBlockState,
     val resistState: FilterDamageStateBundle,
-    val effectsState: FilterEffectBlockState
+    val effectsState: FilterEffectBlockState,
+    val sinnersState: FilterSinnersBlockState
 ) {
     companion object {
         fun getDefaultState() =
             FilterDrawerSheetState(
                 emptyFilterSkillBlockState(),
                 emptyFilterResistClockState(),
-                emptyFilterEffectBlockState()
+                emptyFilterEffectBlockState(),
+                emptyFilterSinnerBlockState()
             )
     }
 }
@@ -28,12 +34,14 @@ data class FilterDrawerSheetMethods(
     val onSkillButtonLongPress: (SelectedButtonPosition) -> Unit,
     val onSinPickerClick: (StateType<Sin>) -> Unit,
     val onResistButtonClick: (SelectedButtonPosition) -> Unit,
-    val onEffectCheckedChange: (Boolean, Effect) -> Unit
+    val onEffectCheckedChange: (Boolean, Effect) -> Unit,
+    val onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 )
 
 sealed class FilterSheetMode {
     object Type: FilterSheetMode()
     object Effects: FilterSheetMode()
+    object Sinners: FilterSheetMode()
 }
 
 /**
@@ -73,6 +81,10 @@ data class FilterEffectBlockState(
     val effects: Map<Effect, Boolean>
 )
 
+data class FilterSinnersBlockState(
+    val sinners: Map<FilterSinnerModel, Boolean>
+)
+
 data class FilterResistButtonLabels(
     val ineffective: String,
     val normal: String,
@@ -96,5 +108,9 @@ private fun emptyFilterResistClockState() =
 
 fun emptyFilterEffectBlockState() = FilterEffectBlockState(
     Effect.values().associateWith { false }
+)
+
+fun emptyFilterSinnerBlockState() = FilterSinnersBlockState(
+    (FIRST_SINNER_ID..LAST_SINNER_ID).associate { index -> FilterSinnerModel(index) to false }
 )
 

@@ -7,6 +7,7 @@ val LightBlue = Color(0xFFAFDDFF)
 val Golden = Color(0xFFfff030)
 val LightGolden = Color(0xFFD6C58F)
 val DeepRed = Color(0xFFCE2517)
+val LightGreen = Color(0xFF9DCE65)
 
 val Black = Color(0xFF1c1b1e)
 val DarkGrey = Color(0xff1c1b1e)
@@ -25,3 +26,4 @@ val inactiveIdentityBorderColor = LighterGrey
 val identityRarity0 = LightGolden
 val identityRarity00 = DeepRed
 val identityRarity000 = Golden
+val selectedFilterItemBorderColor = LightGreen

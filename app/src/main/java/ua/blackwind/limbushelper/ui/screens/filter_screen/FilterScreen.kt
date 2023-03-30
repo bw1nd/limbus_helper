@@ -41,6 +41,7 @@ fun FilterScreen() {
         onSinPickerClick = viewModel::onFilterSinPickerPress,
         onResistButtonClick = viewModel::onFilterResistButtonClick,
         onEffectCheckedChange = viewModel::onEffectCheckedChange,
+        onSinnerCheckedChange = viewModel::onSinnerCheckedChange
     )
 
     FilterScreenUi(
