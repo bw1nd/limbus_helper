@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.FilterDrawerSheet
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.*
@@ -110,9 +111,3 @@ fun FilterScreenUi(
         }
     }
 }
-
-//@Preview(showSystemUi = true, widthDp = 412, heightDp = 846)
-//@Composable
-//fun PreviewFilterScreen() {
-//    FilterScreenUi(identities = listOf(previewIdentity, previewIdentity, previewIdentity))
-//}
