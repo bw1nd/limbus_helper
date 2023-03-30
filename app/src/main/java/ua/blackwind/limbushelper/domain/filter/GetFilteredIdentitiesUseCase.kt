@@ -15,29 +15,26 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         val identities = repository.getAllIdentities()
         if (filter.isEmpty()) return identities
 
+        val sinnerIsEmpty = filter.sinners.isEmpty()
+        val resistIsEmpty = filter.resist.isEmpty()
+        val skillIsEmpty = filter.skills.isEmpty()
+        val effectIsEmpty = filter.effects.isEmpty()
+
         return identities.filter { identity ->
             val bySinner = {
-                filter.sinners.isEmpty() || identityPassSinnerFilter(identity, filter.sinners)
-            }
-            val byResist = {
-                filter.resist.isEmpty() || identityPassResistanceFilter(
-                    identity,
-                    filter.resist
-                )
-            }
-            val bySkill = {
-                filter.skills.isEmpty() || identityPassSkillFilter(
-                    identity,
-                    filter.skills
-                )
+                sinnerIsEmpty || identityPassSinnerFilter(identity, filter.sinners)
             }
             val byEffect = {
-                filter.effects.isEmpty() || identityPassEffectsFilter(
-                    identity,
-                    filter.effects
-                )
+                effectIsEmpty || identityPassEffectsFilter(identity, filter.effects)
             }
-            bySinner() && byResist() && bySkill() && byEffect()
+            val byResist = {
+                resistIsEmpty || identityPassResistanceFilter(identity, filter.resist)
+            }
+            val bySkill = {
+                skillIsEmpty || identityPassSkillFilter(identity, filter.skills)
+            }
+
+            bySinner() && byEffect() && byResist() && bySkill()
         }
     }
 
