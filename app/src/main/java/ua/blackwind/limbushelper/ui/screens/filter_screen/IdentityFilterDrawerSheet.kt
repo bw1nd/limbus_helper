@@ -234,7 +234,7 @@ fun SinnerItem(
     checked: Boolean,
     onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 ) {
-    Box(Modifier.padding(5.dp)) {
+    Box(Modifier.padding(3.dp)) {
         Surface(
             shape = CircleShape,
             border = BorderStroke(
@@ -246,7 +246,7 @@ fun SinnerItem(
             Image(
                 painter = painterResource(id = getSinnerIconById(sinner.id)),
                 contentDescription = null,
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier.size(60.dp)
             )
         }
     }

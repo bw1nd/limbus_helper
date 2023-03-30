@@ -461,7 +461,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with one sinner with id 4 returns empty list`() {
         val expected = emptyList<Identity>()
 
-        val sinners = listOf(Sinner(4, "TestSinner"))
+        val sinners = listOf(4)
 
         return testBase(expected, sinners = sinners)
     }
@@ -470,7 +470,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with sinner id 1 returns identity #1 #4`() {
         val expected = listOf(firstIdentity, fourthIdentity)
 
-        val sinners = listOf(Sinner(1, "TestSinner"))
+        val sinners = listOf(1)
 
         return testBase(expected, sinners = sinners)
     }
@@ -479,7 +479,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with sinners id 2 and 3 returns identity #2 #3`() {
         val expected = listOf(secondIdentity, thirdIdentity)
 
-        val sinners = listOf(Sinner(2, "TestSinner"), Sinner(3, "TestSinner"))
+        val sinners = listOf(2, 3)
 
         return testBase(expected, sinners = sinners)
     }
@@ -493,7 +493,7 @@ class GetFilteredIdentitiesUseCaseTest {
         ),
         resistSetArg: FilterResistSetArg = emptyResistArgs,
         effects: List<Effect> = emptyList(),
-        sinners: List<Sinner> = emptyList()
+        sinners: List<Int> = emptyList()
     ) {
         val useCase = GetFilteredIdentitiesUseCase(repository)
 

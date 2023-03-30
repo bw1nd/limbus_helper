@@ -17,6 +17,7 @@ import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUse
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.toFilterDamageTypeArg
@@ -92,9 +93,10 @@ class FilterScreenViewModel @Inject constructor(
                 val skillState = _filterDrawerShitState.value.skillState
                 val resistState = _filterDrawerShitState.value.resistState
                 val effectState = _filterDrawerShitState.value.effectsState
+                val sinnerState = _filterDrawerShitState.value.sinnersState
                 identityListToFilterIdentityList(
                     getFilteredIdentitiesUseCase(
-                        formIdentityFilter(resistState, skillState, effectState)
+                        formIdentityFilter(resistState, skillState, effectState, sinnerState)
                     ), party.value
                 )
             }
@@ -120,6 +122,7 @@ class FilterScreenViewModel @Inject constructor(
         val newMode = when (id) {
             0 -> FilterSheetMode.Type
             1 -> FilterSheetMode.Effects
+            2 -> FilterSheetMode.Sinners
             else -> throw IllegalArgumentException("Wrong switch button id: $id")
         }
         _filterDrawerSheetMode.update { newMode }
@@ -132,15 +135,24 @@ class FilterScreenViewModel @Inject constructor(
     fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
         val new = filterDrawerShitState.value.effectsState.effects.toMutableMap()
         new[effect] = checked
-        val newState = FilterEffectBlockState(
-            new
-        )
+        val newState = FilterEffectBlockState(new)
         updateFilterDrawerSheetState(
             _filterDrawerShitState.value.copy(
                 effectsState = newState
             )
         )
 
+    }
+
+    fun onSinnerCheckedChange(sinner: FilterSinnerModel) {
+        val new = filterDrawerShitState.value.sinnersState.sinners.toMutableMap()
+        new[sinner] = new[sinner]?.not() ?: false
+        val newState = FilterSinnersBlockState(new)
+        updateFilterDrawerSheetState(
+            _filterDrawerShitState.value.copy(
+                sinnersState = newState
+            )
+        )
     }
 
     fun onFilterSkillButtonLongPress(selected: SelectedButtonPosition) {
@@ -238,7 +250,7 @@ class FilterScreenViewModel @Inject constructor(
         }
         val result = FilterDamageStateBundle(first, second, third)
         return if (unique && !result.isUnique()) {
-            updateDamageStateBundle(button, FilterDamageStateBundle(first, second, third), unique)
+            updateDamageStateBundle(button, FilterDamageStateBundle(first, second, third), true)
         } else result
     }
 
@@ -271,32 +283,37 @@ class FilterScreenViewModel @Inject constructor(
     private fun formIdentityFilter(
         resistState: FilterDamageStateBundle,
         skillState: FilterSkillBlockState,
-        effectState: FilterEffectBlockState
-    ) = IdentityFilter(
-        resist = FilterResistSetArg(
-            ineffective = resistState.first.toFilterDamageTypeArg(),
-            normal = resistState.second.toFilterDamageTypeArg(),
-            fatal = resistState.third.toFilterDamageTypeArg()
-        ),
-        skills = FilterSkillsSetArg(
-            FilterSkillArg(
-                skillState.damage.first.toFilterDamageTypeArg(),
-                skillState.sin.first.toFilterSinTypeArg()
+        effectState: FilterEffectBlockState,
+        sinnersState: FilterSinnersBlockState
+    ): IdentityFilter {
+        return IdentityFilter(
+            resist = FilterResistSetArg(
+                ineffective = resistState.first.toFilterDamageTypeArg(),
+                normal = resistState.second.toFilterDamageTypeArg(),
+                fatal = resistState.third.toFilterDamageTypeArg()
             ),
-            FilterSkillArg(
-                skillState.damage.second.toFilterDamageTypeArg(),
-                skillState.sin.second.toFilterSinTypeArg()
+            skills = FilterSkillsSetArg(
+                FilterSkillArg(
+                    skillState.damage.first.toFilterDamageTypeArg(),
+                    skillState.sin.first.toFilterSinTypeArg()
+                ),
+                FilterSkillArg(
+                    skillState.damage.second.toFilterDamageTypeArg(),
+                    skillState.sin.second.toFilterSinTypeArg()
+                ),
+                FilterSkillArg(
+                    skillState.damage.third.toFilterDamageTypeArg(),
+                    skillState.sin.third.toFilterSinTypeArg()
+                ),
             ),
-            FilterSkillArg(
-                skillState.damage.third.toFilterDamageTypeArg(),
-                skillState.sin.third.toFilterSinTypeArg()
-            ),
-        ),
-        effects = effectState.effects.filter { it.value }.keys.toList()
-    )
+            effects = effectState.effects.filter { it.value }.keys.toList(),
+            sinners = sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
+        )
+    }
 
     companion object {
         private const val UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED =
             "Trying to update filter buttons state with none selected"
     }
 }
+

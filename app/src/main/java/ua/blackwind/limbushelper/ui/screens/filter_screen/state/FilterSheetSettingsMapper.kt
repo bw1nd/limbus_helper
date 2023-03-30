@@ -6,6 +6,7 @@ import ua.blackwind.limbus_helper.FilterSettings
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.util.StateType
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,7 +21,7 @@ class FilterSheetSettingsMapper @Inject constructor() {
     fun mapFilterSheetDataStoreSettingsToState(
         settings: FilterSettings.FilterDrawerSheetSettings
     ): FilterDrawerSheetState =
-         FilterDrawerSheetState(
+        FilterDrawerSheetState(
             FilterSkillBlockState(
                 damage = FilterDamageStateBundle(
                     first = mapToDamageType(settings.skillState.damageBundle.first),
@@ -44,6 +45,13 @@ class FilterSheetSettingsMapper @Inject constructor() {
                 )
             } else {
                 emptyFilterEffectBlockState()
+            },
+            if (settings.sinnersState.sinnersCount > 1) {
+                FilterSinnersBlockState(
+                    settings.sinnersState.sinnersMap.mapKeys { (key, _) -> FilterSinnerModel(key) }
+                )
+            } else {
+                emptyFilterSinnerBlockState()
             }
         )
 
@@ -98,6 +106,13 @@ class FilterSheetSettingsMapper @Inject constructor() {
                 FilterSettings.FilterDrawerSheetSettings.FilterEffectBlockState.newBuilder()
                     .putAllEffects(
                         state.effectsState.effects.mapKeys { (key, _) -> key.toString() }
+                            .toMutableMap()
+                    )
+            )
+            .setSinnersState(
+                FilterSettings.FilterDrawerSheetSettings.FilterSinnersBlockState.newBuilder()
+                    .putAllSinners(
+                        state.sinnersState.sinners.mapKeys { (key, _) -> key.id }
                             .toMutableMap()
                     )
             )

@@ -37,8 +37,8 @@ fun getSinnerIconById(id: Int): Int {
         5 -> R.drawable.mersault_50_ic
         6 -> R.drawable.hong_lu_50_ic
         7 -> R.drawable.heathcliff_50_ic
-        8 -> R.drawable.rodion_50_ic
-        9 -> R.drawable.ishmael_50_ic
+        8 -> R.drawable.ishmael_50_ic
+        9 -> R.drawable.rodion_50_ic
         10 -> R.drawable.sinclair_50_ic
         11 -> R.drawable.outis_50_ic
         12 -> R.drawable.gregor_50_ic

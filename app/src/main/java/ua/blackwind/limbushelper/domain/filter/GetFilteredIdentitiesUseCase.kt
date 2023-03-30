@@ -6,7 +6,6 @@ import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
 
@@ -38,8 +37,8 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         }
     }
 
-    private fun identityPassSinnerFilter(identity: Identity, filter: List<Sinner>): Boolean {
-        return filter.any { it.id == identity.sinnerId }
+    private fun identityPassSinnerFilter(identity: Identity, filter: List<Int>): Boolean {
+        return filter.any { it == identity.sinnerId }
     }
 
     private fun identityPassSkillFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
@@ -153,7 +152,7 @@ data class IdentityFilter(
     val resist: FilterResistSetArg,
     val skills: FilterSkillsSetArg,
     val effects: List<Effect>,
-    val sinners: List<Sinner>
+    val sinners: List<Int>
 )
 
 fun IdentityFilter.isEmpty() =
