@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.common.identityItemCore
-import ua.blackwind.limbushelper.ui.util.previewIdentity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 
 private const val IDENTITY_PORTRAIT_WIDTH = 60
@@ -33,9 +33,17 @@ fun FilterIdentityItem(
         val identity = viewIdentity.identity
         Row(verticalAlignment = Alignment.CenterVertically) {
             Row(content = identityItemCore(identity, IDENTITY_PORTRAIT_WIDTH))
-            Checkbox(checked = viewIdentity.inParty, onCheckedChange = { checked ->
-                if (checked) onInPartyChecked(identity) else onInPartyUnChecked(identity)
-            })
+            Checkbox(
+                checked = viewIdentity.inParty,
+                onCheckedChange = { checked ->
+                    if (checked) onInPartyChecked(identity) else onInPartyUnChecked(identity)
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.outline,
+                    checkmarkColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = MaterialTheme.colorScheme.outline,
+                )
+            )
         }
     }
 }
