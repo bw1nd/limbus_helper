@@ -28,16 +28,19 @@ import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
+private const val PARTY_SIZE = 5
+private const val INFO_PANEL_COLUMNS_PLUS_ONE = 12
+
 @Composable
 fun PartyBuildingInfoPanel(
     state: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
     onShowActiveIdentitiesClick: (Boolean) -> Unit
 ) {
-    val columnWidth = LocalConfiguration.current.screenWidthDp / 12
+    val columnWidth = LocalConfiguration.current.screenWidthDp / INFO_PANEL_COLUMNS_PLUS_ONE
     val (partySizeCheckerColor, partySizeCheckerSign) = when (true) {
-        (state.activeIdentityCount < 5) -> Color.Yellow to "<"
-        (state.activeIdentityCount == 5) -> Color.Green to "="
+        (state.activeIdentityCount < PARTY_SIZE) -> Color.Yellow to "<"
+        (state.activeIdentityCount == PARTY_SIZE) -> Color.Green to "="
         else -> Color.Red to ">"
     }
     Column(
@@ -59,10 +62,15 @@ fun PartyBuildingInfoPanel(
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "$partySizeCheckerSign 5",
+                text = "$partySizeCheckerSign $PARTY_SIZE",
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.titleMedium,
             )
+            Text(text = "(${state.totalIdentityCount})",
+                color = MaterialTheme.colorScheme.onPrimary.copy(
+                    alpha = 0.7f
+                ),
+                style = MaterialTheme.typography.titleMedium,)
             Spacer(modifier = Modifier.weight(1f))
             AlternativeCheckbox(
                 checked = isShowActiveIdentitiesChecked,
@@ -229,7 +237,7 @@ private fun PartyInfoPanelPreview() {
                 InfoPanelDamageResist.Good,
                 InfoPanelDamageResist.Bad
             ),
-            4
+            4, 8
         ), true, {}
     )
 }

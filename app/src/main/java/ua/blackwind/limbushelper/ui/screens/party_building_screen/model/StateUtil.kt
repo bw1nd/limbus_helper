@@ -5,7 +5,8 @@ data class PartyBuildingInfoPanelState(
     val attackByDamage: AttackByDamageInfo,
     val attackBySin: AttackBySinInfo,
     val defenceByDamage: DefenceByDamageInfo,
-    val activeIdentityCount: Int
+    val activeIdentityCount: Int,
+    val totalIdentityCount: Int
 )
 
 data class AttackByDamageInfo(
