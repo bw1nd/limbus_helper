@@ -162,14 +162,14 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     fun onIdentityClick(identityId: Int) {
-
+        //Placeholder for Detail screen
     }
 
     fun undoDelete(identity: Identity) {
         viewModelScope.launch { addIdentityToPartyUseCase(identity, rawParty.value) }
     }
 
-    fun onIdentitySwipe(identity: Identity) {
+    fun onIdentityDeleteButtonClick(identity: Identity) {
         viewModelScope.launch { deleteIdentityFromPartyUseCase(identity, rawParty.value) }
     }
 

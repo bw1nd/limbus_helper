@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyBuildingInfoPanelState
@@ -26,22 +26,31 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
     val party = viewModel.party.collectAsState()
     val infoPanelState by viewModel.infoPanelState.collectAsState()
     val isShowActiveChecked by viewModel.showOnlyActiveIdentities.collectAsState()
+    val undoLabel = stringResource(R.string.undo_delete)
+    val removedLabel = stringResource(R.string.removed_from_party)
     val coroutineScope = rememberCoroutineScope()
+
+    val onDeleteButtonClick: (Identity) -> Unit = { identity ->
+        viewModel.onIdentityDeleteButtonClick(identity)
+        coroutineScope.launch {
+            val snackResult =
+                showSnackBar.invoke(String.format(removedLabel, identity.name), undoLabel)
+            if (snackResult == SnackbarResult.ActionPerformed) {
+                viewModel.undoDelete(identity)
+            }
+        }
+    }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Box(contentAlignment = Alignment.Center) {
-
             PartyBuildingScreenUi(
-                coroutineScope,
-                party.value,
-                infoPanelState,
-                isShowActiveChecked,
-                viewModel::onShowActiveIdentitiesClick,
-                viewModel::onIdentitySwipe,
-                viewModel::onIdentityClick,
-                viewModel::onIdentityLongPress,
-                showSnackBar,
-                viewModel::undoDelete
+                party = party.value,
+                infoPanelState = infoPanelState,
+                isShowActiveIdentitiesChecked = isShowActiveChecked,
+                onShowActiveIdentitiesClick = viewModel::onShowActiveIdentitiesClick,
+                onDeleteButtonClick = onDeleteButtonClick,
+                onIdentityItemClick = viewModel::onIdentityClick,
+                onIdentityItemLongPress = viewModel::onIdentityLongPress
             )
         }
     }
@@ -49,16 +58,13 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
 
 @Composable
 fun PartyBuildingScreenUi(
-    coroutineScope: CoroutineScope,
     party: List<PartySinnerModel>,
     infoPanelState: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
     onShowActiveIdentitiesClick: (Boolean) -> Unit,
-    onIdentityItemSwipe: (Identity) -> Unit,
+    onDeleteButtonClick: (Identity) -> Unit,
     onIdentityItemClick: (Int) -> Unit,
     onIdentityItemLongPress: (Int, Int) -> Unit,
-    showSnackBar: suspend (String, String) -> SnackbarResult,
-    undoDelete: (Identity) -> Unit
 ) {
     if (party.isEmpty()) {
         Text(
@@ -92,14 +98,11 @@ fun PartyBuildingScreenUi(
 
                     if (identities.isNotEmpty()) {
                         PartySinnerItem(
-                            coroutineScope,
                             sinner = sinner,
                             identities = identities,
-                            onIdentityItemSwipe = onIdentityItemSwipe,
-                            onIdentityItemClick,
-                            onIdentityItemLongPress,
-                            showSnackBar,
-                            undoDelete
+                            onIdentityItemClick = onIdentityItemClick,
+                            onIdentityItemLongPress = onIdentityItemLongPress,
+                            onDeleteButtonClick = onDeleteButtonClick,
                         )
                     }
                 }
