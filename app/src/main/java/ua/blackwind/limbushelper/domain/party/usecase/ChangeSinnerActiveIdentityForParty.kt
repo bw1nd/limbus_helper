@@ -5,10 +5,11 @@ import javax.inject.Inject
 
 class ChangeSinnerActiveIdentityForParty @Inject constructor(private val repository: PartyRepository) {
     suspend operator fun invoke(partyId: Int, sinnerId: Int, identityId: Int) {
+        val current = repository.getActiveIdentityIdForPartyAndSinner(partyId, sinnerId)
         repository.changeSinnerActiveIdentityForParty(
             partyId = partyId,
             sinnerId = sinnerId,
-            identityId = identityId
+            identityId = if (current != identityId) identityId else 0
         )
     }
 }
