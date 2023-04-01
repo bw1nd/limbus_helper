@@ -78,6 +78,5 @@ fun getEffectIcon(effect: Effect): Int {
         Effect.DEFENSE_UP -> R.drawable.def_up_ic
         Effect.DEFENSE_DOWN -> R.drawable.def_down_ic
         Effect.HEAL -> R.drawable.heal_ic
-        Effect.GAZE -> R.drawable.gaze_ic
     }
 }

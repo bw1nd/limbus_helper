@@ -2,24 +2,23 @@ package ua.blackwind.limbushelper.domain.common
 
 enum class Effect {
     BLEED,
-    PARALYSIS,
-    RUPTURE,
-    SINKING,
-    TREMOR,
     BURN,
-    BIND,
+    SINKING,
+    RUPTURE,
+    POISE,
+    PARALYSIS,
+    TREMOR,
+    PROTECT,
     FRAGILE,
-    GAZE,
-    DEFENSE_UP,
-    DEFENSE_DOWN,
     ATTACK_UP,
     ATTACK_DOWN,
-    POISE,
-    PROTECT,
-    HASTE,
     CHARGE,
+    DEFENSE_UP,
+    DEFENSE_DOWN,
+    HEAL,
+    HASTE,
+    BIND,
     AMMO,
-    HEAL
 }
 
 fun String.parseStringToEffectsList(): Effect {

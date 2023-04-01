@@ -134,7 +134,7 @@ class FilterScreenViewModel @Inject constructor(
 
     fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
         val new = filterDrawerShitState.value.effectsState.effects.toMutableMap()
-        new[effect] = checked
+        new[effect] = !checked
         val newState = FilterEffectBlockState(new)
         updateFilterDrawerSheetState(
             _filterDrawerShitState.value.copy(

@@ -21,7 +21,7 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSinnersBlo
 import ua.blackwind.limbushelper.ui.theme.selectedFilterItemBorderColor
 import ua.blackwind.limbushelper.ui.util.getSinnerIconById
 
-private const val NUMBER_OF_SINNERS_IN_COLUMN = 3
+private const val NUMBER_OF_GRID_ROWS = 3
 
 @Composable
 fun FilterSinnersBlock(
@@ -29,14 +29,14 @@ fun FilterSinnersBlock(
     onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 ) {
     LazyHorizontalGrid(
-        rows = GridCells.Fixed(NUMBER_OF_SINNERS_IN_COLUMN), userScrollEnabled = false,
+        rows = GridCells.Fixed(NUMBER_OF_GRID_ROWS), userScrollEnabled = false,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        state.sinners.forEach { entry ->
+        state.sinners.forEach { (sinner, checked) ->
             item {
                 SinnerItem(
-                    sinner = entry.key,
-                    checked = entry.value,
+                    sinner = sinner,
+                    checked = checked,
                     onSinnerCheckedChange = onSinnerCheckedChange
                 )
             }
