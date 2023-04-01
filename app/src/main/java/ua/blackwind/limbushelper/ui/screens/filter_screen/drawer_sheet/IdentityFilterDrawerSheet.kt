@@ -1,14 +1,20 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.common.DamageType
@@ -78,9 +84,26 @@ fun FilterDrawerSheet(
             onEffectCheckedChange = methods.onEffectCheckedChange,
             onSinnerCheckedChange = methods.onSinnerCheckedChange
         )
-        OutlinedButton(onClick = { methods.onFilterButtonClick() }) {
-            Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
+        Box {
+            val interactor = remember {
+                MutableInteractionSource()
+            }
+            val isPressed by interactor.collectIsPressedAsState()
+            val scale by animateFloatAsState(targetValue = if (isPressed) .93f else 1f)
+            OutlinedButton(
+                onClick = { methods.onFilterButtonClick() },
+                interactionSource = interactor,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                    }
+            ) {
+                Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
+            }
         }
+
     }
 }
 
@@ -194,7 +217,7 @@ private fun PreviewFilterBlock() {
             "Ineff.", "Normal", "Fatal"
         ),
         FilterDrawerSheetMethods(
-            {}, {}, {}, {}, {}, {}, {}, { _, _ -> }, {  }
+            {}, {}, {}, {}, {}, {}, {}, { _, _ -> }, { }
         )
     )
 }
