@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -81,33 +82,48 @@ fun FilterScreenUi(
             )
         }
     ) { padding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(padding)
-        ) {
-            Surface(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    contentPadding = PaddingValues(5.dp),
-                    verticalArrangement = Arrangement.spacedBy(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.9f)
-                ) {
-                    items(identities.size) {
-                        FilterIdentityItem(
-                            viewIdentity = identities[it],
-                            onInPartyChecked = onInPartyChecked,
-                            onInPartyUnChecked = onInPartyUnChecked
-                        )
+        if (identities.isEmpty()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Spacer(modifier = Modifier
+                    .fillMaxHeight(.3f))
+                Text(
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = stringResource(id = R.string.empty_filter)
+                )
+            }
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(padding)
+            ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(5.dp),
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.9f)
+                    ) {
+                        items(identities.size) {
+                            FilterIdentityItem(
+                                viewIdentity = identities[it],
+                                onInPartyChecked = onInPartyChecked,
+                                onInPartyUnChecked = onInPartyUnChecked
+                            )
+                        }
                     }
                 }
+                Spacer(
+                    modifier = Modifier
+                        .height(100.dp)
+                        .fillMaxWidth()
+                )
             }
-            Spacer(
-                modifier = Modifier
-                    .height(100.dp)
-                    .fillMaxWidth()
-            )
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -67,10 +68,20 @@ fun PartyBuildingScreenUi(
     onIdentityItemLongPress: (Int, Int) -> Unit,
 ) {
     if (party.isEmpty()) {
-        Text(
-            text = stringResource(id = R.string.empty_party),
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxHeight(.3f)
+            )
+            Text(
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onPrimary,
+                text = stringResource(id = R.string.empty_party)
+            )
+        }
     } else {
         Column {
             PartyBuildingInfoPanel(
