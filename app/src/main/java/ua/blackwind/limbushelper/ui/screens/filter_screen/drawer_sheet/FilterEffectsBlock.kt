@@ -1,7 +1,6 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

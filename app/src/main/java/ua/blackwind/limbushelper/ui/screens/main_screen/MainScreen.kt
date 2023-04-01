@@ -20,6 +20,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 import ua.blackwind.limbushelper.R
@@ -38,7 +39,6 @@ enum class LimbusBottomItem(
     FilterItem(FilterScreenDestination, Icons.Default.List, R.string.filter)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
     val snackBarHostState = remember { SnackbarHostState() }
@@ -54,7 +54,7 @@ fun MainScreen(navController: NavHostController) {
                     val isItemSelected =
                         currentDestination?.startDestination == destination.direction
                     NavigationBarItem(selected = isItemSelected, onClick = {
-                        navController.navigate(destination.direction.route) {
+                        navController.navigate(destination.direction) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
@@ -76,27 +76,6 @@ fun MainScreen(navController: NavHostController) {
                     )
                 }
             }
-//            BottomAppBar(modifier = Modifier.height(80.dp)) {
-//
-//                NavigationBarItem(selected = false,
-//                    onClick = {
-//                        if (navController.currentDestination?.route != PartyBuildingScreenDestination.route) {
-//                            navController.navigate(PartyBuildingScreenDestination)
-//                        }
-//                    },
-//                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-//                    label = { Text("Party") }
-//                )
-//                NavigationBarItem(selected = false,
-//                    onClick = {
-//                        if (navController.currentDestination?.route != FilterScreenDestination.route) {
-//                            navController.navigate(FilterScreenDestination)
-//                        }
-//                    },
-//                    icon = { Icon(imageVector = Icons.Default.List, contentDescription = null) },
-//                    label = { Text("Filter") }
-//                )
-//            }
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     ) { padding ->

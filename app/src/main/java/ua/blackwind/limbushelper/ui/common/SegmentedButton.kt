@@ -12,7 +12,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -36,11 +36,13 @@ fun SegmentedButton(
     defaultSelectedItemIndex: Int = 0,
     useFixedWidth: Boolean = false,
     itemWidth: Dp = 120.dp,
-    cornerRadius : Int = 10,
-    color : Color,
+    cornerRadius: Int = 10,
+    color: Color,
     onItemSelection: (selectedItemIndex: Int) -> Unit
 ) {
-    val selectedIndex = remember { mutableStateOf(defaultSelectedItemIndex) }
+    val selectedIndex = rememberSaveable {
+        mutableStateOf(defaultSelectedItemIndex)
+    }
 
     Row(
         modifier = Modifier
@@ -60,7 +62,8 @@ fun SegmentedButton(
                                 .offset(0.dp, 0.dp)
                                 .zIndex(if (selectedIndex.value == index) 1f else 0f)
                         }
-                    } else -> {
+                    }
+                    else -> {
                         if (useFixedWidth)
                             Modifier
                                 .width(itemWidth)
@@ -132,7 +135,7 @@ fun SegmentedButton(
                     color = if (selectedIndex.value == index) {
                         MaterialTheme.colorScheme.primary
                     } else {
-                       color.copy(alpha = 0.9f)
+                        color.copy(alpha = 0.9f)
                     },
                 )
             }
