@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.ui.common
 
+import ua.blackwind.limbushelper.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +43,7 @@ private const val PORTRAIT_IMAGE_WIDTH = 70
 fun identityItemCore(
     identity: Identity,
     portraitWidthDp: Int
-): @Composable() (RowScope.() -> Unit) =
+): @Composable (RowScope.() -> Unit) =
     {
         val density = LocalConfiguration.current.densityDpi
         AsyncImage(
@@ -50,6 +51,7 @@ fun identityItemCore(
                 .Builder(LocalContext.current)
                 .data(identity.imageUrl)
                 .crossfade(true)
+                .placeholder(R.drawable.vroom_im)
                 .size(
                     Size(
                         Dimension(PORTRAIT_IMAGE_WIDTH * density),
@@ -230,7 +232,7 @@ fun EffectsBlock(effects: Set<Effect>) {
 @Preview(showSystemUi = true, showBackground = true, backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun IdentityItemPreview() {
-    Row() {
+    Row {
         identityItemCore(identity = previewIdentity, 70).invoke(this)
     }
 

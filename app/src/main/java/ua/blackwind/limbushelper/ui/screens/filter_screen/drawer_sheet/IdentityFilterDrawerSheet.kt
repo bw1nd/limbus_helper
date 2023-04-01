@@ -26,6 +26,9 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerMode
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.*
 
+private const val FILTER_BLOCK_WIDTH_DP = 400
+private const val FILTER_BLOCK_HEIGHT_DP = 170
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterDrawerSheet(
@@ -85,14 +88,14 @@ fun FilterDrawerSheet(
             onSinnerCheckedChange = methods.onSinnerCheckedChange
         )
         Box {
-            val interactor = remember {
+            val interactionEmitter = remember {
                 MutableInteractionSource()
             }
-            val isPressed by interactor.collectIsPressedAsState()
+            val isPressed by interactionEmitter.collectIsPressedAsState()
             val scale by animateFloatAsState(targetValue = if (isPressed) .93f else 1f)
             OutlinedButton(
                 onClick = { methods.onFilterButtonClick() },
-                interactionSource = interactor,
+                interactionSource = interactionEmitter,
                 modifier = Modifier
                     .wrapContentSize()
                     .graphicsLayer {
@@ -123,8 +126,8 @@ fun FilterBlock(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .width(400.dp)
-            .height(170.dp)
+            .width(FILTER_BLOCK_WIDTH_DP.dp)
+            .height(FILTER_BLOCK_HEIGHT_DP.dp)
             .padding(bottom = 5.dp)
     ) {
         when (mode) {
