@@ -8,6 +8,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('E:\\Assets\\Limbus Helper\\key\\upload.jks')
+            storePassword 'Sh1n1ta1'
+            keyAlias 'upload'
+            keyPassword 'Sh1n1ta1'
+        }
+    }
     namespace 'ua.blackwind.limbushelper'
     compileSdk 33
 
@@ -16,7 +24,7 @@ android {
         minSdk 27
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "beta-0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,7 +34,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -126,7 +134,6 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 }
-
 
 
 kapt {
