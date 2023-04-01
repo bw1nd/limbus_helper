@@ -28,7 +28,7 @@ fun FilterIdentityItem(
     onInPartyUnChecked: (Identity) -> Unit
 ) {
     Card(
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimaryContainer),
         shape = CutCornerShape(topStart = 10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier.width(380.dp)

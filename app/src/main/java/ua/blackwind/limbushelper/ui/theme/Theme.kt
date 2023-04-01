@@ -17,10 +17,10 @@ private val DarkColorScheme = darkColorScheme(
     secondary = DarkGrey,
     tertiary = LightBlue,
     onPrimary = Color.White,
-    onPrimaryContainer = Golden,
+    onPrimaryContainer = LightBlue,
     background = Black,
     surface = DarkGrey,
-    outline = LightGolden,
+    outline = LightBlue,
 )
 
 private val LightColorScheme = lightColorScheme(
