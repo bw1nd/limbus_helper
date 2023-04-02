@@ -1,12 +1,20 @@
 # Limbus Helper
 Open source party-building and analysis tool for ProjectMoon's Limbus Company game.
 
+Current version:```v0.1.0``` 
+
+This version features:
+
+- `Identity` filtering by `Damage` and `Sin` types, `Damage Resistance` type, `Skill Effects`  and `Sinners`.
+- `Party Building` screen with aggregate `Identity` info, ability to toggle active Identity.
+- User `Filter` and `Party` settings are persisted in `Room DB` and `Data Store`.
+
 Planned features:
-- identites and ego filters by resistance/ skill dmg and affinity/ skill effects
-- party building tool
-- party analysis tool
-- saving and sharing parties
-- etc.
+- `E.G.O.` in filter and party building.
+- saving and sharing parties.
+- user `Identity` and `EGO` collection.
+
+![screens_v0 1](https://user-images.githubusercontent.com/83974507/229336304-70e714af-4cbd-44bc-a952-133ab7d5590d.png)
 
 
 Copyright (c) 2023 Andrii Tarasenko
