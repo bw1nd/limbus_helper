@@ -1,7 +1,7 @@
 # Limbus Helper
 Open source party-building and analysis tool for ProjectMoon's Limbus Company game.
 
-Current version:```v0.1.0``` <a href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.1.0/limbus_helper_v0.1.1.apk">Download latest APK</a>.
+Current version:```v0.1.0``` <a href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.1.0/limbus_helper_v0.1.0.apk">Download latest APK</a>.
 
 This version features:
 
