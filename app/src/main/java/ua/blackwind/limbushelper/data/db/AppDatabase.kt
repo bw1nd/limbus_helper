@@ -13,6 +13,7 @@ import ua.blackwind.limbushelper.data.db.model.*
         PartyIdentityEntity::class,
         PartyActiveIdentityEntity::class
     ],
+    exportSchema = false,
     version = 1
 )
 abstract class AppDatabase: RoomDatabase() {
