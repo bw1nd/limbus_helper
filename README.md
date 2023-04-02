@@ -14,7 +14,7 @@ Planned features:
 - saving and sharing parties.
 - user `Identity` and `EGO` collection.
 
-![screens_v0 1](https://user-images.githubusercontent.com/83974507/229336304-70e714af-4cbd-44bc-a952-133ab7d5590d.png)
+![screens_v0 1](https://user-images.githubusercontent.com/83974507/229337665-361052a0-c1f2-43bd-9c32-7bfc4540d686.png)
 
 
 Copyright (c) 2023 Andrii Tarasenko
