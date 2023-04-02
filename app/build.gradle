@@ -1,18 +1,30 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+    id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
+    id 'com.google.protobuf'
 }
 
 android {
-    namespace 'com.example.limbushelper'
+    signingConfigs {
+        debug {
+            storeFile file('E:\\Assets\\Limbus Helper\\key\\upload.jks')
+            storePassword 'Sh1n1ta1'
+            keyAlias 'upload'
+            keyPassword 'Sh1n1ta1'
+        }
+    }
+    namespace 'ua.blackwind.limbushelper'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.limbushelper"
+        applicationId "ua.blackwind.limbushelper"
         minSdk 27
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -22,7 +34,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,6 +56,43 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
+
+    applicationVariants.all { variant ->
+        kotlin.sourceSets {
+            getByName(variant.name) {
+                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.20.1"
+    }
+    plugins {
+        javalite {
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+//                kotlin{
+//                    option 'lite'
+//                }
+            }
+        }
+    }
 }
 
 dependencies {
@@ -52,13 +101,41 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.6.1'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha07'
+    implementation "androidx.compose.material3:material3:$material3_version"
 
+    //Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    //Room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation "androidx.room:room-ktx:$room_version"
+
+    //DataSore
+    implementation("androidx.datastore:datastore:$data_store_version")
+    implementation 'com.google.protobuf:protobuf-javalite:3.21.7'
+
+    //navigation
+    implementation("io.github.raamcosta.compose-destinations:core:$nav_version")
+    ksp("io.github.raamcosta.compose-destinations:ksp:$nav_version")
+    implementation "androidx.hilt:hilt-navigation-compose:$compose_hilt_navigation_version"
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:$coil_version")
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation "io.mockk:mockk:$mockkVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.9.2"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+}
+
+
+kapt {
+    correctErrorTypes true
 }
