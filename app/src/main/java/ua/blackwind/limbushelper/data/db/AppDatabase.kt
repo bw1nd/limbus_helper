@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.db.model.*
 
 @Database(

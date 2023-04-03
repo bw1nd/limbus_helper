@@ -1,6 +1,6 @@
 package ua.blackwind.limbushelper.data
 
-import ua.blackwind.limbushelper.data.db.Dao
+import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 import ua.blackwind.limbushelper.data.db.model.toIdentity
 import ua.blackwind.limbushelper.data.db.model.toSinner

@@ -3,7 +3,7 @@ package ua.blackwind.limbushelper.data.party
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import ua.blackwind.limbushelper.data.db.Dao
+import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
 import ua.blackwind.limbushelper.data.db.model.toIdentity

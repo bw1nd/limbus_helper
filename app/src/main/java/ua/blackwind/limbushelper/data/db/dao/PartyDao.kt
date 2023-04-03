@@ -1,13 +1,15 @@
-package ua.blackwind.limbushelper.data.db
+package ua.blackwind.limbushelper.data.db.dao
 
-import androidx.room.*
-import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import ua.blackwind.limbushelper.data.db.model.*
+import ua.blackwind.limbushelper.data.db.model.PartyActiveIdentityEntity
+import ua.blackwind.limbushelper.data.db.model.PartyEntity
+import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
 
-// TODO : Refactor this global DAO into several other DAOs (e.g: `SinnerDao`, `PartyDao`)
-@Dao
-interface Dao {
+interface PartyDao {
     @Query("SELECT * FROM party WHERE id = :id")
     suspend fun getParty(id: Int): PartyEntity
 
@@ -36,25 +38,4 @@ interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun changeActiveIdentity(active: PartyActiveIdentityEntity)
-
-    @Query("SELECT * FROM sinner ORDER BY id ASC")
-    suspend fun getAllSinners(): List<SinnerEntity>
-
-    @Query("SELECT * FROM sinner WHERE id = :id")
-    suspend fun getSinnerById(id: Int): SinnerEntity
-
-    @Query("SELECT * FROM identity")
-    suspend fun getAllIdentities(): List<IdentityEntity>
-
-    @Query("SELECT * FROM identity WHERE id = :id")
-    suspend fun getIdentityById(id: Int): IdentityEntity
-
-    @Query("SELECT * FROM identity WHERE sinnerId = :id")
-    suspend fun getIdentityBySinnerId(id: Int): List<IdentityEntity>
-
-    @Query("SELECT * FROM skill WHERE id = :id")
-    suspend fun getSkillById(id: Int): SkillEntity
-
-    @Query("SELECT * FROM skill WHERE identityId = :id")
-    suspend fun getSkillsByIdentityId(id: Int): List<SkillEntity>
 }
