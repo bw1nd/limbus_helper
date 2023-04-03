@@ -1,10 +1,7 @@
 package ua.blackwind.limbushelper.data
 
 import ua.blackwind.limbushelper.data.db.dao.Dao
-import ua.blackwind.limbushelper.data.db.model.IdentityEntity
-import ua.blackwind.limbushelper.data.db.model.toIdentity
-import ua.blackwind.limbushelper.data.db.model.toSinner
-import ua.blackwind.limbushelper.data.db.model.toSkill
+import ua.blackwind.limbushelper.data.db.model.*
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
 import ua.blackwind.limbushelper.domain.sinner.model.*
@@ -12,8 +9,7 @@ import javax.inject.Inject
 
 class SinnerRepository @Inject constructor(
     private val dao: Dao,
-) : ISinnerRepository {
-
+): ISinnerRepository {
 
     override suspend fun getAllSinners(): List<Sinner> {
         return dao.getAllSinners().map { it.toSinner() }
@@ -35,6 +31,22 @@ class SinnerRepository @Inject constructor(
 
     override suspend fun getIdentityBySinnerId(id: Int): List<Identity> {
         return dao.getIdentityBySinnerId(id).map { identityEntityToIdentity(it) }
+    }
+
+    override suspend fun getAllEgo(): List<Ego> {
+        //TODO this function uses dummy data, must add passive db table to implement it
+        return dao.getAllEgo().map {
+            it.toEgo(
+                getSkill = ::getSkillById,
+                getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") },
+            )
+        }
+    }
+
+    override suspend fun getEgoById(id: Int): Ego {
+        //TODO this function uses dummy data, must add passive db table to implement it
+        return dao.getEgoById(id).toEgo(getSkill = ::getSkillById,
+            getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") })
     }
 
     override suspend fun getSkillById(id: Int): Skill {
