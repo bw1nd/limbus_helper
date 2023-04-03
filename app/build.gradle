@@ -8,14 +8,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('E:\\Assets\\Limbus Helper\\key\\upload.jks')
-            storePassword 'Sh1n1ta1'
-            keyAlias 'upload'
-            keyPassword 'Sh1n1ta1'
-        }
-    }
     namespace 'ua.blackwind.limbushelper'
     compileSdk 33
 
