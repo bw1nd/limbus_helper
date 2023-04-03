@@ -32,7 +32,7 @@ private const val FILTER_BLOCK_HEIGHT_DP = 170
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterDrawerSheet(
-    mode: FilterSheetMode,
+    mode: FilterSheetTab,
     filterState: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
@@ -112,7 +112,7 @@ fun FilterDrawerSheet(
 
 @Composable
 fun FilterBlock(
-    mode: FilterSheetMode,
+    mode: FilterSheetTab,
     state: FilterDrawerSheetState,
     sinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
@@ -131,11 +131,11 @@ fun FilterBlock(
             .padding(bottom = 5.dp)
     ) {
         when (mode) {
-            FilterSheetMode.Effects -> FilterEffectsBlock(
+            FilterSheetTab.Effects -> FilterEffectsBlock(
                 state.effectsState,
                 onEffectCheckedChange
             )
-            FilterSheetMode.Type -> FilterTypeBlock(
+            FilterSheetTab.Type -> FilterTypeBlock(
                 sinPickerVisible,
                 onSinPickerClick,
                 state.skillState,
@@ -145,7 +145,7 @@ fun FilterBlock(
                 state.resistState,
                 onResistButtonClick
             )
-            FilterSheetMode.Sinners -> FilterSinnersBlock(
+            FilterSheetTab.Sinners -> FilterSinnersBlock(
                 state = state.sinnersState,
                 onSinnerCheckedChange = onSinnerCheckedChange
             )
@@ -193,7 +193,7 @@ private fun FilterTypeBlock(
 @Composable
 private fun PreviewFilterBlock() {
     FilterDrawerSheet(
-        FilterSheetMode.Effects,
+        FilterSheetTab.Effects,
         FilterDrawerSheetState(
             FilterSkillBlockState(
                 FilterDamageStateBundle(

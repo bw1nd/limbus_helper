@@ -14,9 +14,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.ui.common.SegmentedButton
 import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.FilterDrawerSheet
-import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.*
 
@@ -25,9 +25,9 @@ import ua.blackwind.limbushelper.ui.util.*
 @Composable
 fun FilterScreen() {
     val viewModel = hiltViewModel<FilterScreenViewModel>()
-    val identities by viewModel.filteredIdentities.collectAsState()
+    val identities by viewModel.filteredItems.collectAsState()
     val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
-    val filterDrawerMode by viewModel.filterDrawerSheetMode.collectAsState()
+    val filterDrawerMode by viewModel.filterDrawerSheetTab.collectAsState()
     val filterSkillSinPickerVisible by viewModel.sinPickerVisible.collectAsState()
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
@@ -35,7 +35,7 @@ fun FilterScreen() {
         stringResource(R.string.res_fatal)
     )
     val filterSheetStateMethods = FilterDrawerSheetMethods(
-        onSwitchChange = viewModel::onFilterModeSwitch,
+        onSwitchChange = viewModel::onFilterTabSwitch,
         onFilterButtonClick = viewModel::onFilterButtonClick,
         onClearFilterButtonPress = viewModel::onClearFilterButtonPress,
         onSkillButtonClick = viewModel::onFilterSkillButtonClick,
@@ -47,12 +47,13 @@ fun FilterScreen() {
     )
 
     FilterScreenUi(
-        identities = identities,
+        list = identities,
         filterDrawerMode = filterDrawerMode,
         filterDrawerSheetState = filterDrawerSheetState,
         filterSkillSinPickerVisible = filterSkillSinPickerVisible,
         resistLabels = labels,
         filterSheetMethods = filterSheetStateMethods,
+        onFilterModeChanged = viewModel::onFilterModeSwitch,
         onInPartyChecked = viewModel::onIdentityItemInPartyChecked,
         onInPartyUnChecked = viewModel::onIdentityItemInPartyUnChecked
     )
@@ -61,14 +62,15 @@ fun FilterScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreenUi(
-    identities: List<FilterIdentityModel>,
-    filterDrawerMode: FilterSheetMode,
+    list: List<FilterDataModel>,
+    filterDrawerMode: FilterSheetTab,
     filterDrawerSheetState: FilterDrawerSheetState,
     filterSkillSinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
     filterSheetMethods: FilterDrawerSheetMethods,
-    onInPartyChecked: (Identity) -> Unit,
-    onInPartyUnChecked: (Identity) -> Unit
+    onFilterModeChanged: (Int) -> Unit,
+    onInPartyChecked: (FilterDataModel) -> Unit,
+    onInPartyUnChecked: (FilterDataModel) -> Unit
 ) {
     BottomSheetScaffold(
         scaffoldState = rememberBottomSheetScaffoldState(),
@@ -82,47 +84,57 @@ fun FilterScreenUi(
             )
         }
     ) { padding ->
-        if (identities.isEmpty()) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier
-                    .fillMaxHeight(.3f))
-                Text(
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    text = stringResource(id = R.string.empty_filter)
-                )
-            }
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(padding)
-            ) {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    LazyColumn(
-                        contentPadding = PaddingValues(5.dp),
-                        verticalArrangement = Arrangement.spacedBy(5.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+        Column(Modifier.fillMaxSize()) {
+            SegmentedButton(
+                items = listOf("IDENTITY","EGO"),
+                color = MaterialTheme.colorScheme.onPrimary,
+                onItemSelection = onFilterModeChanged
+            )
+            if (list.isEmpty()) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Spacer(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.9f)
-                    ) {
-                        items(identities.size) {
-                            FilterIdentityItem(
-                                viewIdentity = identities[it],
-                                onInPartyChecked = onInPartyChecked,
-                                onInPartyUnChecked = onInPartyUnChecked
-                            )
+                            .fillMaxHeight(.3f)
+                    )
+                    Text(
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        text = stringResource(id = R.string.empty_filter)
+                    )
+                }
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(padding)
+                ) {
+
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            contentPadding = PaddingValues(5.dp),
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.9f)
+                        ) {
+                            items(list.size) {
+                                FilterListItem(
+                                    listItem = list[it],
+                                    onInPartyChecked = onInPartyChecked,
+                                    onInPartyUnChecked = onInPartyUnChecked
+                                )
+                            }
                         }
                     }
+                    Spacer(
+                        modifier = Modifier
+                            .height(100.dp)
+                            .fillMaxWidth()
+                    )
                 }
-                Spacer(
-                    modifier = Modifier
-                        .height(100.dp)
-                        .fillMaxWidth()
-                )
             }
         }
     }

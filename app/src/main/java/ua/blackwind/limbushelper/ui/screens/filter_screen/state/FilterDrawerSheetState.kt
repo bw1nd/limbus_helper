@@ -38,10 +38,15 @@ data class FilterDrawerSheetMethods(
     val onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 )
 
-sealed class FilterSheetMode {
-    object Type: FilterSheetMode()
-    object Effects: FilterSheetMode()
-    object Sinners: FilterSheetMode()
+sealed class FilterSheetTab {
+    object Type: FilterSheetTab()
+    object Effects: FilterSheetTab()
+    object Sinners: FilterSheetTab()
+}
+
+sealed class FilterMode {
+    object Identity: FilterMode()
+    object Ego: FilterMode()
 }
 
 /**

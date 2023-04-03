@@ -12,20 +12,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.common.AlternativeCheckbox
+import ua.blackwind.limbushelper.ui.common.egoItemCore
 import ua.blackwind.limbushelper.ui.common.identityItemCore
-import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 
 private const val IDENTITY_PORTRAIT_WIDTH = 60
 
+//TODO need better naming for this
 @Composable
-fun FilterIdentityItem(
-    viewIdentity: FilterIdentityModel,
-    onInPartyChecked: (Identity) -> Unit,
-    onInPartyUnChecked: (Identity) -> Unit
+fun FilterListItem(
+    listItem: FilterDataModel,
+    onInPartyChecked: (FilterDataModel) -> Unit,
+    onInPartyUnChecked: (FilterDataModel) -> Unit
 ) {
     Card(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimaryContainer),
@@ -33,13 +35,28 @@ fun FilterIdentityItem(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier.width(380.dp)
     ) {
-        val identity = viewIdentity.identity
+        val item = listItem.item
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Row(content = identityItemCore(identity, IDENTITY_PORTRAIT_WIDTH))
+            when (item) {
+                is FilterItemTypeModel.IdentityType ->
+                    Row(
+                        content = identityItemCore(
+                            item.identity,
+                            IDENTITY_PORTRAIT_WIDTH
+                        )
+                    )
+                is FilterItemTypeModel.EgoType -> Row(
+                    content = egoItemCore(
+                        ego = item.ego,
+                        portraitWidthDp = IDENTITY_PORTRAIT_WIDTH
+                    )
+                )
+            }
+
             AlternativeCheckbox(
-                checked = viewIdentity.inParty,
+                checked = listItem.inParty,
                 onCheckedChange = { checked ->
-                    if (checked) onInPartyChecked(identity) else onInPartyUnChecked(identity)
+                    if (checked) onInPartyChecked(listItem) else onInPartyUnChecked(listItem)
                 },
             )
         }
@@ -49,5 +66,9 @@ fun FilterIdentityItem(
 @Preview
 @Composable
 private fun PreviewFilterIdentityItem() {
-    FilterIdentityItem(viewIdentity = FilterIdentityModel(previewIdentity, true), { }, {})
+    FilterListItem(listItem = FilterDataModel(
+        FilterItemTypeModel.IdentityType(
+            previewIdentity,
+        ), true
+    ), { }, {})
 }

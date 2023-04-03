@@ -15,8 +15,8 @@ import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.StateType
@@ -28,6 +28,7 @@ import javax.inject.Inject
 class FilterScreenViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
+    private val getFilteredEgoUseCase: GetFilteredEgoUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
     private val getPartyUseCase: GetPartyUseCase,
@@ -36,16 +37,19 @@ class FilterScreenViewModel @Inject constructor(
 
     private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
-    private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
-    val filteredIdentities: StateFlow<List<FilterIdentityModel>> = _filteredIdentities
+    private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())
+    val filteredItems: StateFlow<List<FilterDataModel>> = _filteredItems
+
+    private val _filterMode: MutableStateFlow<FilterMode> = MutableStateFlow(FilterMode.Identity)
+    val filterMode = _filterMode.asStateFlow()
 
     private val _filterDrawerShitState = MutableStateFlow(
         FilterDrawerSheetState.getDefaultState()
     )
     val filterDrawerShitState = _filterDrawerShitState.asStateFlow()
 
-    private val _filterDrawerSheetMode = MutableStateFlow<FilterSheetMode>(FilterSheetMode.Type)
-    val filterDrawerSheetMode = _filterDrawerSheetMode.asStateFlow()
+    private val _filterDrawerSheetTab = MutableStateFlow<FilterSheetTab>(FilterSheetTab.Type)
+    val filterDrawerSheetTab = _filterDrawerSheetTab.asStateFlow()
 
     private val _sinPickerVisible = MutableStateFlow(false)
     val sinPickerVisible = _sinPickerVisible.asStateFlow()
@@ -60,10 +64,10 @@ class FilterScreenViewModel @Inject constructor(
         viewModelScope.launch {
             getPartyUseCase().collectLatest { newParty ->
                 party.update { newParty }
-                if (_filteredIdentities.value.isNotEmpty() && party.value.id != 0) {
-                    _filteredIdentities.update { list ->
-                        identityListToFilterIdentityList(
-                            list.map { it.identity },
+                if (_filteredItems.value.isNotEmpty() && party.value.id != 0) {
+                    _filteredItems.update { list ->
+                        itemListToFilterItemList(
+                            list.map { it.item },
                             newParty
                         )
                     }
@@ -89,43 +93,78 @@ class FilterScreenViewModel @Inject constructor(
     fun onFilterButtonClick() {
         //TODO add dispatchers injection
         viewModelScope.launch(Dispatchers.Default) {
-            _filteredIdentities.update {
+            _filteredItems.update {
                 val skillState = _filterDrawerShitState.value.skillState
                 val resistState = _filterDrawerShitState.value.resistState
                 val effectState = _filterDrawerShitState.value.effectsState
                 val sinnerState = _filterDrawerShitState.value.sinnersState
-                identityListToFilterIdentityList(
-                    getFilteredIdentitiesUseCase(
-                        formIdentityFilter(resistState, skillState, effectState, sinnerState)
-                    ), party.value
-                )
+                when (filterMode.value) {
+                    is FilterMode.Identity -> itemListToFilterItemList(
+                        getFilteredIdentitiesUseCase(
+                            formIdentityFilter(
+                                resistState,
+                                skillState,
+                                effectState,
+                                sinnerState
+                            )
+                        ).map { FilterItemTypeModel.IdentityType(it) }, party.value
+                    )
+                    FilterMode.Ego -> getFilteredEgoUseCase(
+                        EgoFilter(
+                            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Empty),
+                            EgoFilterSinResistTypeArg(emptyList()),
+                            EgoFilterPriceSetArg(emptyList()),
+                            emptyList(), emptyList()
+                        )
+                    ).map { FilterDataModel(FilterItemTypeModel.EgoType(it), false) }
+                }
             }
         }
     }
 
-    fun onIdentityItemInPartyChecked(identity: Identity) {
+    fun onIdentityItemInPartyChecked(identity: FilterDataModel) {
         viewModelScope.launch {
-            addIdentityToPartyUseCase(
-                identity,
-                party.value
-            )
+            when (identity.item) {
+                is FilterItemTypeModel.EgoType -> TODO()
+                is FilterItemTypeModel.IdentityType -> addIdentityToPartyUseCase(
+                    identity.item.identity,
+                    party.value
+                )
+            }
+
         }
     }
 
-    fun onIdentityItemInPartyUnChecked(identity: Identity) {
+    fun onIdentityItemInPartyUnChecked(identity: FilterDataModel) {
         viewModelScope.launch {
-            deleteIdentityFromPartyUseCase(identity, party.value)
+            when (identity.item) {
+                is FilterItemTypeModel.EgoType -> TODO()
+                is FilterItemTypeModel.IdentityType -> deleteIdentityFromPartyUseCase(
+                    identity.item.identity,
+                    party.value
+                )
+            }
+
         }
+    }
+
+    fun onFilterTabSwitch(id: Int) {
+        val newTab = when (id) {
+            0 -> FilterSheetTab.Type
+            1 -> FilterSheetTab.Effects
+            2 -> FilterSheetTab.Sinners
+            else -> throw IllegalArgumentException("Wrong switch button id: $id")
+        }
+        _filterDrawerSheetTab.update { newTab }
     }
 
     fun onFilterModeSwitch(id: Int) {
         val newMode = when (id) {
-            0 -> FilterSheetMode.Type
-            1 -> FilterSheetMode.Effects
-            2 -> FilterSheetMode.Sinners
+            0 -> FilterMode.Ego
+            1 -> FilterMode.Identity
             else -> throw IllegalArgumentException("Wrong switch button id: $id")
         }
-        _filterDrawerSheetMode.update { newMode }
+        _filterMode.update { newMode }
     }
 
     fun onClearFilterButtonPress() {
@@ -218,15 +257,20 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
-    private fun identityListToFilterIdentityList(
-        list: List<Identity>,
+    private fun itemListToFilterItemList(
+        list: List<FilterItemTypeModel>,
         party: Party
-    ): List<FilterIdentityModel> {
-        return list.map { identity ->
-            FilterIdentityModel(
-                identity,
-                party.identityList.any { it.identity.id == identity.id }
-            )
+    ): List<FilterDataModel> {
+        return list.map { item ->
+            when (item) {
+                is FilterItemTypeModel.IdentityType ->
+                    FilterDataModel(
+                        item,
+                        party.identityList.any { it.identity.id == item.identity.id }
+                    )
+                is FilterItemTypeModel.EgoType ->
+                    FilterDataModel(item, false)
+            }
         }
     }
 
