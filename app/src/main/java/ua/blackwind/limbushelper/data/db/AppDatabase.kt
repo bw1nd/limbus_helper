@@ -9,13 +9,14 @@ import ua.blackwind.limbushelper.data.db.model.*
     entities = [
         SinnerEntity::class,
         IdentityEntity::class,
+        EgoEntity::class,
         SkillEntity::class,
         PartyEntity::class,
         PartyIdentityEntity::class,
         PartyActiveIdentityEntity::class
     ],
     exportSchema = false,
-    version = 1
+    version = 2
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract val dao: Dao
