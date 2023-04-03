@@ -292,7 +292,7 @@ class FilterScreenViewModel @Inject constructor(
                 normal = resistState.second.toFilterDamageTypeArg(),
                 fatal = resistState.third.toFilterDamageTypeArg()
             ),
-            skills = FilterSkillsSetArg(
+            skills = IdentityFilterSkillsSetArg(
                 FilterSkillArg(
                     skillState.damage.first.toFilterDamageTypeArg(),
                     skillState.sin.first.toFilterSinTypeArg()

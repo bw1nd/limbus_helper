@@ -41,7 +41,7 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         return filter.any { it == identity.sinnerId }
     }
 
-    private fun identityPassSkillFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
+    private fun identityPassSkillFilter(identity: Identity, filter: IdentityFilterSkillsSetArg): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
         val filterSkills = filter.toSkillList().toMutableList()
@@ -150,7 +150,7 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
 
 data class IdentityFilter(
     val resist: FilterResistSetArg,
-    val skills: FilterSkillsSetArg,
+    val skills: IdentityFilterSkillsSetArg,
     val effects: List<Effect>,
     val sinners: List<Int>
 )
@@ -169,15 +169,15 @@ fun FilterResistSetArg.isEmpty() =
             && this.normal == FilterDamageTypeArg.Empty
             && this.fatal == FilterDamageTypeArg.Empty
 
-data class FilterSkillsSetArg(
+data class IdentityFilterSkillsSetArg(
     val first: FilterSkillArg,
     val second: FilterSkillArg,
     val third: FilterSkillArg
 )
 
-fun FilterSkillsSetArg.toSkillList() = listOf(first, second, third)
+fun IdentityFilterSkillsSetArg.toSkillList() = listOf(first, second, third)
 
-fun FilterSkillsSetArg.isEmpty() =
+fun IdentityFilterSkillsSetArg.isEmpty() =
     this.first.damageType == FilterDamageTypeArg.Empty
             && first.sin == FilterSinTypeArg.Empty
             && second.damageType == FilterDamageTypeArg.Empty

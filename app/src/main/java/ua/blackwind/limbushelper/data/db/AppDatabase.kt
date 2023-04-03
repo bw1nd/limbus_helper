@@ -16,7 +16,7 @@ import ua.blackwind.limbushelper.data.db.model.*
         PartyActiveIdentityEntity::class
     ],
     exportSchema = false,
-    version = 2
+    version = 1
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract val dao: Dao
