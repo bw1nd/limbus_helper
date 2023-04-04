@@ -1,0 +1,35 @@
+syntax = "proto3";
+option java_package = "ua.blackwind.limbus_helper";
+option java_multiple_files = false;
+
+    message EgoSettings {
+        FilterSkillState skillState = 1;
+        FilterResistStateBundle resistState = 2;
+        FilterEffectBlockState effectsState = 3;
+        FilterSinnersBlockState sinnersState = 4;
+
+    message FilterSkillState{
+        string damageType = 1;
+        string sinType = 2;
+    }
+
+    message FilterResistStateBundle{
+          FilterResistStateArg first = 1;
+          FilterResistStateArg second = 2;
+          FilterResistStateArg third = 3;
+          FilterResistStateArg fourth = 4;
+    }
+
+    message FilterResistStateArg{
+        string sin = 1;
+        string resist = 2;
+    }
+
+    message FilterEffectBlockState{
+         map<string,bool> effects = 1;
+    }
+
+    message FilterSinnersBlockState{
+        map<int32,bool> sinners = 1;
+    }
+}

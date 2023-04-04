@@ -3,22 +3,34 @@ package ua.blackwind.limbushelper.data
 import android.util.Log
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import ua.blackwind.limbus_helper.FilterSettings.FilterDrawerSheetSettings
+import ua.blackwind.limbus_helper.EgoFilterSettings
+import ua.blackwind.limbus_helper.FilterModeSettings
+import ua.blackwind.limbus_helper.IdentityFilterSettings
+
 import ua.blackwind.limbus_helper.PartySettingsOuterClass.PartySettings
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterDrawerSheetState
-import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetSettingsMapper
+import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterMode
 import javax.inject.Inject
 
 class PreferencesRepository @Inject constructor(
-    private val filterSheetSettingsDataStore: DataStore<FilterDrawerSheetSettings>,
+    private val filterModeDataStore: DataStore<FilterModeSettings.FilterMode>,
+    private val identityFilterSettingsDataStore: DataStore<IdentityFilterSettings.IdentitySettings>,
+    private val egoFilterSettingsDataStore: DataStore<EgoFilterSettings.EgoSettings>,
     private val partySettingsDataStore: DataStore<PartySettings>,
-    private val mapper: FilterSheetSettingsMapper
+    private val mapper: IdentityFilterSettingsMapper
 ) {
-    fun getFilterSheetSettings(): Flow<FilterDrawerSheetSettings> =
-        filterSheetSettingsDataStore.data
+    fun getIdentityFilterSheetSettings(): Flow<IdentityFilterSettings.IdentitySettings> =
+        identityFilterSettingsDataStore.data
 
-    suspend fun updateFilterSheetSettings(state: FilterDrawerSheetState) {
-        filterSheetSettingsDataStore.updateData { old ->
+    fun getEgoFilterSheetSettings(): Flow<EgoFilterSettings.EgoSettings> =
+        egoFilterSettingsDataStore.data
+
+    fun getFilterModeSettings(): Flow<FilterModeSettings.FilterMode> =
+        filterModeDataStore.data
+
+    suspend fun updateIdentityFilterSheetSettings(state: FilterDrawerSheetState.IdentityMode) {
+        identityFilterSettingsDataStore.updateData { old ->
             mapper.mapStateToSettings(state, old)
         }
     }
@@ -27,10 +39,17 @@ class PreferencesRepository @Inject constructor(
         partySettingsDataStore.data
 
     suspend fun updatePartySettings(showOnlyActive: Boolean) {
-        Log.d("DATA_STORE","Updating with $showOnlyActive")
+        Log.d("DATA_STORE", "Updating with $showOnlyActive")
         partySettingsDataStore.updateData {
             it.toBuilder().setShowOnlyActive(showOnlyActive).build()
         }
     }
 
+    suspend fun updateFilterModeSettings(state: FilterMode) {
+        filterModeDataStore.updateData {
+            it.toBuilder().setMode(
+                state.label
+            ).build()
+        }
+    }
 }
