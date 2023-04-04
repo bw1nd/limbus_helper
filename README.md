@@ -20,21 +20,22 @@
 </div>
 
 
-An open source party-building and analysis tool for ProjectMoon's Limbus Company game.
+**Limbus Helper** is an open source party-building and analysis tool for ProjectMoon's Limbus Company game.
 
+It is currently under development.
 
 <div align="center">
 <a  href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.1.0/limbus_helper_v0.1.0.apk">
 <img alt="Get it on Github"
- src="./readme-assets/images/badge_github.png" height="60"
+ src="./readme-assets/images/badge_github_alt.png" height="120"
  />
 </a>
 </div>
 
 ## Features 
 
-Current
-version: ```v0.1.0``` 
+Current version: ```v0.1.0``` 
+
 
 This version features:
 
