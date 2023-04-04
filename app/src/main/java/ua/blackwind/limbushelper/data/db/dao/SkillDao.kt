@@ -7,6 +7,13 @@ interface SkillDao {
     @Query("SELECT * FROM skill WHERE id = :id")
     suspend fun getSkillById(id: Int): SkillEntity
 
-    @Query("SELECT * FROM skill WHERE identityId = :id")
+    @Query("SELECT * FROM skill\n" +
+            "WHERE id IN (\n" +
+            "   SELECT firstSkillId FROM identity WHERE id = :id\n" +
+            "   UNION\n" +
+            "   SELECT secondSkillId FROM identity WHERE id = :id\n" +
+            "   UNION\n" +
+            "   SELECT thirdSkillId FROM identity WHERE id = :id\n" +
+            ")")
     suspend fun getSkillsByIdentityId(id: Int): List<SkillEntity>
 }

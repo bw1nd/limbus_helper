@@ -21,7 +21,6 @@ val previewIdentity = Identity(
     firstSkill = Skill(
         0,
         "Rip",
-        0,
         DamageType.SLASH,
         Sin.GLOOM,
         3,
@@ -30,8 +29,8 @@ val previewIdentity = Identity(
         2,
         listOf(Effect.BLEED, Effect.BURN,Effect.POISE,Effect.ATTACK_DOWN,Effect.HASTE)
     ),
-    secondSkill = Skill(0, "Rip", 0, DamageType.PIERCE, Sin.WRATH, 3, 3, 2, 2, emptyList()),
-    thirdSkill = Skill(0, "Rip", 0, DamageType.BLUNT, Sin.SLOTH, 3, 3, 15, 2, emptyList()),
+    secondSkill = Skill(0, "Rip",  DamageType.PIERCE, Sin.WRATH, 3, 3, 2, 2, emptyList()),
+    thirdSkill = Skill(0, "Rip",  DamageType.BLUNT, Sin.SLOTH, 3, 3, 15, 2, emptyList()),
     passive = Passive(0, 0, SinCost(emptyList()), ""),
     support = Support(0, 0, SinCost(emptyList()), ""),
     imageUrl = ""

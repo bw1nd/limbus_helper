@@ -510,7 +510,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
 
     private fun generateSkill(damage: DamageType, sin: Sin, effects: List<Effect>) =
-        Skill(0, "test skill", 0, damage, sin, 3, 3, 2, 2, effects)
+        Skill(0, "test skill", damage, sin, 3, 3, 2, 2, effects)
 
     private fun generateIdentity(
         name: String,
