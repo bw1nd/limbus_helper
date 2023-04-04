@@ -1,9 +1,6 @@
 package ua.blackwind.limbushelper.domain.sinner
 
-import ua.blackwind.limbushelper.domain.sinner.model.Ego
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.domain.sinner.model.Sinner
-import ua.blackwind.limbushelper.domain.sinner.model.Skill
+import ua.blackwind.limbushelper.domain.sinner.model.*
 
 interface ISinnerRepository {
     suspend fun getAllSinners(): List<Sinner>
@@ -23,4 +20,6 @@ interface ISinnerRepository {
     suspend fun getSkillById(id: Int): Skill
 
     suspend fun getSkillsByIdentityId(id: Int): List<Skill>
+
+    suspend fun getEgoSkillById(id: Int): EgoSkill?
 }

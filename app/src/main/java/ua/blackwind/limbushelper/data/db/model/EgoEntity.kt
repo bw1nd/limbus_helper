@@ -7,8 +7,8 @@ import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.RiskLevel
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
+import ua.blackwind.limbushelper.domain.sinner.model.EgoSkill
 import ua.blackwind.limbushelper.domain.sinner.model.Passive
-import ua.blackwind.limbushelper.domain.sinner.model.Skill
 
 private const val MAP_CONVERTER_PAIR_DIVIDER = "_"
 private const val MAP_CONVERTER_ITEM_DIVIDER = ","
@@ -20,7 +20,7 @@ data class EgoEntity(
     val sinnerId: Int,
     val risk: RiskLevel,
     val awakeningSkillId: Int,
-    val corrosionSkillId: Int,
+    val corrosionSkillId: Int?,
     val passiveId: Int,
     val resourceCost: Map<Sin, Int>,
     val sanityCost: Int,
@@ -29,18 +29,18 @@ data class EgoEntity(
 )
 
 suspend fun EgoEntity.toEgo(
-    getSkill: suspend (id: Int) -> Skill,
+    getSkill: suspend (id: Int) -> EgoSkill?,
     getPassive: suspend (id: Int) -> Passive,
 ): Ego {
     val awakeningSkill = getSkill(awakeningSkillId)
-    val corrosionSkill = getSkill(corrosionSkillId)
+    val corrosionSkill = corrosionSkillId?.let { getSkill(it) }
     val passive = getPassive(passiveId)
     return Ego(
         id = id,
         name = name,
         sinnerId = sinnerId,
         risk = risk,
-        awakeningSkill = awakeningSkill,
+        awakeningSkill = awakeningSkill!!,
         corrosionSkill = corrosionSkill,
         passive = passive,
         resourceCost = resourceCost,

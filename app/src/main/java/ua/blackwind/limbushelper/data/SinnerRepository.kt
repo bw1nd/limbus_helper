@@ -37,7 +37,7 @@ class SinnerRepository @Inject constructor(
         //TODO this function uses dummy data, must add passive db table to implement it
         return dao.getAllEgo().map {
             it.toEgo(
-                getSkill = ::getSkillById,
+                getSkill = ::getEgoSkillById,
                 getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") },
             )
         }
@@ -45,7 +45,8 @@ class SinnerRepository @Inject constructor(
 
     override suspend fun getEgoById(id: Int): Ego {
         //TODO this function uses dummy data, must add passive db table to implement it
-        return dao.getEgoById(id).toEgo(getSkill = ::getSkillById,
+        return dao.getEgoById(id).toEgo(
+            getSkill = ::getEgoSkillById,
             getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") })
     }
 
@@ -55,6 +56,10 @@ class SinnerRepository @Inject constructor(
 
     override suspend fun getSkillsByIdentityId(id: Int): List<Skill> {
         return dao.getSkillsByIdentityId(id).map { it.toSkill() }
+    }
+
+    override suspend fun getEgoSkillById(id: Int): EgoSkill? {
+        return dao.getEgoSkillById(id)?.toEgoSkill()
     }
 
     private suspend fun identityEntityToIdentity(identityEntity: IdentityEntity): Identity {

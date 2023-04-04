@@ -1,7 +1,7 @@
 package ua.blackwind.limbushelper.ui.common
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -9,12 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,16 +23,20 @@ import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Size
 import ua.blackwind.limbushelper.R
+import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.RiskLevel
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
+import ua.blackwind.limbushelper.domain.sinner.model.EgoSkill
+import ua.blackwind.limbushelper.ui.theme.*
 import ua.blackwind.limbushelper.ui.util.getEffectIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 
 private const val ITEM_VERTICAL_SIZE_DP = 100
+private const val PORTRAIT_VERTICAL_SIZE_DP = 100
 private const val PORTRAIT_IMAGE_WIDTH = 70
 private const val SIN_ICON_SIZE_DP = 28
 
@@ -40,23 +44,40 @@ private const val SIN_ICON_SIZE_DP = 28
 fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Unit) =
     {
         val density = LocalConfiguration.current.densityDpi
-        AsyncImage(
-            model = ImageRequest
-                .Builder(LocalContext.current)
-                .data(ego.imageUrl)
-                .crossfade(true)
-                .placeholder(R.drawable.vroom_im)
-                .size(
-                    Size(
-                        Dimension(PORTRAIT_IMAGE_WIDTH * density),
-                        Dimension(ITEM_VERTICAL_SIZE_DP * density)
+        Box(
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(ego.imageUrl)
+                    .crossfade(true)
+                    .placeholder(R.drawable.vroom_im)
+                    .size(
+                        Size(
+                            Dimension(PORTRAIT_IMAGE_WIDTH * density),
+                            Dimension(PORTRAIT_VERTICAL_SIZE_DP * density)
+                        )
                     )
-                )
-                .build(),
-            alignment = Alignment.Center,
-            contentScale = ContentScale.Crop,
-            contentDescription = null, modifier = Modifier
-                .size(portraitWidthDp.dp, ITEM_VERTICAL_SIZE_DP.dp)
+                    .build(),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Crop,
+                contentDescription = null, modifier = Modifier
+                    .size(portraitWidthDp.dp, PORTRAIT_VERTICAL_SIZE_DP.dp)
+            )
+            EgoRiskLevel(ego = ego)
+        }
+
+        Divider(
+            color = when (ego.risk) {
+                RiskLevel.ZAYIN -> zayin
+                RiskLevel.TETH -> teth
+                RiskLevel.HE -> he
+                RiskLevel.WAW -> waw
+                RiskLevel.ALEPH -> aleph
+            },
+            modifier = Modifier
+                .size(4.dp, ITEM_VERTICAL_SIZE_DP.dp)
         )
         Column(
             Modifier
@@ -70,8 +91,6 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                EgoRiskLevel(ego = ego)
             }
             Spacer(modifier = Modifier.weight(1f))
             Row(
@@ -79,7 +98,7 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SkillItem(skill = ego.awakeningSkill)
+                EgoSkillItem(skill = ego.awakeningSkill)
                 Column {
                     EgoCostBlock(ego = ego)
                     Divider(thickness = 2.dp)
@@ -97,11 +116,22 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
 @Composable
 fun EgoRiskLevel(ego: Ego) {
     Box(
-        Modifier
-            .padding(2.dp)
-            .border(2.dp, MaterialTheme.colorScheme.onPrimary, RectangleShape)
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .padding(top= 5.dp)
+            .background(color = MaterialTheme.colorScheme.primary)
     ) {
-        Text(text = ego.risk.name, color = MaterialTheme.colorScheme.onPrimary)
+        Text(
+            text = ego.risk.name,
+            textAlign = TextAlign.Center,
+            color = when (ego.risk) {
+                RiskLevel.ZAYIN -> zayin
+                RiskLevel.TETH -> teth
+                RiskLevel.HE -> he
+                RiskLevel.WAW -> waw
+                RiskLevel.ALEPH -> aleph
+            }
+        )
     }
 }
 
@@ -193,8 +223,8 @@ private fun PreviewEgoItemCore() {
                 "Test Ego",
                 0,
                 RiskLevel.ALEPH,
-                previewIdentity.firstSkill,
-                previewIdentity.secondSkill,
+                EgoSkill(0, "", DamageType.BLUNT, Sin.LUST, 30, 15, 10, 1, 20, emptyList()),
+                EgoSkill(0, "", DamageType.BLUNT, Sin.LUST, 30, 15, 10, 1, 20, emptyList()),
                 previewIdentity.passive,
                 mapOf(Sin.LUST to 3),
                 20,
