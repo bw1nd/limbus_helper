@@ -11,4 +11,9 @@
     <string name="empty_filter">Looks like there is nobody\nwho could fulfill your request, Manager.\nTry to be less strict.</string>
     <string name="party">Party</string>
     <string name="filter">Filter</string>
+    <string name="tab_type">Type</string>
+    <string name="tab_effect">Effect</string>
+    <string name="tab_sinner">Sinner</string>
+    <string name="filter_mode_identity">Identity</string>
+    <string name="filter_mode_ego">Ego</string>
 </resources>

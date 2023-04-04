@@ -14,7 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
-import ua.blackwind.limbushelper.ui.common.SegmentedButton
+import ua.blackwind.limbushelper.ui.common.FilterModeSegmentedButton
 import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.FilterDrawerSheet
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
@@ -27,8 +27,11 @@ fun FilterScreen() {
     val viewModel = hiltViewModel<FilterScreenViewModel>()
     val identities by viewModel.filteredItems.collectAsState()
     val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
-    val filterDrawerMode by viewModel.filterDrawerSheetTab.collectAsState()
+    val filterDrawerTab by viewModel.filterDrawerSheetTab.collectAsState()
     val filterSkillSinPickerVisible by viewModel.sinPickerVisible.collectAsState()
+    val filterMode by viewModel.filterMode.collectAsState()
+
+
     val labels = FilterResistButtonLabels(
         stringResource(R.string.res_ineff),
         stringResource(R.string.res_normal),
@@ -48,8 +51,9 @@ fun FilterScreen() {
 
     FilterScreenUi(
         list = identities,
-        filterDrawerMode = filterDrawerMode,
+        filterDrawerSheetTab = filterDrawerTab,
         filterDrawerSheetState = filterDrawerSheetState,
+        filterMode = filterMode,
         filterSkillSinPickerVisible = filterSkillSinPickerVisible,
         resistLabels = labels,
         filterSheetMethods = filterSheetStateMethods,
@@ -63,8 +67,9 @@ fun FilterScreen() {
 @Composable
 fun FilterScreenUi(
     list: List<FilterDataModel>,
-    filterDrawerMode: FilterSheetTab,
+    filterDrawerSheetTab: FilterSheetTab,
     filterDrawerSheetState: FilterDrawerSheetState,
+    filterMode: FilterMode,
     filterSkillSinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
     filterSheetMethods: FilterDrawerSheetMethods,
@@ -76,7 +81,7 @@ fun FilterScreenUi(
         scaffoldState = rememberBottomSheetScaffoldState(),
         sheetContent = {
             FilterDrawerSheet(
-                mode = filterDrawerMode,
+                mode = filterDrawerSheetTab,
                 filterState = filterDrawerSheetState,
                 sinPickerVisible = filterSkillSinPickerVisible,
                 resistLabels = resistLabels,
@@ -84,12 +89,17 @@ fun FilterScreenUi(
             )
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize()) {
-            SegmentedButton(
-                items = listOf("IDENTITY","EGO"),
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            FilterModeSegmentedButton(
+                state = filterMode,
                 color = MaterialTheme.colorScheme.onPrimary,
                 onItemSelection = onFilterModeChanged
             )
+
             if (list.isEmpty()) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,

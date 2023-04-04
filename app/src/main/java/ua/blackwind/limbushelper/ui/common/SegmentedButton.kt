@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.ui.common
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
@@ -15,10 +16,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import ua.blackwind.limbushelper.R
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterMode
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetTab
 
 /**
  * items : list of items to be render
@@ -29,21 +34,72 @@ import androidx.compose.ui.zIndex
  * color : Set color to control (Optional)
  * onItemSelection : Get selected item index
  */
+
+@Composable
+fun FilterModeSegmentedButton(
+    state: FilterMode,
+    color: Color,
+    onItemSelection: (Int) -> Unit
+) {
+    val items = listOf(
+        stringResource(id = R.string.filter_mode_identity),
+        stringResource(id = R.string.filter_mode_ego)
+    )
+    val index = state.index
+    SegmentedButtonCore(
+        selectedIndex = index,
+        items = items,
+        color = color,
+        onItemSelection = onItemSelection
+    )
+}
+
+@Composable
+fun FilterDrawerTabSegmentedButton(
+    state: FilterSheetTab,
+    color: Color,
+    onItemSelection: (Int) -> Unit
+) {
+    val index = rememberSaveable {
+        mutableStateOf(
+            when (state) {
+                FilterSheetTab.Effects -> 0
+                FilterSheetTab.Sinners -> 1
+                FilterSheetTab.Type -> 2
+            }
+        )
+    }
+    val items = listOf(
+        stringResource(id = R.string.tab_type),
+        stringResource(id = R.string.tab_effect),
+        stringResource(id = R.string.tab_sinner)
+    )
+
+    val onItemSelected: (Int) -> Unit = {
+        index.value = it
+        onItemSelection(it)
+    }
+
+    SegmentedButtonCore(
+        items = items,
+        selectedIndex = index.value,
+        color = color,
+        onItemSelection = onItemSelected
+    )
+}
+
 @SuppressWarnings
 @Composable
-fun SegmentedButton(
+fun SegmentedButtonCore(
     items: List<String>,
-    defaultSelectedItemIndex: Int = 0,
+    selectedIndex: Int,
     useFixedWidth: Boolean = false,
     itemWidth: Dp = 120.dp,
     cornerRadius: Int = 10,
     color: Color,
     onItemSelection: (selectedItemIndex: Int) -> Unit
 ) {
-    val selectedIndex = rememberSaveable {
-        mutableStateOf(defaultSelectedItemIndex)
-    }
-
+    Log.d("SEGMENTED", "Index is $selectedIndex")
     Row(
         modifier = Modifier
     ) {
@@ -55,12 +111,12 @@ fun SegmentedButton(
                             Modifier
                                 .width(itemWidth)
                                 .offset(0.dp, 0.dp)
-                                .zIndex(if (selectedIndex.value == index) 1f else 0f)
+                                .zIndex(if (selectedIndex == index) 1f else 0f)
                         } else {
                             Modifier
                                 .wrapContentSize()
                                 .offset(0.dp, 0.dp)
-                                .zIndex(if (selectedIndex.value == index) 1f else 0f)
+                                .zIndex(if (selectedIndex == index) 1f else 0f)
                         }
                     }
                     else -> {
@@ -68,16 +124,15 @@ fun SegmentedButton(
                             Modifier
                                 .width(itemWidth)
                                 .offset((-1 * index).dp, 0.dp)
-                                .zIndex(if (selectedIndex.value == index) 1f else 0f)
+                                .zIndex(if (selectedIndex == index) 1f else 0f)
                         else Modifier
                             .wrapContentSize()
                             .offset((-1 * index).dp, 0.dp)
-                            .zIndex(if (selectedIndex.value == index) 1f else 0f)
+                            .zIndex(if (selectedIndex == index) 1f else 0f)
                     }
                 },
                 onClick = {
-                    selectedIndex.value = index
-                    onItemSelection(selectedIndex.value)
+                    onItemSelection(index)
                 },
                 shape = when (index) {
                     /**
@@ -109,13 +164,13 @@ fun SegmentedButton(
                     )
                 },
                 border = BorderStroke(
-                    1.dp, if (selectedIndex.value == index) {
+                    1.dp, if (selectedIndex == index) {
                         color
                     } else {
                         color.copy(alpha = 0.75f)
                     }
                 ),
-                colors = if (selectedIndex.value == index) {
+                colors = if (selectedIndex == index) {
                     /**
                      * selected colors
                      */
@@ -132,7 +187,7 @@ fun SegmentedButton(
                 Text(
                     text = item,
                     fontWeight = FontWeight.Normal,
-                    color = if (selectedIndex.value == index) {
+                    color = if (selectedIndex == index) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         color.copy(alpha = 0.9f)

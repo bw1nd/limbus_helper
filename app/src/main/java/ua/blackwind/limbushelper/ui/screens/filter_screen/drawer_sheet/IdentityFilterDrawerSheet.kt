@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
-import ua.blackwind.limbushelper.ui.common.SegmentedButton
+import ua.blackwind.limbushelper.ui.common.FilterDrawerTabSegmentedButton
 import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
@@ -68,10 +68,10 @@ fun FilterDrawerSheet(
                 )
             }
             Spacer(modifier = Modifier.weight(.4f))
-            SegmentedButton(
-                items = listOf("Type", "Effect", "Sinner"),
-                onItemSelection = methods.onSwitchChange,
-                color = MaterialTheme.colorScheme.onPrimary
+            FilterDrawerTabSegmentedButton(
+                state = mode,
+                color = MaterialTheme.colorScheme.onPrimary,
+                onItemSelection = methods.onSwitchChange
             )
             Spacer(modifier = Modifier.weight(.6f))
         }
@@ -130,6 +130,7 @@ fun FilterBlock(
             .height(FILTER_BLOCK_HEIGHT_DP.dp)
             .padding(bottom = 5.dp)
     ) {
+        state as FilterDrawerSheetState.IdentityMode
         when (mode) {
             FilterSheetTab.Effects -> FilterEffectsBlock(
                 state.effectsState,
@@ -194,7 +195,7 @@ private fun FilterTypeBlock(
 private fun PreviewFilterBlock() {
     FilterDrawerSheet(
         FilterSheetTab.Effects,
-        FilterDrawerSheetState(
+        FilterDrawerSheetState.IdentityMode(
             FilterSkillBlockState(
                 FilterDamageStateBundle(
                     StateType.Value(DamageType.BLUNT),
