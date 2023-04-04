@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.state
 
+
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
@@ -48,6 +49,18 @@ data class EgoFilterResistBlockState(
     val third: EgoFilterResistArg,
     val fourth: EgoFilterResistArg
 )
+
+//TODO this looks kinda sus, mb there is better way
+fun EgoFilterResistBlockState.toFilterArg() =
+    listOf(
+        first.resist to first.sin,
+        second.resist to second.sin,
+        third.resist to third.sin,
+        third.resist to third.sin
+    ).filter { it.first !is StateType.Empty && it.second !is StateType.Empty }
+        .map { (it.first as? StateType.Value<EgoSinResistType>)?.value as EgoSinResistType to (it.second as? StateType.Value<Sin>)?.value as Sin }
+
+
 
 data class EgoFilterResistArg(
     val sin: StateType<Sin>,

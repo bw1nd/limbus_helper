@@ -26,7 +26,6 @@ import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.toFilterDamageTypeArg
 import ua.blackwind.limbushelper.ui.util.toFilterSinTypeArg
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class FilterScreenViewModel @Inject constructor(
@@ -116,41 +115,36 @@ class FilterScreenViewModel @Inject constructor(
 
     fun onFilterButtonClick() {
         //TODO add dispatchers injection
-        val filterTime = measureTimeMillis {
-            viewModelScope.launch(Dispatchers.Default) {
-                _filteredItems.update {
-                    when (filterDrawerShitState.value) {
-                        is FilterDrawerSheetState.IdentityMode -> {
-                            val current =
-                                _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
-                            val skillState = current.skillState
-                            val resistState = current.resistState
-                            val effectState = current.effectsState
-                            val sinnerState = current.sinnersState
-                            itemListToFilterItemList(
-                                getFilteredIdentitiesUseCase(
-                                    formIdentityFilter(
-                                        resistState,
-                                        skillState,
-                                        effectState,
-                                        sinnerState
-                                    )
-                                ).map { FilterItemTypeModel.IdentityType(it) }, party.value
-                            )
-                        }
-                        is FilterDrawerSheetState.EgoMode -> getFilteredEgoUseCase(
-                            EgoFilter(
-                                FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Empty),
-                                EgoFilterSinResistTypeArg(emptyList()),
-                                EgoFilterPriceSetArg(emptyList()),
-                                emptyList(), emptyList()
-                            )
+        viewModelScope.launch(Dispatchers.Default) {
+            _filteredItems.update {
+                when (filterDrawerShitState.value) {
+                    is FilterDrawerSheetState.IdentityMode -> {
+                        val current =
+                            _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
+                        val skillState = current.skillState
+                        val resistState = current.resistState
+                        val effectState = current.effectsState
+                        val sinnerState = current.sinnersState
+                        itemListToFilterItemList(
+                            getFilteredIdentitiesUseCase(
+                                formIdentityFilter(
+                                    resistState,
+                                    skillState,
+                                    effectState,
+                                    sinnerState
+                                )
+                            ).map { FilterItemTypeModel.IdentityType(it) }, party.value
+                        )
+                    }
+                    is FilterDrawerSheetState.EgoMode -> {
+                        val current = _filterDrawerShitState.value as FilterDrawerSheetState.EgoMode
+                        getFilteredEgoUseCase(
+                            formEgoFilter(state = current)
                         ).map { FilterDataModel(FilterItemTypeModel.EgoType(it), false) }
                     }
                 }
             }
         }
-        Log.d("USECASE", "Execution time $filterTime")
     }
 
     fun onIdentityItemInPartyChecked(identity: FilterDataModel) {
@@ -486,6 +480,24 @@ class FilterScreenViewModel @Inject constructor(
             ),
             effects = effectState.effects.filter { it.value }.keys.toList(),
             sinners = sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
+        )
+    }
+
+    private fun formEgoFilter(state: FilterDrawerSheetState.EgoMode): EgoFilter {
+
+        return EgoFilter(
+            skillFilterArg = FilterSkillArg(
+                damageType = state.skillState.damageType.toFilterDamageTypeArg(),
+                sin = state.skillState.sinType.toFilterSinTypeArg()
+            ),
+            resistSetArg = EgoFilterSinResistTypeArg(
+                state.resistState.toFilterArg()
+            ),
+            priceSetArg = EgoFilterPriceSetArg(emptyList<Sin>()),
+            effects =
+            state.effectsState.effects.filter { it.value }.keys.toList(),
+            sinners = state.sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
+
         )
     }
 

@@ -14,19 +14,3 @@ class GetFilteredEgoUseCase @Inject constructor(
         return repository.getAllEgo()
     }
 }
-
-data class EgoFilter(
-    val skillFilterArg: FilterSkillArg,
-    val resistSetArg: EgoFilterSinResistTypeArg,
-    val priceSetArg: EgoFilterPriceSetArg,
-    val effects: List<Effect>,
-    val sinners: List<Int>
-)
-
-data class EgoFilterSinResistTypeArg(
-    val resistList: List<Pair<EgoSinResistType, Sin>>
-)
-
-data class EgoFilterPriceSetArg(
-    val priceList: List<Sin>
-)
