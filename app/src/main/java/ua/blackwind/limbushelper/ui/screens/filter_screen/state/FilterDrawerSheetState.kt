@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.ui.screens.filter_screen.state
 
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.util.StateType
@@ -9,44 +10,74 @@ import ua.blackwind.limbushelper.ui.util.StateType
 private const val FIRST_SINNER_ID = 1
 private const val LAST_SINNER_ID = 12
 
-data class FilterDrawerSheetState(
-    val skillState: FilterSkillBlockState,
-    val resistState: FilterDamageStateBundle,
-    val effectsState: FilterEffectBlockState,
-    val sinnersState: FilterSinnersBlockState
-) {
-    companion object {
-        fun getDefaultState() =
-            FilterDrawerSheetState(
-                emptyFilterSkillBlockState(),
-                emptyFilterResistClockState(),
-                emptyFilterEffectBlockState(),
-                emptyFilterSinnerBlockState()
-            )
+
+sealed interface FilterDrawerSheetState {
+    data class IdentityMode(
+        val skillState: FilterSkillBlockState,
+        val resistState: FilterDamageStateBundle,
+        val effectsState: FilterEffectBlockState,
+        val sinnersState: FilterSinnersBlockState
+    ): FilterDrawerSheetState {
+        companion object {
+            fun getDefaultState() =
+                IdentityMode(
+                    emptyFilterSkillBlockState(),
+                    emptyFilterResistClockState(),
+                    emptyFilterEffectBlockState(),
+                    emptyFilterSinnerBlockState()
+                )
+        }
     }
+
+    data class EgoMode(
+        val skillState: EgoFilterSkillBlockState,
+        val resistState: EgoFilterResistBlockState,
+        val effectsState: FilterEffectBlockState,
+        val sinnersState: FilterSinnersBlockState
+    ): FilterDrawerSheetState
 }
+
+data class EgoFilterSkillBlockState(
+    val damageType: StateType<DamageType>,
+    val sinType: StateType<Sin>
+)
+
+data class EgoFilterResistBlockState(
+    val first: EgoFilterResistArg,
+    val second: EgoFilterResistArg,
+    val third: EgoFilterResistArg,
+    val fourth: EgoFilterResistArg
+)
+
+data class EgoFilterResistArg(
+    val sin: StateType<Sin>,
+    val resist: StateType<EgoSinResistType>
+)
+
+data class EgoResistButtonLabels(
+    val normal: String,
+    val endure: String,
+    val ineffective: String,
+    val fatal: String
+)
 
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,
     val onFilterButtonClick: () -> Unit,
     val onClearFilterButtonPress: () -> Unit,
-    val onSkillButtonClick: (SelectedButtonPosition) -> Unit,
-    val onSkillButtonLongPress: (SelectedButtonPosition) -> Unit,
+    val onSkillButtonClick: (SelectedSkillButtonPosition) -> Unit,
+    val onSkillButtonLongPress: (SelectedSkillButtonPosition) -> Unit,
     val onSinPickerClick: (StateType<Sin>) -> Unit,
-    val onResistButtonClick: (SelectedButtonPosition) -> Unit,
+    val onResistButtonClick: (SelectedSkillButtonPosition) -> Unit,
+    val onResistButtonLongPress: (SelectedResistButtonPosition) -> Unit,
     val onEffectCheckedChange: (Boolean, Effect) -> Unit,
     val onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 )
 
-sealed class FilterSheetTab {
-    object Type: FilterSheetTab()
-    object Effects: FilterSheetTab()
-    object Sinners: FilterSheetTab()
-}
-
-sealed class FilterMode {
-    object Identity: FilterMode()
-    object Ego: FilterMode()
+sealed class FilterSheetTab(val index: Int) {
+    object Type: FilterSheetTab(0)
+    object Effects: FilterSheetTab(1)
+    object Sinners: FilterSheetTab(2)
 }
 
 /**
@@ -96,12 +127,21 @@ data class FilterResistButtonLabels(
     val fatal: String
 )
 
-sealed class SelectedButtonPosition {
-    object None: SelectedButtonPosition()
-    object First: SelectedButtonPosition()
-    object Second: SelectedButtonPosition()
-    object Third: SelectedButtonPosition()
+sealed class SelectedSkillButtonPosition {
+    object None: SelectedSkillButtonPosition()
+    object First: SelectedSkillButtonPosition()
+    object Second: SelectedSkillButtonPosition()
+    object Third: SelectedSkillButtonPosition()
 }
+
+sealed class SelectedResistButtonPosition {
+    object None: SelectedResistButtonPosition()
+    object First: SelectedResistButtonPosition()
+    object Second: SelectedResistButtonPosition()
+    object Third: SelectedResistButtonPosition()
+    object Fourth: SelectedResistButtonPosition()
+}
+
 
 private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
     FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),

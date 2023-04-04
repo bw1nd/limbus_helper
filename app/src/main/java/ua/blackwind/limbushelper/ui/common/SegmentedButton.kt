@@ -62,11 +62,7 @@ fun FilterDrawerTabSegmentedButton(
 ) {
     val index = rememberSaveable {
         mutableStateOf(
-            when (state) {
-                FilterSheetTab.Effects -> 0
-                FilterSheetTab.Sinners -> 1
-                FilterSheetTab.Type -> 2
-            }
+            state.index
         )
     }
     val items = listOf(

@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.db.model.*
 
@@ -18,6 +19,7 @@ import ua.blackwind.limbushelper.data.db.model.*
     exportSchema = false,
     version = 1
 )
+@TypeConverters(RoomTypeConverters::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract val dao: Dao
 

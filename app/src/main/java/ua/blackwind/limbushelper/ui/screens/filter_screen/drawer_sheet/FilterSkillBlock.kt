@@ -21,36 +21,37 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterSkillBlockState
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSkillBlockState
-import ua.blackwind.limbushelper.ui.screens.filter_screen.state.SelectedButtonPosition
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.SelectedSkillButtonPosition
 import ua.blackwind.limbushelper.ui.util.HexagonShape
 import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.getSinColor
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
 @Composable
-fun FilterSkillBlock(
+fun IdentityFilterSkillBlock(
     state: FilterSkillBlockState,
-    onButtonClick: (SelectedButtonPosition) -> Unit,
-    onButtonLongPress: (SelectedButtonPosition) -> Unit
+    onButtonClick: (SelectedSkillButtonPosition) -> Unit,
+    onButtonLongPress: (SelectedSkillButtonPosition) -> Unit
 ) {
     Row {
         FilterSkillButton(
-            id = SelectedButtonPosition.First,
+            id = SelectedSkillButtonPosition.First,
             damage = state.damage.first,
             sin = state.sin.first,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = SelectedButtonPosition.Second,
+            id = SelectedSkillButtonPosition.Second,
             damage = state.damage.second,
             sin = state.sin.second,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = SelectedButtonPosition.Third,
+            id = SelectedSkillButtonPosition.Third,
             damage = state.damage.third,
             sin = state.sin.third,
             onClick = onButtonClick,
@@ -59,14 +60,29 @@ fun FilterSkillBlock(
     }
 }
 
+@Composable
+fun EgoFilterSkillBlock(
+    state: EgoFilterSkillBlockState,
+    onButtonClick: () -> Unit,
+    onButtonLongPress: () -> Unit
+) {
+    FilterSkillButton(
+        id = SelectedSkillButtonPosition.First,
+        damage = state.damageType,
+        sin = state.sinType,
+        onClick = { onButtonClick() },
+        onButtonLongPress = { onButtonLongPress() }
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterSkillButton(
-    id: SelectedButtonPosition,
+    id: SelectedSkillButtonPosition,
     damage: StateType<DamageType>,
     sin: StateType<Sin>,
-    onClick: (SelectedButtonPosition) -> Unit,
-    onButtonLongPress: (SelectedButtonPosition) -> Unit
+    onClick: (SelectedSkillButtonPosition) -> Unit,
+    onButtonLongPress: (SelectedSkillButtonPosition) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.primary
@@ -110,7 +126,6 @@ fun FilterSkillButton(
         }
     }
 }
-
 
 
 @Composable

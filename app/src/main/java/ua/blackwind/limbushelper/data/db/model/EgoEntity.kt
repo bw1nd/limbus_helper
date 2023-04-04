@@ -23,11 +23,9 @@ data class EgoEntity(
     val awakeningSkillId: Int,
     val corrosionSkillId: Int,
     val passiveId: Int,
-    // @TypeConverters(EgoResourceCostTypeConverter::class)
-    val resourceCost: String,
+    val resourceCost: Map<Sin, Int>,
     val sanityCost: Int,
-    //@TypeConverters(EgoSinResistancesTypeConverter::class)
-    val sinResistances: String,
+    val sinResistances: Map<Sin, EgoSinResistType>,
     val imageUrl: String
 )
 
@@ -46,14 +44,14 @@ suspend fun EgoEntity.toEgo(
         awakeningSkill = awakeningSkill,
         corrosionSkill = corrosionSkill,
         passive = passive,
-        resourceCost = emptyMap(),
+        resourceCost = resourceCost,
         sanityCost = sanityCost,
-        sinResistances = emptyMap(),
+        sinResistances = sinResistances,
         imageUrl = imageUrl
     )
 }
 
-class EgoResourceCostTypeConverter {
+class RoomTypeConverters {
     @TypeConverter
     fun fromResourceCostMap(value: Map<Sin, Int>): String {
         val sortedMap = TreeMap(value)
@@ -75,9 +73,7 @@ class EgoResourceCostTypeConverter {
             res
         }
     }
-}
 
-class EgoSinResistancesTypeConverter {
     @TypeConverter
     fun fromSinResistancesMap(value: Map<Sin, EgoSinResistType>): String {
         val sortedMap = TreeMap(value)

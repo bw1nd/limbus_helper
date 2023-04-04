@@ -149,6 +149,7 @@ fun EgoResistItem(sin: Sin, egoSinResistType: EgoSinResistType) {
                 EgoSinResistType.INEFFECTIVE -> stringResource(id = R.string.res_ineff)
                 EgoSinResistType.ENDURE -> stringResource(id = R.string.res_endure)
                 EgoSinResistType.FATAL -> stringResource(id = R.string.res_fatal)
+                EgoSinResistType.NORMAL -> throw IllegalArgumentException("Ego Card should not have info on Normal resistances.")
             },
             fontSize = 10.sp,
             color = MaterialTheme.colorScheme.onPrimary

@@ -5,7 +5,7 @@ import ua.blackwind.limbushelper.data.db.model.IdentityEntity
 
 interface IdentityDao {
     @Query("SELECT * FROM identity")
-    suspend fun getAllIdentities(): List<IdentityEntity>
+    fun getAllIdentities(): List<IdentityEntity>
 
     @Query("SELECT * FROM identity WHERE id = :id")
     suspend fun getIdentityById(id: Int): IdentityEntity

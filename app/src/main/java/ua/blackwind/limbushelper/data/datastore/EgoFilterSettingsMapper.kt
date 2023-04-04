@@ -1,7 +1,6 @@
 package ua.blackwind.limbushelper.data.datastore
 
 import androidx.datastore.core.CorruptionException
-import ua.blackwind.limbus_helper.EgoFilterSettings
 import ua.blackwind.limbus_helper.EgoFilterSettings.EgoSettings
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
@@ -70,18 +69,22 @@ class EgoFilterSettingsMapper @Inject constructor() {
                 EgoSettings.FilterResistStateBundle.newBuilder()
                     .setFirst(
                         EgoSettings.FilterResistStateArg.newBuilder()
+                            .setSin(sinSkillStateToSettings(state.resistState.first.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.first.resist))
                     )
                     .setSecond(
                         EgoSettings.FilterResistStateArg.newBuilder()
+                            .setSin(sinSkillStateToSettings(state.resistState.second.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.second.resist))
                     )
                     .setThird(
                         EgoSettings.FilterResistStateArg.newBuilder()
+                            .setSin(sinSkillStateToSettings(state.resistState.third.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.third.resist))
                     )
                     .setFourth(
                         EgoSettings.FilterResistStateArg.newBuilder()
+                            .setSin(sinSkillStateToSettings(state.resistState.fourth.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.fourth.resist))
                     ).build()
             )

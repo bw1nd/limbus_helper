@@ -8,6 +8,7 @@ import ua.blackwind.limbus_helper.FilterModeSettings
 import ua.blackwind.limbus_helper.IdentityFilterSettings
 
 import ua.blackwind.limbus_helper.PartySettingsOuterClass.PartySettings
+import ua.blackwind.limbushelper.data.datastore.EgoFilterSettingsMapper
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterDrawerSheetState
 import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterMode
@@ -18,7 +19,8 @@ class PreferencesRepository @Inject constructor(
     private val identityFilterSettingsDataStore: DataStore<IdentityFilterSettings.IdentitySettings>,
     private val egoFilterSettingsDataStore: DataStore<EgoFilterSettings.EgoSettings>,
     private val partySettingsDataStore: DataStore<PartySettings>,
-    private val mapper: IdentityFilterSettingsMapper
+    private val mapper: IdentityFilterSettingsMapper,
+    private val egoMapper: EgoFilterSettingsMapper
 ) {
     fun getIdentityFilterSheetSettings(): Flow<IdentityFilterSettings.IdentitySettings> =
         identityFilterSettingsDataStore.data
@@ -32,6 +34,12 @@ class PreferencesRepository @Inject constructor(
     suspend fun updateIdentityFilterSheetSettings(state: FilterDrawerSheetState.IdentityMode) {
         identityFilterSettingsDataStore.updateData { old ->
             mapper.mapStateToSettings(state, old)
+        }
+    }
+
+    suspend fun updateEgoFilterSheetSettings(state: FilterDrawerSheetState.EgoMode){
+        egoFilterSettingsDataStore.updateData { old ->
+            egoMapper.mapStateToSettings(state, old)
         }
     }
 

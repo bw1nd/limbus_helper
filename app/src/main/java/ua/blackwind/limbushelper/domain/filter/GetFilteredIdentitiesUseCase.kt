@@ -10,8 +10,10 @@ import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
 
 class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: ISinnerRepository) {
+
     suspend operator fun invoke(filter: IdentityFilter): List<Identity> {
         val identities = repository.getAllIdentities()
+
         if (filter.isEmpty()) return identities
 
         val sinnerIsEmpty = filter.sinners.isEmpty()
@@ -41,7 +43,10 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         return filter.any { it == identity.sinnerId }
     }
 
-    private fun identityPassSkillFilter(identity: Identity, filter: IdentityFilterSkillsSetArg): Boolean {
+    private fun identityPassSkillFilter(
+        identity: Identity,
+        filter: IdentityFilterSkillsSetArg
+    ): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
         val filterSkills = filter.toSkillList().toMutableList()

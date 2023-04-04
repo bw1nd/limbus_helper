@@ -28,7 +28,8 @@ fun FilterScreen() {
     val identities by viewModel.filteredItems.collectAsState()
     val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
     val filterDrawerTab by viewModel.filterDrawerSheetTab.collectAsState()
-    val filterSkillSinPickerVisible by viewModel.sinPickerVisible.collectAsState()
+    val filterSkillSinPickerVisible by viewModel.skillSinPickerVisible.collectAsState()
+    val filterResistSinPickerVisible by viewModel.resistSinPickerVisible.collectAsState()
     val filterMode by viewModel.filterMode.collectAsState()
 
 
@@ -45,6 +46,7 @@ fun FilterScreen() {
         onSkillButtonLongPress = viewModel::onFilterSkillButtonLongPress,
         onSinPickerClick = viewModel::onFilterSinPickerPress,
         onResistButtonClick = viewModel::onFilterResistButtonClick,
+        onResistButtonLongPress = viewModel::onEgoResistButtonLongPress,
         onEffectCheckedChange = viewModel::onEffectCheckedChange,
         onSinnerCheckedChange = viewModel::onSinnerCheckedChange
     )
@@ -55,6 +57,7 @@ fun FilterScreen() {
         filterDrawerSheetState = filterDrawerSheetState,
         filterMode = filterMode,
         filterSkillSinPickerVisible = filterSkillSinPickerVisible,
+        filterResistSinPickerVisible = filterResistSinPickerVisible,
         resistLabels = labels,
         filterSheetMethods = filterSheetStateMethods,
         onFilterModeChanged = viewModel::onFilterModeSwitch,
@@ -71,6 +74,7 @@ fun FilterScreenUi(
     filterDrawerSheetState: FilterDrawerSheetState,
     filterMode: FilterMode,
     filterSkillSinPickerVisible: Boolean,
+    filterResistSinPickerVisible: Boolean,
     resistLabels: FilterResistButtonLabels,
     filterSheetMethods: FilterDrawerSheetMethods,
     onFilterModeChanged: (Int) -> Unit,
@@ -83,7 +87,8 @@ fun FilterScreenUi(
             FilterDrawerSheet(
                 mode = filterDrawerSheetTab,
                 filterState = filterDrawerSheetState,
-                sinPickerVisible = filterSkillSinPickerVisible,
+                skillSinPickerVisible = filterSkillSinPickerVisible,
+                resistSinPickerVisible = filterResistSinPickerVisible,
                 resistLabels = resistLabels,
                 methods = filterSheetMethods
             )
