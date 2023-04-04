@@ -35,7 +35,17 @@ sealed interface FilterDrawerSheetState {
         val resistState: EgoFilterResistBlockState,
         val effectsState: FilterEffectBlockState,
         val sinnersState: FilterSinnersBlockState
-    ): FilterDrawerSheetState
+    ): FilterDrawerSheetState {
+        companion object {
+            fun getDefaultState() =
+                EgoMode(
+                    EgoFilterSkillBlockState(StateType.Empty, StateType.Empty),
+                    emptyEgoFilterResistBlockState(),
+                    emptyFilterEffectBlockState(),
+                    emptyFilterSinnerBlockState()
+                )
+        }
+    }
 }
 
 data class EgoFilterSkillBlockState(
@@ -59,7 +69,6 @@ fun EgoFilterResistBlockState.toFilterArg() =
         third.resist to third.sin
     ).filter { it.first !is StateType.Empty && it.second !is StateType.Empty }
         .map { (it.first as? StateType.Value<EgoSinResistType>)?.value as EgoSinResistType to (it.second as? StateType.Value<Sin>)?.value as Sin }
-
 
 
 data class EgoFilterResistArg(
@@ -170,5 +179,12 @@ fun emptyFilterEffectBlockState() = FilterEffectBlockState(
 
 fun emptyFilterSinnerBlockState() = FilterSinnersBlockState(
     (FIRST_SINNER_ID..LAST_SINNER_ID).associate { index -> FilterSinnerModel(index) to false }
+)
+
+fun emptyEgoFilterResistBlockState() = EgoFilterResistBlockState(
+    first = EgoFilterResistArg(StateType.Empty, StateType.Empty),
+    second = EgoFilterResistArg(StateType.Empty, StateType.Empty),
+    third = EgoFilterResistArg(StateType.Empty, StateType.Empty),
+    fourth = EgoFilterResistArg(StateType.Empty, StateType.Empty)
 )
 

@@ -193,6 +193,14 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onClearFilterButtonPress() {
+        when (_filterDrawerShitState.value) {
+            is FilterDrawerSheetState.EgoMode -> updateFilterDrawerSheetState(
+                FilterDrawerSheetState.EgoMode.getDefaultState()
+            )
+            is FilterDrawerSheetState.IdentityMode -> updateFilterDrawerSheetState(
+                FilterDrawerSheetState.IdentityMode.getDefaultState()
+            )
+        }
         updateFilterDrawerSheetState(FilterDrawerSheetState.IdentityMode.getDefaultState())
     }
 

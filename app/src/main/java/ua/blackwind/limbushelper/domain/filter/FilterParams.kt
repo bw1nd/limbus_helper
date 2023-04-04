@@ -64,6 +64,9 @@ data class FilterSkillArg(
     val sin: FilterSinTypeArg
 )
 
+fun FilterSkillArg.isEmpty() =
+    damageType is FilterDamageTypeArg.Empty && sin is FilterSinTypeArg.Empty
+
 fun FilterSkillArg.isStrict() = this.damageType !is FilterDamageTypeArg.Empty &&
         this.sin !is FilterSinTypeArg.Empty
 
