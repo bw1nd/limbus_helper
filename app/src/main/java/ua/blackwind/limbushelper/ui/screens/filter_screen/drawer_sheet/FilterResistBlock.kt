@@ -30,23 +30,23 @@ import ua.blackwind.limbushelper.ui.util.getSinColor
 @Composable
 fun IdentityFilterResistBlock(
     state: FilterDamageStateBundle,
-    onButtonClick: (SelectedSkillButtonPosition) -> Unit
+    onButtonClick: (FilterSheetButtonPosition) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilterResistButton(
-            SelectedSkillButtonPosition.First,
+            FilterSheetButtonPosition.First,
             label = stringResource(id = R.string.res_ineff),
             state = state.first,
             onClick = onButtonClick
         )
         FilterResistButton(
-            SelectedSkillButtonPosition.Second,
+            FilterSheetButtonPosition.Second,
             label = stringResource(id = R.string.res_normal),
             state = state.second,
             onClick = onButtonClick
         )
         FilterResistButton(
-            SelectedSkillButtonPosition.Third,
+            FilterSheetButtonPosition.Third,
             label = stringResource(id = R.string.res_fatal),
             state = state.third,
             onClick = onButtonClick
@@ -57,15 +57,15 @@ fun IdentityFilterResistBlock(
 @Composable
 fun EgoFilterResistBlock(
     state: EgoFilterResistBlockState,
-    onButtonClick: (SelectedResistButtonPosition) -> Unit,
-    onButtonLongPress: (SelectedResistButtonPosition) -> Unit,
+    onButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onButtonLongPress: (FilterSheetButtonPosition) -> Unit,
 ) {
     val (first, second, third) = state
     Row() {
         listOf(
-            SelectedResistButtonPosition.First to first,
-            SelectedResistButtonPosition.Second to second,
-            SelectedResistButtonPosition.Third to third,
+            FilterSheetButtonPosition.First to first,
+            FilterSheetButtonPosition.Second to second,
+            FilterSheetButtonPosition.Third to third,
         ).forEach { (id, current) ->
             EgoFilterResistButton(
                 id = id,
@@ -86,12 +86,12 @@ fun EgoFilterResistBlock(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EgoFilterResistButton(
-    id: SelectedResistButtonPosition, label: String,
+    id: FilterSheetButtonPosition, label: String,
     state: EgoFilterResistArg,
-    onClick: (SelectedResistButtonPosition) -> Unit,
-    onLongPress: (SelectedResistButtonPosition) -> Unit
+    onClick: (FilterSheetButtonPosition) -> Unit,
+    onLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
-    require(id !is SelectedResistButtonPosition.None)
+    require(id !is FilterSheetButtonPosition.None)
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.combinedClickable(
             onClick = { onClick(id) },
@@ -122,12 +122,12 @@ fun EgoFilterResistButton(
 
 @Composable
 fun FilterResistButton(
-    id: SelectedSkillButtonPosition,
+    id: FilterSheetButtonPosition,
     label: String,
     state: StateType<DamageType>,
-    onClick: (SelectedSkillButtonPosition) -> Unit
+    onClick: (FilterSheetButtonPosition) -> Unit
 ) {
-    require(id !is SelectedSkillButtonPosition.None)
+    require(id !is FilterSheetButtonPosition.None)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

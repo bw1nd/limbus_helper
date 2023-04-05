@@ -32,8 +32,7 @@ private const val FILTER_BLOCK_HEIGHT_DP = 170
 fun FilterDrawerSheet(
     mode: FilterSheetTab,
     filterState: FilterDrawerSheetState,
-    skillSinPickerVisible: Boolean,
-    resistSinPickerVisible: Boolean,
+    sinPickerState: SinPickerState,
     methods: FilterDrawerSheetMethods
 ) {
     Column(
@@ -76,13 +75,13 @@ fun FilterDrawerSheet(
         FilterBlock(
             mode = mode,
             state = filterState,
-            skillSinPickerVisible = skillSinPickerVisible,
-            resistSinPickerVisible = resistSinPickerVisible,
+            sinPickerState = sinPickerState,
             onSkillButtonClick = methods.onSkillButtonClick,
             onSkillButtonLongPress = methods.onSkillButtonLongPress,
             onIdentityResistButtonClick = methods.onIdentityResistButtonClick,
             onEgoResistButtonClick = methods.onEgoResistButtonClick,
             onEgoResistButtonLongPress = methods.onEgoResistButtonLongPress,
+            onPriceButtonLongPress = methods.onEgoPriceButtonLongPress,
             onSinPickerClick = methods.onSinPickerClick,
             onEffectCheckedChange = methods.onEffectCheckedChange,
             onSinnerCheckedChange = methods.onSinnerCheckedChange
@@ -114,14 +113,14 @@ fun FilterDrawerSheet(
 fun FilterBlock(
     mode: FilterSheetTab,
     state: FilterDrawerSheetState,
-    skillSinPickerVisible: Boolean,
-    resistSinPickerVisible: Boolean,
-    onSkillButtonClick: (SelectedSkillButtonPosition) -> Unit,
-    onSkillButtonLongPress: (SelectedSkillButtonPosition) -> Unit,
+    sinPickerState: SinPickerState,
+    onSkillButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onSkillButtonLongPress: (FilterSheetButtonPosition) -> Unit,
     onSinPickerClick: (StateType<Sin>) -> Unit,
-    onIdentityResistButtonClick: (SelectedSkillButtonPosition) -> Unit,
-    onEgoResistButtonClick: (SelectedResistButtonPosition) -> Unit,
-    onEgoResistButtonLongPress: (SelectedResistButtonPosition) -> Unit,
+    onIdentityResistButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onEgoResistButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onEgoResistButtonLongPress: (FilterSheetButtonPosition) -> Unit,
+    onPriceButtonLongPress: (FilterSheetButtonPosition) -> Unit,
     onEffectCheckedChange: (Boolean, Effect) -> Unit,
     onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 ) {
@@ -162,28 +161,29 @@ fun FilterBlock(
             FilterSheetTab.Type -> {
                 when (state) {
                     is FilterDrawerSheetState.EgoMode -> EgoFilterTypeBlock(
-                        skillSinPickerVisible = skillSinPickerVisible,
-                        resistSinPickerVisible = resistSinPickerVisible,
+                        sinPickerState = sinPickerState,
                         onSinPickerClick = onSinPickerClick,
                         skillState = state.skillState,
                         resistState = state.resistState,
-                        onSkillButtonClick = { onSkillButtonClick(SelectedSkillButtonPosition.First) },
+                        priceState = state.priceState,
+                        onSkillButtonClick = { onSkillButtonClick(FilterSheetButtonPosition.First) },
                         onSkillButtonLongPress = {
                             onSkillButtonLongPress(
-                                SelectedSkillButtonPosition.First
+                                FilterSheetButtonPosition.First
                             )
                         },
                         onResistButtonClick = onEgoResistButtonClick,
-                        onResistButtonLongPress = onEgoResistButtonLongPress
+                        onResistButtonLongPress = onEgoResistButtonLongPress,
+                        onPriceButtonLongPress = onPriceButtonLongPress
                     )
                     is FilterDrawerSheetState.IdentityMode -> IdentityFilterTypeBlock(
-                        skillSinPickerVisible,
-                        onSinPickerClick,
-                        skillState,
-                        onSkillButtonClick,
-                        onSkillButtonLongPress,
-                        resistState,
-                        onIdentityResistButtonClick
+                        sinPickerState = sinPickerState,
+                        onSinPickerClick = onSinPickerClick,
+                        skillState = skillState,
+                        onSkillButtonClick = onSkillButtonClick,
+                        onSkillButtonLongPress = onSkillButtonLongPress,
+                        resistState = resistState,
+                        onResistButtonClick = onIdentityResistButtonClick
                     )
                 }
             }
@@ -197,22 +197,25 @@ fun FilterBlock(
 
 @Composable
 fun EgoFilterTypeBlock(
-    skillSinPickerVisible: Boolean,
-    resistSinPickerVisible: Boolean,
+    sinPickerState: SinPickerState,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     skillState: EgoFilterSkillBlockState,
     resistState: EgoFilterResistBlockState,
+    priceState: EgoFilterPriceState,
     onSkillButtonClick: () -> Unit,
     onSkillButtonLongPress: () -> Unit,
-    onResistButtonClick: (SelectedResistButtonPosition) -> Unit,
-    onResistButtonLongPress: (SelectedResistButtonPosition) -> Unit
+    onResistButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onResistButtonLongPress: (FilterSheetButtonPosition) -> Unit,
+    onPriceButtonLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .requiredHeight(75.dp)
     ) {
-        if (skillSinPickerVisible) {
+        if (sinPickerState is SinPickerState.SkillSelected
+            || sinPickerState is SinPickerState.EgoPriceSelected
+        ) {
             SinPicker(onClick = onSinPickerClick)
         } else {
             EgoFilterSkillBlock(
@@ -220,6 +223,7 @@ fun EgoFilterTypeBlock(
                 onButtonClick = onSkillButtonClick,
                 onButtonLongPress = onSkillButtonLongPress
             )
+            EgoFilterPriceBlock(state = priceState, onClick = onPriceButtonLongPress)
         }
     }
     Divider(
@@ -229,7 +233,7 @@ fun EgoFilterTypeBlock(
             .width(300.dp)
             .padding(5.dp)
     )
-    if (resistSinPickerVisible) {
+    if (sinPickerState is SinPickerState.EgoResistSelected) {
         SinPicker(onClick = onSinPickerClick)
     } else {
         EgoFilterResistBlock(
@@ -242,20 +246,20 @@ fun EgoFilterTypeBlock(
 
 @Composable
 private fun IdentityFilterTypeBlock(
-    sinPickerVisible: Boolean,
+    sinPickerState: SinPickerState,
     onSinPickerClick: (StateType<Sin>) -> Unit,
     skillState: FilterSkillBlockState,
-    onSkillButtonClick: (SelectedSkillButtonPosition) -> Unit,
-    onSkillButtonLongPress: (SelectedSkillButtonPosition) -> Unit,
+    onSkillButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onSkillButtonLongPress: (FilterSheetButtonPosition) -> Unit,
     resistState: FilterDamageStateBundle,
-    onResistButtonClick: (SelectedSkillButtonPosition) -> Unit
+    onResistButtonClick: (FilterSheetButtonPosition) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .requiredHeight(75.dp)
     ) {
-        if (sinPickerVisible) {
+        if (sinPickerState is SinPickerState.SkillSelected) {
             SinPicker(onClick = onSinPickerClick)
         } else {
             IdentityFilterSkillBlock(

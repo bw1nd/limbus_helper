@@ -28,8 +28,7 @@ fun FilterScreen() {
     val identities by viewModel.filteredItems.collectAsState()
     val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
     val filterDrawerTab by viewModel.filterDrawerSheetTab.collectAsState()
-    val filterSkillSinPickerVisible by viewModel.skillSinPickerVisible.collectAsState()
-    val filterResistSinPickerVisible by viewModel.resistSinPickerVisible.collectAsState()
+    val sinPickerState by viewModel.sinPickerState.collectAsState()
     val filterMode by viewModel.filterMode.collectAsState()
 
 
@@ -43,6 +42,7 @@ fun FilterScreen() {
         onIdentityResistButtonClick = viewModel::onIdentityFilterResistButtonClick,
         onEgoResistButtonClick = viewModel::onEgoFilterResistButtonClick,
         onEgoResistButtonLongPress = viewModel::onEgoResistButtonLongPress,
+        onEgoPriceButtonLongPress = viewModel::onEgoFilterPriceButtonLongPress,
         onEffectCheckedChange = viewModel::onEffectCheckedChange,
         onSinnerCheckedChange = viewModel::onSinnerCheckedChange
     )
@@ -52,8 +52,7 @@ fun FilterScreen() {
         filterDrawerSheetTab = filterDrawerTab,
         filterDrawerSheetState = filterDrawerSheetState,
         filterMode = filterMode,
-        filterSkillSinPickerVisible = filterSkillSinPickerVisible,
-        filterResistSinPickerVisible = filterResistSinPickerVisible,
+        sinPickerState = sinPickerState,
         filterSheetMethods = filterSheetStateMethods,
         onFilterModeChanged = viewModel::onFilterModeSwitch,
         onInPartyChecked = viewModel::onItemInPartyChecked,
@@ -68,8 +67,7 @@ fun FilterScreenUi(
     filterDrawerSheetTab: FilterSheetTab,
     filterDrawerSheetState: FilterDrawerSheetState,
     filterMode: FilterMode,
-    filterSkillSinPickerVisible: Boolean,
-    filterResistSinPickerVisible: Boolean,
+    sinPickerState: SinPickerState,
     filterSheetMethods: FilterDrawerSheetMethods,
     onFilterModeChanged: (Int) -> Unit,
     onInPartyChecked: (FilterDataModel) -> Unit,
@@ -81,8 +79,7 @@ fun FilterScreenUi(
             FilterDrawerSheet(
                 mode = filterDrawerSheetTab,
                 filterState = filterDrawerSheetState,
-                skillSinPickerVisible = filterSkillSinPickerVisible,
-                resistSinPickerVisible = filterResistSinPickerVisible,
+                sinPickerState = sinPickerState,
                 methods = filterSheetMethods
             )
         }

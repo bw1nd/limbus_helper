@@ -56,16 +56,11 @@ class FilterScreenViewModel @Inject constructor(
     private val _filterDrawerSheetTab = MutableStateFlow<FilterSheetTab>(FilterSheetTab.Type)
     val filterDrawerSheetTab = _filterDrawerSheetTab.asStateFlow()
 
-    private val _skillSinPickerVisible = MutableStateFlow(false)
-    val skillSinPickerVisible = _skillSinPickerVisible.asStateFlow()
+    private val _sinPickerState = MutableStateFlow<SinPickerState>(SinPickerState.Gone)
+    val sinPickerState = _sinPickerState.asStateFlow()
 
-    private val _resistSinPickerVisible = MutableStateFlow(false)
-    val resistSinPickerVisible = _resistSinPickerVisible.asStateFlow()
-
-    private var selectedSkillSheetButtonPosition: SelectedSkillButtonPosition =
-        SelectedSkillButtonPosition.None
-    private var selectedResistSheetButtonPosition: SelectedResistButtonPosition =
-        SelectedResistButtonPosition.None
+    private var selectedSheetButtonPosition: FilterSheetButtonPosition =
+        FilterSheetButtonPosition.None
 
     init {
         viewModelScope.launch {
@@ -211,6 +206,7 @@ class FilterScreenViewModel @Inject constructor(
             )
         }
         updateFilterDrawerSheetState(FilterDrawerSheetState.IdentityMode.getDefaultState())
+        _sinPickerState.update { SinPickerState.Gone }
     }
 
     fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
@@ -247,22 +243,20 @@ class FilterScreenViewModel @Inject constructor(
         )
     }
 
-    fun onFilterSkillButtonLongPress(selected: SelectedSkillButtonPosition) {
-        selectedSkillSheetButtonPosition = selected
-        _resistSinPickerVisible.update { false }
-        _skillSinPickerVisible.update { true }
+    fun onFilterSkillButtonLongPress(selected: FilterSheetButtonPosition) {
+        selectedSheetButtonPosition = selected
+        _sinPickerState.update { SinPickerState.SkillSelected }
     }
 
-    fun onEgoResistButtonLongPress(selected: SelectedResistButtonPosition) {
-        selectedResistSheetButtonPosition = selected
-        _skillSinPickerVisible.update { false }
-        _resistSinPickerVisible.update { true }
+    fun onEgoResistButtonLongPress(selected: FilterSheetButtonPosition) {
+        selectedSheetButtonPosition = selected
+        _sinPickerState.update { SinPickerState.EgoResistSelected }
     }
 
     fun onFilterSinPickerPress(sin: StateType<Sin>) {
         when (val value = _filterDrawerShitState.value) {
             is FilterDrawerSheetState.EgoMode -> {
-                if (_skillSinPickerVisible.value) {
+                if (_sinPickerState.value is SinPickerState.SkillSelected) {
                     updateFilterDrawerSheetState(
                         value.copy(
                             skillState = EgoFilterSkillBlockState(
@@ -272,13 +266,12 @@ class FilterScreenViewModel @Inject constructor(
                         )
                     )
                 }
-                if (_resistSinPickerVisible.value) {
-                    Log.d("DATA_STORE", "Trying to update resist sin")
+                if (_sinPickerState.value is SinPickerState.EgoResistSelected) {
                     updateFilterDrawerSheetState(
                         value.copy(
                             resistState =
-                            when (selectedResistSheetButtonPosition) {
-                                SelectedResistButtonPosition.First -> {
+                            when (selectedSheetButtonPosition) {
+                                FilterSheetButtonPosition.First -> {
                                     value.resistState.copy(
                                         first = EgoFilterResistArg(
                                             resist = value.resistState.first.resist,
@@ -286,7 +279,7 @@ class FilterScreenViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                SelectedResistButtonPosition.Second -> {
+                                FilterSheetButtonPosition.Second -> {
                                     value.resistState.copy(
                                         second = EgoFilterResistArg(
                                             resist = value.resistState.second.resist,
@@ -294,7 +287,7 @@ class FilterScreenViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                SelectedResistButtonPosition.Third -> {
+                                FilterSheetButtonPosition.Third -> {
                                     value.resistState.copy(
                                         third = EgoFilterResistArg(
                                             resist = value.resistState.third.resist,
@@ -302,7 +295,7 @@ class FilterScreenViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                SelectedResistButtonPosition.None -> throw IllegalArgumentException(
+                                FilterSheetButtonPosition.None -> throw IllegalArgumentException(
                                     "Trying to update resist button with none selected"
                                 )
                             }
@@ -311,17 +304,17 @@ class FilterScreenViewModel @Inject constructor(
                 }
             }
             is FilterDrawerSheetState.IdentityMode -> {
-                val oldSinState = when (selectedSkillSheetButtonPosition) {
-                    SelectedSkillButtonPosition.None -> {
+                val oldSinState = when (selectedSheetButtonPosition) {
+                    FilterSheetButtonPosition.None -> {
                         throw IllegalStateException("Trying to update filter buttons state with none selected")
                     }
-                    SelectedSkillButtonPosition.First -> {
+                    FilterSheetButtonPosition.First -> {
                         value.skillState
                     }
-                    SelectedSkillButtonPosition.Second -> {
+                    FilterSheetButtonPosition.Second -> {
                         value.skillState
                     }
-                    SelectedSkillButtonPosition.Third -> {
+                    FilterSheetButtonPosition.Third -> {
                         value.skillState
                     }
                 }
@@ -330,7 +323,7 @@ class FilterScreenViewModel @Inject constructor(
                         skillState = FilterSkillBlockState(
                             oldSinState.damage,
                             updateSinStateBundle(
-                                selectedSkillSheetButtonPosition,
+                                selectedSheetButtonPosition,
                                 sin,
                                 oldSinState.sin
                             )
@@ -339,13 +332,11 @@ class FilterScreenViewModel @Inject constructor(
                 )
             }
         }
-        _skillSinPickerVisible.update { false }
-        _resistSinPickerVisible.update { false }
-        selectedResistSheetButtonPosition = SelectedResistButtonPosition.None
-        selectedSkillSheetButtonPosition = SelectedSkillButtonPosition.None
+        _sinPickerState.update { SinPickerState.Gone }
+        selectedSheetButtonPosition = FilterSheetButtonPosition.None
     }
 
-    fun onFilterSkillButtonClick(button: SelectedSkillButtonPosition) {
+    fun onFilterSkillButtonClick(button: FilterSheetButtonPosition) {
         when (val old = _filterDrawerShitState.value) {
             is FilterDrawerSheetState.EgoMode -> {
                 updateFilterDrawerSheetState(
@@ -367,7 +358,7 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
-    fun onIdentityFilterResistButtonClick(button: SelectedSkillButtonPosition) {
+    fun onIdentityFilterResistButtonClick(button: FilterSheetButtonPosition) {
         if (_filterDrawerShitState.value is FilterDrawerSheetState.IdentityMode) {
             val oldState = _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
             updateFilterDrawerSheetState(
@@ -378,12 +369,16 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
+    fun onEgoFilterPriceButtonLongPress(button: FilterSheetButtonPosition) {
+
+    }
+
     //TODO refactor this heresy to use dataStore for all such operations
-    fun onEgoFilterResistButtonClick(buttonPosition: SelectedResistButtonPosition) {
+    fun onEgoFilterResistButtonClick(buttonPosition: FilterSheetButtonPosition) {
         if (_filterDrawerShitState.value is FilterDrawerSheetState.EgoMode) {
             val old = _filterDrawerShitState.value as FilterDrawerSheetState.EgoMode
             val new = when (buttonPosition) {
-                SelectedResistButtonPosition.First -> {
+                FilterSheetButtonPosition.First -> {
                     old.copy(
                         resistState = old.resistState.copy(
                             first = old.resistState.first.copy(
@@ -393,21 +388,21 @@ class FilterScreenViewModel @Inject constructor(
                     )
 
                 }
-                SelectedResistButtonPosition.Second -> old.copy(
+                FilterSheetButtonPosition.Second -> old.copy(
                     resistState = old.resistState.copy(
                         second = old.resistState.second.copy(
                             resist = cycleEgoResistButtonState(old.resistState.second.resist)
                         )
                     )
                 )
-                SelectedResistButtonPosition.Third -> old.copy(
+                FilterSheetButtonPosition.Third -> old.copy(
                     resistState = old.resistState.copy(
                         third = old.resistState.third.copy(
                             resist = cycleEgoResistButtonState(old.resistState.third.resist)
                         )
                     )
                 )
-                SelectedResistButtonPosition.None -> throw IllegalArgumentException("Impossible button position")
+                FilterSheetButtonPosition.None -> throw IllegalArgumentException("Impossible button position")
             }
             updateFilterDrawerSheetState(new)
         }
@@ -465,16 +460,16 @@ class FilterScreenViewModel @Inject constructor(
      * (for resistance block) or non unique (for skills block)
      */
     private fun updateDamageStateBundle(
-        button: SelectedSkillButtonPosition,
+        button: FilterSheetButtonPosition,
         input: FilterDamageStateBundle,
         unique: Boolean
     ): FilterDamageStateBundle {
         var (first, second, third) = input
         when (button) {
-            SelectedSkillButtonPosition.First -> first = cycleSkillDamageTypes(first)
-            SelectedSkillButtonPosition.Second -> second = cycleSkillDamageTypes(second)
-            SelectedSkillButtonPosition.Third -> third = cycleSkillDamageTypes(third)
-            SelectedSkillButtonPosition.None ->
+            FilterSheetButtonPosition.First -> first = cycleSkillDamageTypes(first)
+            FilterSheetButtonPosition.Second -> second = cycleSkillDamageTypes(second)
+            FilterSheetButtonPosition.Third -> third = cycleSkillDamageTypes(third)
+            FilterSheetButtonPosition.None ->
                 throw IllegalStateException(UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED)
         }
         val result = FilterDamageStateBundle(first, second, third)
@@ -484,16 +479,16 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     private fun updateSinStateBundle(
-        button: SelectedSkillButtonPosition,
+        button: FilterSheetButtonPosition,
         sin: StateType<Sin>,
         input: FilterSinStateBundle
     ): FilterSinStateBundle {
         var (first, second, third) = input
         when (button) {
-            SelectedSkillButtonPosition.First -> first = sin
-            SelectedSkillButtonPosition.Second -> second = sin
-            SelectedSkillButtonPosition.Third -> third = sin
-            SelectedSkillButtonPosition.None ->
+            FilterSheetButtonPosition.First -> first = sin
+            FilterSheetButtonPosition.Second -> second = sin
+            FilterSheetButtonPosition.Third -> third = sin
+            FilterSheetButtonPosition.None ->
                 throw IllegalStateException(UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED)
         }
         return FilterSinStateBundle(first, second, third)

@@ -20,6 +20,7 @@ class EgoFilterSettingsMapper @Inject constructor() {
                 mapToDamageType(settings.skillState.damageType),
                 mapToSinType(settings.skillState.sinType)
             ),
+            EgoFilterPriceState(StateType.Empty, StateType.Empty, StateType.Empty),
             EgoFilterResistBlockState(
                 EgoFilterResistArg(
                     mapToSinType(settings.resistState.first.sin),

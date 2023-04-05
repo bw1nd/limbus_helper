@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.state
 
-
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
@@ -32,6 +31,7 @@ sealed interface FilterDrawerSheetState {
 
     data class EgoMode(
         val skillState: EgoFilterSkillBlockState,
+        val priceState: EgoFilterPriceState,
         val resistState: EgoFilterResistBlockState,
         val effectsState: FilterEffectBlockState,
         val sinnersState: FilterSinnersBlockState
@@ -40,12 +40,22 @@ sealed interface FilterDrawerSheetState {
             fun getDefaultState() =
                 EgoMode(
                     EgoFilterSkillBlockState(StateType.Empty, StateType.Empty),
+                    emptyEgoFilterPriceBlockState(),
                     emptyEgoFilterResistBlockState(),
                     emptyFilterEffectBlockState(),
                     emptyFilterSinnerBlockState()
                 )
+
+
         }
     }
+}
+
+sealed interface SinPickerState {
+    object Gone: SinPickerState
+    object SkillSelected: SinPickerState
+    object EgoResistSelected: SinPickerState
+    object EgoPriceSelected: SinPickerState
 }
 
 data class EgoFilterSkillBlockState(
@@ -76,16 +86,23 @@ data class EgoFilterResistArg(
     val resist: EgoSinResistType
 )
 
+data class EgoFilterPriceState(
+    val first: StateType<Sin>,
+    val second: StateType<Sin>,
+    val third: StateType<Sin>
+)
+
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,
     val onFilterButtonClick: () -> Unit,
     val onClearFilterButtonPress: () -> Unit,
-    val onSkillButtonClick: (SelectedSkillButtonPosition) -> Unit,
-    val onSkillButtonLongPress: (SelectedSkillButtonPosition) -> Unit,
+    val onSkillButtonClick: (FilterSheetButtonPosition) -> Unit,
+    val onSkillButtonLongPress: (FilterSheetButtonPosition) -> Unit,
     val onSinPickerClick: (StateType<Sin>) -> Unit,
-    val onIdentityResistButtonClick: (SelectedSkillButtonPosition) -> Unit,
-    val onEgoResistButtonClick: (SelectedResistButtonPosition) -> Unit,
-    val onEgoResistButtonLongPress: (SelectedResistButtonPosition) -> Unit,
+    val onIdentityResistButtonClick: (FilterSheetButtonPosition) -> Unit,
+    val onEgoResistButtonClick: (FilterSheetButtonPosition) -> Unit,
+    val onEgoResistButtonLongPress: (FilterSheetButtonPosition) -> Unit,
+    val onEgoPriceButtonLongPress: (FilterSheetButtonPosition) -> Unit,
     val onEffectCheckedChange: (Boolean, Effect) -> Unit,
     val onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 )
@@ -143,25 +160,20 @@ data class IdentityFilterResistButtonLabels(
     val fatal: String
 )
 
-sealed class SelectedSkillButtonPosition {
-    object None: SelectedSkillButtonPosition()
-    object First: SelectedSkillButtonPosition()
-    object Second: SelectedSkillButtonPosition()
-    object Third: SelectedSkillButtonPosition()
+sealed class FilterSheetButtonPosition {
+    object None: FilterSheetButtonPosition()
+    object First: FilterSheetButtonPosition()
+    object Second: FilterSheetButtonPosition()
+    object Third: FilterSheetButtonPosition()
 }
-
-sealed class SelectedResistButtonPosition {
-    object None: SelectedResistButtonPosition()
-    object First: SelectedResistButtonPosition()
-    object Second: SelectedResistButtonPosition()
-    object Third: SelectedResistButtonPosition()
-}
-
 
 private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
     FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
     FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
 )
+
+private fun emptyEgoFilterPriceBlockState(): EgoFilterPriceState =
+    EgoFilterPriceState(StateType.Empty, StateType.Empty, StateType.Empty)
 
 private fun emptyFilterResistClockState() =
     FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
