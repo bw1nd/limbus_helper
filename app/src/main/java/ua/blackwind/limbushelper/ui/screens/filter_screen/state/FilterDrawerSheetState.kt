@@ -67,16 +67,16 @@ fun EgoFilterResistBlockState.toFilterArg() =
         second.resist to second.sin,
         third.resist to third.sin,
         third.resist to third.sin
-    ).filter { it.first !is StateType.Empty && it.second !is StateType.Empty }
-        .map { (it.first as? StateType.Value<EgoSinResistType>)?.value as EgoSinResistType to (it.second as? StateType.Value<Sin>)?.value as Sin }
+    ).filter { it.second !is StateType.Empty }
+        .map { it.first to (it.second as? StateType.Value<Sin>)?.value as Sin }
 
 
 data class EgoFilterResistArg(
     val sin: StateType<Sin>,
-    val resist: StateType<EgoSinResistType>
+    val resist: EgoSinResistType
 )
 
-data class EgoResistButtonLabels(
+data class EgoFilterResistButtonLabels(
     val normal: String,
     val endure: String,
     val ineffective: String,
@@ -90,8 +90,9 @@ data class FilterDrawerSheetMethods(
     val onSkillButtonClick: (SelectedSkillButtonPosition) -> Unit,
     val onSkillButtonLongPress: (SelectedSkillButtonPosition) -> Unit,
     val onSinPickerClick: (StateType<Sin>) -> Unit,
-    val onResistButtonClick: (SelectedSkillButtonPosition) -> Unit,
-    val onResistButtonLongPress: (SelectedResistButtonPosition) -> Unit,
+    val onIdentityResistButtonClick: (SelectedSkillButtonPosition) -> Unit,
+    val onEgoResistButtonClick: (SelectedResistButtonPosition) -> Unit,
+    val onEgoResistButtonLongPress: (SelectedResistButtonPosition) -> Unit,
     val onEffectCheckedChange: (Boolean, Effect) -> Unit,
     val onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 )
@@ -143,7 +144,7 @@ data class FilterSinnersBlockState(
     val sinners: Map<FilterSinnerModel, Boolean>
 )
 
-data class FilterResistButtonLabels(
+data class IdentityFilterResistButtonLabels(
     val ineffective: String,
     val normal: String,
     val fatal: String
@@ -161,7 +162,6 @@ sealed class SelectedResistButtonPosition {
     object First: SelectedResistButtonPosition()
     object Second: SelectedResistButtonPosition()
     object Third: SelectedResistButtonPosition()
-    object Fourth: SelectedResistButtonPosition()
 }
 
 
@@ -182,9 +182,9 @@ fun emptyFilterSinnerBlockState() = FilterSinnersBlockState(
 )
 
 fun emptyEgoFilterResistBlockState() = EgoFilterResistBlockState(
-    first = EgoFilterResistArg(StateType.Empty, StateType.Empty),
-    second = EgoFilterResistArg(StateType.Empty, StateType.Empty),
-    third = EgoFilterResistArg(StateType.Empty, StateType.Empty),
-    fourth = EgoFilterResistArg(StateType.Empty, StateType.Empty)
+    first = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL),
+    second = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL),
+    third = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL),
+    fourth = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL)
 )
 

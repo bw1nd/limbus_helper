@@ -5,7 +5,6 @@ import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
-import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import javax.inject.Inject
 
 class GetFilteredEgoUseCase @Inject constructor(
@@ -21,7 +20,21 @@ class GetFilteredEgoUseCase @Inject constructor(
                     filter.skillFilterArg
                 )
             }
-            bySinner() && byEffect() && bySkill()
+            val byResist = {
+                filter.resistSetArg.resistList.isEmpty() || egoPassResistFilter(
+                    ego,
+                    filter.resistSetArg.resistList
+                )
+            }
+            bySinner() && byEffect() && bySkill() && byResist()
+        }
+    }
+
+    private fun egoPassResistFilter(ego: Ego, filter: List<Pair<EgoSinResistType, Sin>>): Boolean {
+        return filter.all { arg ->
+            if (arg.first == EgoSinResistType.NORMAL)
+                ego.sinResistances.none {it.key == arg.second } else
+                ego.sinResistances.any { it.value == arg.first && it.key == arg.second }
         }
     }
 

@@ -99,17 +99,12 @@ class EgoFilterSettingsMapper @Inject constructor() {
                         .toMutableMap())
             )
             .build()
-
-
     }
 
-    private fun mapToEgoResistType(input: String): StateType<EgoSinResistType> {
-        if (input.isBlank()) return StateType.Empty
+    private fun mapToEgoResistType(input: String): EgoSinResistType {
+        if (input.isBlank()) return EgoSinResistType.NORMAL
         try {
-            return when (input) {
-                EMPTY_STATE_VALUE -> StateType.Empty
-                else -> StateType.Value(EgoSinResistType.valueOf(input))
-            }
+            return EgoSinResistType.valueOf(input)
         } catch (e: IllegalArgumentException) {
             throw CorruptionException("Ego filter resist data type corrupted with value: $input")
         }
@@ -139,9 +134,8 @@ class EgoFilterSettingsMapper @Inject constructor() {
         }
     }
 
-    private fun resistStateTypeToSettings(stateType: StateType<EgoSinResistType>): String {
-        if (stateType is StateType.Empty) return EMPTY_STATE_VALUE
-        return (stateType as StateType.Value<EgoSinResistType>).value.toString()
+    private fun resistStateTypeToSettings(stateType: EgoSinResistType): String {
+        return stateType.name
     }
 
     private fun damageSkillStateToSettings(stateType: StateType<DamageType>): String {

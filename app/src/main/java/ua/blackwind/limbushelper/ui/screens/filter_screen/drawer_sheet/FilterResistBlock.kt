@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
@@ -28,25 +29,25 @@ import ua.blackwind.limbushelper.ui.util.getSinColor
 
 @Composable
 fun IdentityFilterResistBlock(
-    labels: FilterResistButtonLabels, state: FilterDamageStateBundle,
+    state: FilterDamageStateBundle,
     onButtonClick: (SelectedSkillButtonPosition) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilterResistButton(
             SelectedSkillButtonPosition.First,
-            label = labels.ineffective,
+            label = stringResource(id = R.string.res_ineff),
             state = state.first,
             onClick = onButtonClick
         )
         FilterResistButton(
             SelectedSkillButtonPosition.Second,
-            label = labels.normal,
+            label = stringResource(id = R.string.res_normal),
             state = state.second,
             onClick = onButtonClick
         )
         FilterResistButton(
             SelectedSkillButtonPosition.Third,
-            label = labels.fatal,
+            label = stringResource(id = R.string.res_fatal),
             state = state.third,
             onClick = onButtonClick
         )
@@ -55,30 +56,24 @@ fun IdentityFilterResistBlock(
 
 @Composable
 fun EgoFilterResistBlock(
-    labels: EgoResistButtonLabels,
     state: EgoFilterResistBlockState,
     onButtonClick: (SelectedResistButtonPosition) -> Unit,
     onButtonLongPress: (SelectedResistButtonPosition) -> Unit,
 ) {
-    //TODO still need to implement changing resistance potency
-    val (first, second, third, fourth) = state
+    val (first, second, third) = state
     Row() {
         listOf(
             SelectedResistButtonPosition.First to first,
             SelectedResistButtonPosition.Second to second,
             SelectedResistButtonPosition.Third to third,
-            SelectedResistButtonPosition.Fourth to fourth
         ).forEach { (id, current) ->
             EgoFilterResistButton(
                 id = id,
                 label = when (current.resist) {
-                    StateType.Empty -> "None"
-                    is StateType.Value -> when (current.resist.value) {
-                        EgoSinResistType.INEFF -> "Ineff."
-                        EgoSinResistType.ENDURE -> "Endure"
-                        EgoSinResistType.FATAL -> "Fatal"
-                        EgoSinResistType.NORMAL -> "Normal"
-                    }
+                    EgoSinResistType.INEFF -> stringResource(id = R.string.res_ineff)
+                    EgoSinResistType.ENDURE -> stringResource(id = R.string.res_endure)
+                    EgoSinResistType.FATAL -> stringResource(id = R.string.res_fatal)
+                    EgoSinResistType.NORMAL -> stringResource(id = R.string.res_normal)
                 },
                 state = current,
                 onClick = onButtonClick,

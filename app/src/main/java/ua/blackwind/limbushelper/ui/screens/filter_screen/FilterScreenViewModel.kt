@@ -12,6 +12,7 @@ import ua.blackwind.limbushelper.data.datastore.EgoFilterSettingsMapper
 import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
@@ -107,6 +108,7 @@ class FilterScreenViewModel @Inject constructor(
                     }
                 }
             }.collectLatest { newState ->
+                Log.d("FILTER", "Updating state")
                 _filterDrawerShitState.update { newState }
                 onFilterButtonClick()
             }
@@ -138,9 +140,11 @@ class FilterScreenViewModel @Inject constructor(
                     }
                     is FilterDrawerSheetState.EgoMode -> {
                         val current = _filterDrawerShitState.value as FilterDrawerSheetState.EgoMode
-                        getFilteredEgoUseCase(
-                            formEgoFilter(state = current)
-                        ).map { FilterDataModel(FilterItemTypeModel.EgoType(it), false) }
+                        itemListToFilterItemList(
+                            getFilteredEgoUseCase(
+                                formEgoFilter(state = current)
+                            ).map { FilterItemTypeModel.EgoType(it) }, party.value
+                        )
                     }
                 }
             }
@@ -298,14 +302,6 @@ class FilterScreenViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                SelectedResistButtonPosition.Fourth -> {
-                                    value.resistState.copy(
-                                        fourth = EgoFilterResistArg(
-                                            resist = value.resistState.fourth.resist,
-                                            sin = sin
-                                        )
-                                    )
-                                }
                                 SelectedResistButtonPosition.None -> throw IllegalArgumentException(
                                     "Trying to update resist button with none selected"
                                 )
@@ -371,14 +367,61 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
-    fun onFilterResistButtonClick(button: SelectedSkillButtonPosition) {
-        val oldState = _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
-
-        updateFilterDrawerSheetState(
-            oldState.copy(
-                resistState = updateDamageStateBundle(button, oldState.resistState, true)
+    fun onIdentityFilterResistButtonClick(button: SelectedSkillButtonPosition) {
+        if (_filterDrawerShitState.value is FilterDrawerSheetState.IdentityMode) {
+            val oldState = _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
+            updateFilterDrawerSheetState(
+                oldState.copy(
+                    resistState = updateDamageStateBundle(button, oldState.resistState, true)
+                )
             )
-        )
+        }
+    }
+
+    //TODO refactor this heresy to use dataStore for all such operations
+    fun onEgoFilterResistButtonClick(buttonPosition: SelectedResistButtonPosition) {
+        if (_filterDrawerShitState.value is FilterDrawerSheetState.EgoMode) {
+            val old = _filterDrawerShitState.value as FilterDrawerSheetState.EgoMode
+            val new = when (buttonPosition) {
+                SelectedResistButtonPosition.First -> {
+                    old.copy(
+                        resistState = old.resistState.copy(
+                            first = old.resistState.first.copy(
+                                resist = cycleEgoResistButtonState(old.resistState.first.resist)
+                            )
+                        )
+                    )
+
+                }
+                SelectedResistButtonPosition.Second -> old.copy(
+                    resistState = old.resistState.copy(
+                        second = old.resistState.second.copy(
+                            resist = cycleEgoResistButtonState(old.resistState.second.resist)
+                        )
+                    )
+                )
+                SelectedResistButtonPosition.Third -> old.copy(
+                    resistState = old.resistState.copy(
+                        third = old.resistState.third.copy(
+                            resist = cycleEgoResistButtonState(old.resistState.third.resist)
+                        )
+                    )
+                )
+                SelectedResistButtonPosition.None -> throw IllegalArgumentException("Impossible button position")
+            }
+            updateFilterDrawerSheetState(new)
+        }
+    }
+
+    private fun cycleEgoResistButtonState(
+        type: EgoSinResistType
+    ): EgoSinResistType {
+        return when (type) {
+            EgoSinResistType.INEFF -> EgoSinResistType.ENDURE
+            EgoSinResistType.ENDURE -> EgoSinResistType.NORMAL
+            EgoSinResistType.NORMAL -> EgoSinResistType.FATAL
+            EgoSinResistType.FATAL -> EgoSinResistType.INEFF
+        }
     }
 
     private fun updateFilterDrawerSheetState(newState: FilterDrawerSheetState) {
@@ -411,7 +454,7 @@ class FilterScreenViewModel @Inject constructor(
                     )
                 is FilterItemTypeModel.EgoType ->
                     FilterDataModel(item,
-                    party.egoList.any { it.id == item.ego.id })
+                        party.egoList.any { it.id == item.ego.id })
             }
         }
     }
