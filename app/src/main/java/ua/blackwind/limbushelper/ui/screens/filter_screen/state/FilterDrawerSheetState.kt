@@ -76,13 +76,6 @@ data class EgoFilterResistArg(
     val resist: EgoSinResistType
 )
 
-data class EgoFilterResistButtonLabels(
-    val normal: String,
-    val endure: String,
-    val ineffective: String,
-    val fatal: String
-)
-
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,
     val onFilterButtonClick: () -> Unit,
