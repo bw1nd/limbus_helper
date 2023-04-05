@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.HexagonShape
 import ua.blackwind.limbushelper.ui.util.StateType
@@ -75,7 +74,7 @@ fun EgoFilterResistBlock(
                 label = when (current.resist) {
                     StateType.Empty -> "None"
                     is StateType.Value -> when (current.resist.value) {
-                        EgoSinResistType.INEFFECTIVE -> "Ineff."
+                        EgoSinResistType.INEFF -> "Ineff."
                         EgoSinResistType.ENDURE -> "Endure"
                         EgoSinResistType.FATAL -> "Fatal"
                         EgoSinResistType.NORMAL -> "Normal"
