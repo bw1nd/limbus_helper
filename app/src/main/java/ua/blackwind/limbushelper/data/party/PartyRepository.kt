@@ -1,13 +1,9 @@
 package ua.blackwind.limbushelper.data.party
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import ua.blackwind.limbushelper.data.db.dao.Dao
-import ua.blackwind.limbushelper.data.db.model.IdentityEntity
-import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
-import ua.blackwind.limbushelper.data.db.model.toIdentity
-import ua.blackwind.limbushelper.data.db.model.toSkill
+import ua.blackwind.limbushelper.data.db.model.*
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
@@ -18,7 +14,7 @@ import javax.inject.Inject
 
 class PartyRepository @Inject constructor(
     private val dao: Dao,
-) : IPartyRepository {
+): IPartyRepository {
 
     override fun getParty(id: Int): Flow<Party> {
         return dao.getIdentityListByPartyId(DEFAULT_PARTY_ID)
@@ -27,15 +23,20 @@ class PartyRepository @Inject constructor(
                     DEFAULT_PARTY_ID
                 )
             ) { identities, activeIdentities ->
+                identities to activeIdentities
+            }.combine(dao.getEgoListByPartyId(DEFAULT_PARTY_ID)) { identities, ego ->
                 val party = dao.getParty(DEFAULT_PARTY_ID)
 
-                Party(party.id, party.name, identities.map { entity ->
+                Party(party.id, party.name, identities.first.map { entity ->
                     val identity = dao.getIdentityById(entity.identityId)
                     PartyIdentity(
                         identityEntityToIdentity(identity),
-                        identity.id in activeIdentities.map { it.identityId }
+                        identity.id in identities.second.map { it.identityId }
                     )
-                })
+                },
+                    ego.filter { it.egoId != NO_EGO_FOR_THIS_RISK_SINNER_ADDED }.map { entity ->
+                        egoEntityToEgo(dao.getEgoById(entity.egoId))
+                    })
             }
     }
 
@@ -56,11 +57,25 @@ class PartyRepository @Inject constructor(
         sinnerId: Int,
         identityId: Int
     ) {
-        Log.d("PARTY", "partyId: $partyId sinner: $sinnerId identity: $identityId")
         val current = dao.getActiveIdentityBySinnerAndPartyId(partyId, sinnerId)
         dao.changeActiveIdentity(
             current.copy(identityId = identityId)
         )
+    }
+
+    override suspend fun addEgoToParty(partyId: Int, ego: Ego) {
+        val entity = PartyEgoEntity(partyId, ego.sinnerId, ego.risk, ego.id)
+        dao.addEgoToParty(entity)
+    }
+
+    override suspend fun deleteEgoFromParty(partyId: Int, ego: Ego) {
+        val entity = PartyEgoEntity(
+            partyId = partyId,
+            sinnerId = ego.sinnerId,
+            risk = ego.risk,
+            egoId = NO_EGO_FOR_THIS_RISK_SINNER_ADDED
+        )
+        dao.addEgoToParty(entity)
     }
 
     override suspend fun getActiveIdentityIdForPartyAndSinner(partyId: Int, sinnerId: Int): Int {
@@ -76,11 +91,23 @@ class PartyRepository @Inject constructor(
         )
     }
 
+    private suspend fun egoEntityToEgo(egoEntity: EgoEntity): Ego {
+        return egoEntity.toEgo(
+            ::getEgoSkillById,
+            getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") },
+        )
+    }
+
     private suspend fun getSkillById(id: Int): Skill {
         return dao.getSkillById(id).toSkill()
     }
 
+    private suspend fun getEgoSkillById(id: Int): EgoSkill? {
+        return dao.getEgoSkillById(id)?.toEgoSkill()
+    }
+
     companion object {
         private const val NEW_VALUE_ID = 0
+        private const val NO_EGO_FOR_THIS_RISK_SINNER_ADDED = 0
     }
 }

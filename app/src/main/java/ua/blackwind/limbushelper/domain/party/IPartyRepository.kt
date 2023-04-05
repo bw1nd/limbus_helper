@@ -3,6 +3,8 @@ package ua.blackwind.limbushelper.domain.party
 
 import ua.blackwind.limbushelper.domain.party.model.Party
 import kotlinx.coroutines.flow.Flow
+import ua.blackwind.limbushelper.domain.common.RiskLevel
+import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 
 interface IPartyRepository {
@@ -18,4 +20,9 @@ interface IPartyRepository {
     suspend fun getActiveIdentityIdForPartyAndSinner(partyId: Int, sinnerId: Int): Int
 
     suspend fun changeSinnerActiveIdentityForParty(partyId: Int, sinnerId: Int, identityId: Int)
+
+    suspend fun addEgoToParty(partyId: Int, ego: Ego)
+
+    suspend fun deleteEgoFromParty(partyId: Int, ego: Ego)
+
 }

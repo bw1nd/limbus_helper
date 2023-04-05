@@ -5,9 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import ua.blackwind.limbushelper.data.db.model.PartyActiveIdentityEntity
-import ua.blackwind.limbushelper.data.db.model.PartyEntity
-import ua.blackwind.limbushelper.data.db.model.PartyIdentityEntity
+import ua.blackwind.limbushelper.data.db.model.*
+import ua.blackwind.limbushelper.domain.common.RiskLevel
 
 interface PartyDao {
     @Query("SELECT * FROM party WHERE id = :id")
@@ -38,4 +37,10 @@ interface PartyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun changeActiveIdentity(active: PartyActiveIdentityEntity)
+
+    @Query("SELECT * FROM party_ego WHERE partyId = :id")
+    fun getEgoListByPartyId(id: Int): Flow<List<PartyEgoEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addEgoToParty(partyEgoEntity: PartyEgoEntity)
 }

@@ -1,10 +1,12 @@
 package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.domain.common.DamageType
@@ -14,8 +16,8 @@ import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.ChangeSinnerActiveIdentityForParty
-import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
+import ua.blackwind.limbushelper.domain.party.usecase.RemoveIdentityFromPartyUseCase
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
@@ -28,10 +30,10 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val getAllSinners: GetAllSinners,
     private val preferencesRepository: PreferencesRepository,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
-    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
+    private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
     private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
 ): ViewModel() {
-    private val rawParty = MutableStateFlow(Party(0, "empty", emptyList()))
+    private val rawParty = MutableStateFlow(Party(0, "empty", emptyList(), emptyList()))
     private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
     val party = _party.asStateFlow()
 
@@ -59,7 +61,6 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
         viewModelScope.launch {
             preferencesRepository.getPartySettings().collectLatest { settings ->
-                Log.d("DATA_STORE", "Getting $settings")
                 _showOnlyActiveIdentities.update { settings.showOnlyActive }
             }
         }
@@ -172,7 +173,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     fun onIdentityDeleteButtonClick(identity: Identity) {
-        viewModelScope.launch { deleteIdentityFromPartyUseCase(identity, rawParty.value) }
+        viewModelScope.launch { removeIdentityFromPartyUseCase(identity, rawParty.value) }
     }
 
     private fun parseIdentityListToSinnerList(

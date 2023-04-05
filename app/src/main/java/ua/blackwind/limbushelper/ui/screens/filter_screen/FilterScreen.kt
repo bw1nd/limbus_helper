@@ -61,8 +61,8 @@ fun FilterScreen() {
         resistLabels = labels,
         filterSheetMethods = filterSheetStateMethods,
         onFilterModeChanged = viewModel::onFilterModeSwitch,
-        onInPartyChecked = viewModel::onIdentityItemInPartyChecked,
-        onInPartyUnChecked = viewModel::onIdentityItemInPartyUnChecked
+        onInPartyChecked = viewModel::onItemInPartyChecked,
+        onInPartyUnChecked = viewModel::onItemInPartyUnChecked
     )
 }
 

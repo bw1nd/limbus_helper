@@ -15,9 +15,7 @@ import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
-import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
+import ua.blackwind.limbushelper.domain.party.usecase.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
@@ -33,13 +31,15 @@ class FilterScreenViewModel @Inject constructor(
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
     private val getFilteredEgoUseCase: GetFilteredEgoUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
-    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
+    private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
+    private val addEgoToPartyUseCase: AddEgoToPartyUseCase,
+    private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase,
     private val getPartyUseCase: GetPartyUseCase,
     private val filterSheetSettingsMapper: IdentityFilterSettingsMapper,
     private val filterEgoSettingsMapper: EgoFilterSettingsMapper
 ): ViewModel() {
 
-    private val party = MutableStateFlow(Party(0, "Default", emptyList()))
+    private val party = MutableStateFlow(Party(0, "Default", emptyList(), emptyList()))
 
     private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())
     val filteredItems: StateFlow<List<FilterDataModel>> = _filteredItems
@@ -147,25 +147,30 @@ class FilterScreenViewModel @Inject constructor(
         }
     }
 
-    fun onIdentityItemInPartyChecked(identity: FilterDataModel) {
+    fun onItemInPartyChecked(item: FilterDataModel) {
         viewModelScope.launch {
-            when (identity.item) {
-                is FilterItemTypeModel.EgoType -> TODO()
+            when (item.item) {
+                is FilterItemTypeModel.EgoType -> addEgoToPartyUseCase(
+                    item.item.ego,
+                    party.value
+                )
                 is FilterItemTypeModel.IdentityType -> addIdentityToPartyUseCase(
-                    identity.item.identity,
+                    item.item.identity,
                     party.value
                 )
             }
-
         }
     }
 
-    fun onIdentityItemInPartyUnChecked(identity: FilterDataModel) {
+    fun onItemInPartyUnChecked(item: FilterDataModel) {
         viewModelScope.launch {
-            when (identity.item) {
-                is FilterItemTypeModel.EgoType -> TODO()
-                is FilterItemTypeModel.IdentityType -> deleteIdentityFromPartyUseCase(
-                    identity.item.identity,
+            when (item.item) {
+                is FilterItemTypeModel.EgoType -> removeEgoFromPartyUseCase(
+                    item.item.ego,
+                    party.value
+                )
+                is FilterItemTypeModel.IdentityType -> removeIdentityFromPartyUseCase(
+                    item.item.identity,
                     party.value
                 )
             }
@@ -405,7 +410,8 @@ class FilterScreenViewModel @Inject constructor(
                         party.identityList.any { it.identity.id == item.identity.id }
                     )
                 is FilterItemTypeModel.EgoType ->
-                    FilterDataModel(item, false)
+                    FilterDataModel(item,
+                    party.egoList.any { it.id == item.ego.id })
             }
         }
     }

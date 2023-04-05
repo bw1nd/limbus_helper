@@ -34,7 +34,6 @@ import ua.blackwind.limbushelper.ui.util.getEffectIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
-
 private const val ITEM_VERTICAL_SIZE_DP = 100
 private const val PORTRAIT_VERTICAL_SIZE_DP = 100
 private const val PORTRAIT_IMAGE_WIDTH = 70
