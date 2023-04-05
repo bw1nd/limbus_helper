@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,12 +24,12 @@ import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Size
 import ua.blackwind.limbushelper.R
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.RiskLevel
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.EgoSkill
+import ua.blackwind.limbushelper.ui.screens.filter_screen.FilterListItem
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.theme.*
 import ua.blackwind.limbushelper.ui.util.getEffectIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
@@ -37,7 +38,7 @@ import ua.blackwind.limbushelper.ui.util.previewIdentity
 private const val ITEM_VERTICAL_SIZE_DP = 100
 private const val PORTRAIT_VERTICAL_SIZE_DP = 100
 private const val PORTRAIT_IMAGE_WIDTH = 70
-private const val SIN_ICON_SIZE_DP = 28
+private const val SIN_ICON_SIZE_DP = 26
 
 @Composable
 fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Unit) =
@@ -66,7 +67,6 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
             )
             EgoRiskLevel(ego = ego)
         }
-
         Divider(
             color = when (ego.risk) {
                 RiskLevel.ZAYIN -> zayin
@@ -88,7 +88,7 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
                 Text(
                     text = ego.name,
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.tertiary
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -97,14 +97,21 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                EgoSkillItem(skill = ego.awakeningSkill)
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.width(60.dp)) {
+                    EgoSkillItem(skill = ego.awakeningSkill)
+                }
+                Spacer(modifier = Modifier.width(5.dp))
                 Column {
                     EgoCostBlock(ego = ego)
-                    Divider(thickness = 2.dp)
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        EgoEffectsBlock(ego = ego)
-                        EgoSanityItem(ego = ego)
-                        //Divider(thickness = 2.dp)
+                    Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            EgoSanityItem(ego = ego)
+                            EgoEffectsBlock(ego.awakeningSkill.effects.toSet())
+                        }
                         EgoResistBlock(ego = ego)
                     }
                 }
@@ -113,12 +120,37 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
     }
 
 @Composable
+fun EgoEffectsBlock(effects: Set<Effect>) {
+    Divider(
+        thickness = 2.dp, color = MaterialTheme.colorScheme.onPrimary,
+        modifier = Modifier
+            .width(50.dp)
+            .padding(top = 2.dp)
+    )
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+            .padding(top = 4.dp)
+    ) {
+        for (effect in effects.toSet()) {
+            Image(
+                painter = painterResource(id = getEffectIcon(effect)),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(15.dp)
+            )
+        }
+    }
+}
+
+@Composable
 fun EgoRiskLevel(ego: Ego) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .padding(top= 5.dp)
+            //.padding(top = 5.dp)
             .background(color = MaterialTheme.colorScheme.primary)
+            .width(PORTRAIT_IMAGE_WIDTH.dp)
     ) {
         Text(
             text = ego.risk.name,
@@ -136,29 +168,23 @@ fun EgoRiskLevel(ego: Ego) {
 
 @Composable
 fun EgoSanityItem(ego: Ego) {
-    Row() {
-        Text(text = ego.sanityCost.toString())
-        Image(painter = painterResource(id = R.drawable.sanity_ic), contentDescription = null)
-    }
-}
-
-@Composable
-fun EgoEffectsBlock(ego: Ego) {
-    Row() {
-        ego.awakeningSkill.effects.forEach { effect ->
-            Image(
-                painter = painterResource(id = getEffectIcon(effect)),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(15.dp)
-            )
-        }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = ego.sanityCost.toString(),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onPrimary
+        )
+        Image(
+            painter = painterResource(id = R.drawable.sanity_ic), contentDescription = null,
+            Modifier.size((SIN_ICON_SIZE_DP - 6).dp)
+        )
     }
 }
 
 @Composable
 fun EgoResistBlock(ego: Ego) {
-    Row() {
+    Row(horizontalArrangement = Arrangement.SpaceEvenly) {
         ego.sinResistances.forEach { (sin, resist) ->
             EgoResistItem(sin = sin, egoSinResistType = resist)
         }
@@ -167,7 +193,12 @@ fun EgoResistBlock(ego: Ego) {
 
 @Composable
 fun EgoResistItem(sin: Sin, egoSinResistType: EgoSinResistType) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(top = 2.dp)
+            .width(28.dp)
+    ) {
         Image(
             painter = painterResource(id = getSinIcon(sin)), contentDescription = null,
             modifier = Modifier.size(SIN_ICON_SIZE_DP.dp)
@@ -176,7 +207,7 @@ fun EgoResistItem(sin: Sin, egoSinResistType: EgoSinResistType) {
             text =
             when (egoSinResistType) {
                 EgoSinResistType.INEFF -> stringResource(id = R.string.res_ineff)
-                EgoSinResistType.ENDURE -> stringResource(id = R.string.res_endure)
+                EgoSinResistType.ENDURE -> stringResource(id = R.string.res_endure).dropLast(3) + "."
                 EgoSinResistType.FATAL -> stringResource(id = R.string.res_fatal)
                 EgoSinResistType.NORMAL -> throw IllegalArgumentException("Ego Card should not have info on Normal resistances.")
             },
@@ -188,7 +219,13 @@ fun EgoResistItem(sin: Sin, egoSinResistType: EgoSinResistType) {
 
 @Composable
 fun EgoCostBlock(ego: Ego) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(bottom = 2.dp)
+            .fillMaxWidth()
+    ) {
         ego.resourceCost.forEach { (sin, cost) ->
             EgoCostItem(sin = sin, cost = cost)
         }
@@ -197,40 +234,60 @@ fun EgoCostBlock(ego: Ego) {
 
 @Composable
 fun EgoCostItem(sin: Sin, cost: Int) {
-    Row() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
             painter = painterResource(id = getSinIcon(sin)),
             contentDescription = null,
             modifier = Modifier.size(SIN_ICON_SIZE_DP.dp)
         )
         Text(
-            text = "X ${if (cost != 0) cost else "Error"}",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            text = "\u00D7${if (cost != 0) cost else "Error"}",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true, backgroundColor = 0xFF1E1E1E)
+@Preview(
+    showSystemUi = true,
+    showBackground = true,
+    widthDp = 400,
+    heightDp = 100,
+    backgroundColor = 0xFF1E1E1E
+)
 @Composable
 private fun PreviewEgoItemCore() {
-    Row() {
-        egoItemCore(
-            ego =
-            Ego(
-                0,
-                "Test Ego",
-                0,
-                RiskLevel.ALEPH,
-                EgoSkill(0, "", DamageType.BLUNT, Sin.LUST, 30, 15, 10, 1, 20, emptyList()),
-                EgoSkill(0, "", DamageType.BLUNT, Sin.LUST, 30, 15, 10, 1, 20, emptyList()),
-                previewIdentity.passive,
-                mapOf(Sin.LUST to 3),
-                20,
-                mapOf(Sin.ENVY to EgoSinResistType.ENDURE),
-                ""
-            ), portraitWidthDp = PORTRAIT_IMAGE_WIDTH
-        ).invoke(this)
+    Box(modifier = Modifier.size(400.dp, 100.dp)) {
+        FilterListItem(listItem = FilterDataModel(
+            FilterItemTypeModel.EgoType(
+                Ego(
+                    0,
+                    "Test Ego",
+                    0,
+                    RiskLevel.ALEPH,
+                    EgoSkill(0, "", DamageType.BLUNT, Sin.LUST, 30, 15, 10, 1, 20, emptyList()),
+                    EgoSkill(0, "", DamageType.BLUNT, Sin.LUST, 30, 15, 10, 1, 20, emptyList()),
+                    previewIdentity.passive,
+                    mapOf(
+                        Sin.LUST to 3,
+                        Sin.PRIDE to 3,
+                        Sin.GLOOM to 1,
+                        Sin.WRATH to 2,
+                        Sin.ENVY to 5
+                    ),
+                    20,
+                    mapOf(
+                        Sin.ENVY to EgoSinResistType.ENDURE,
+                        Sin.GLUTTONY to EgoSinResistType.FATAL,
+                        Sin.WRATH to EgoSinResistType.FATAL,
+                        Sin.GLOOM to EgoSinResistType.INEFF
+                    ),
+                    ""
+                )
+            ), true
+        ), {}, {}
+        )
     }
 
 }

@@ -105,7 +105,12 @@ fun PartyBuildingScreenUi(
             ) {
                 items(party.size, key = { it }) { index ->
                     val sinnerModel = party[index]
-                    if (sinnerModel.identities.isNotEmpty() || sinnerModel.egos.isNotEmpty()) {
+                    val show = if (isShowActiveIdentitiesChecked) {
+                        sinnerModel.identities.any { it.isActive }
+                    } else {
+                        sinnerModel.identities.isNotEmpty() && sinnerModel.egos.isNotEmpty()
+                    }
+                    if (show) {
                         PartySinnerItem(
                             sinnerModel,
                             showInactive = !isShowActiveIdentitiesChecked,

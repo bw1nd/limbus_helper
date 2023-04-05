@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.ui.screens.filter_screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Card
@@ -33,7 +34,7 @@ fun FilterListItem(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimaryContainer),
         shape = CutCornerShape(topStart = 10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-        modifier = Modifier.width(380.dp)
+        modifier = Modifier.width(380.dp).height(100.dp)
     ) {
         val item = listItem.item
         Row(verticalAlignment = Alignment.CenterVertically) {
