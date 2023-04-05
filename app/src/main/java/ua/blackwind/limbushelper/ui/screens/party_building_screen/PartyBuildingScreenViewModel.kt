@@ -180,11 +180,13 @@ class PartyBuildingScreenViewModel @Inject constructor(
         party: Party,
         sinners: List<Sinner>
     ): List<PartySinnerModel> {
-        return party.identityList.groupBy { it.identity.sinnerId }.map { pair ->
-
+        val identities = party.identityList.groupBy { it.identity.sinnerId }
+        val egos = party.egoList.groupBy { it.sinnerId }
+        return identities.map { sinner ->
             PartySinnerModel(
-                sinners.find { it.id == pair.key }!!,
-                pair.value
+                sinners.find { it.id == sinner.key }!!,
+                sinner.value,
+                egos[sinner.key] ?: emptyList()
             )
         }.sortedBy { it.sinner.id }
     }

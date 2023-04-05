@@ -38,7 +38,7 @@ class FilterScreenViewModel @Inject constructor(
     private val filterSheetSettingsMapper: IdentityFilterSettingsMapper,
     private val filterEgoSettingsMapper: EgoFilterSettingsMapper
 ): ViewModel() {
-
+    //TODO Everything inside of this class is a huge mess
     private val party = MutableStateFlow(Party(0, "Default", emptyList(), emptyList()))
 
     private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())

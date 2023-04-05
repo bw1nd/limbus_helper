@@ -101,8 +101,9 @@ fun PartyBuildingScreenUi(
                     .padding(5.dp)
             ) {
                 items(party.size, key = { it }) { index ->
-                    val sinner = party[index].sinner
-                    val identities = party[index].identities
+                    val sinnerModel = party[index]
+                    val sinner = sinnerModel.sinner
+                    val identities = sinnerModel.identities
                         .sortedByDescending { it.identity.id }.let { list ->
                             if (isShowActiveIdentitiesChecked) list.filter { it.isActive } else list
                         }
@@ -111,6 +112,7 @@ fun PartyBuildingScreenUi(
                         PartySinnerItem(
                             sinner = sinner,
                             identities = identities,
+                            egos = sinnerModel.egos,
                             onIdentityItemClick = onIdentityItemClick,
                             onIdentityItemLongPress = onIdentityItemLongPress,
                             onDeleteButtonClick = onDeleteButtonClick,
