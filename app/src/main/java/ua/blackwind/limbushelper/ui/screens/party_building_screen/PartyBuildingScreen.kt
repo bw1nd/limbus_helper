@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.R
+import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyBuildingInfoPanelState
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
@@ -49,9 +50,10 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
                 infoPanelState = infoPanelState,
                 isShowActiveIdentitiesChecked = isShowActiveChecked,
                 onShowActiveIdentitiesClick = viewModel::onShowActiveIdentitiesClick,
-                onDeleteButtonClick = onDeleteButtonClick,
+                onIdentityDeleteButtonClick = onDeleteButtonClick,
                 onIdentityItemClick = viewModel::onIdentityClick,
-                onIdentityItemLongPress = viewModel::onIdentityLongPress
+                onIdentityItemLongPress = viewModel::onIdentityLongPress,
+                onEgoDeleteButtonClick = viewModel::onEgoDeleteButtonClick
             )
         }
     }
@@ -63,7 +65,8 @@ fun PartyBuildingScreenUi(
     infoPanelState: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
     onShowActiveIdentitiesClick: (Boolean) -> Unit,
-    onDeleteButtonClick: (Identity) -> Unit,
+    onIdentityDeleteButtonClick: (Identity) -> Unit,
+    onEgoDeleteButtonClick: (Ego) -> Unit,
     onIdentityItemClick: (Int) -> Unit,
     onIdentityItemLongPress: (Int, Int) -> Unit,
 ) {
@@ -102,20 +105,14 @@ fun PartyBuildingScreenUi(
             ) {
                 items(party.size, key = { it }) { index ->
                     val sinnerModel = party[index]
-                    val sinner = sinnerModel.sinner
-                    val identities = sinnerModel.identities
-                        .sortedByDescending { it.identity.id }.let { list ->
-                            if (isShowActiveIdentitiesChecked) list.filter { it.isActive } else list
-                        }
-
-                    if (identities.isNotEmpty()) {
+                    if (sinnerModel.identities.isNotEmpty() || sinnerModel.egos.isNotEmpty()) {
                         PartySinnerItem(
-                            sinner = sinner,
-                            identities = identities,
-                            egos = sinnerModel.egos,
+                            sinnerModel,
+                            showInactive = !isShowActiveIdentitiesChecked,
                             onIdentityItemClick = onIdentityItemClick,
                             onIdentityItemLongPress = onIdentityItemLongPress,
-                            onDeleteButtonClick = onDeleteButtonClick,
+                            onIdentityDeleteButtonClick = onIdentityDeleteButtonClick,
+                            onEgoDeleteButtonClick = onEgoDeleteButtonClick
                         )
                     }
                 }

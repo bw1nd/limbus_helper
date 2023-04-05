@@ -14,10 +14,8 @@ import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
-import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.ChangeSinnerActiveIdentityForParty
-import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.RemoveIdentityFromPartyUseCase
+import ua.blackwind.limbushelper.domain.party.usecase.*
+import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
@@ -31,7 +29,8 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
-    private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
+    private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty,
+    private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase
 ): ViewModel() {
     private val rawParty = MutableStateFlow(Party(0, "empty", emptyList(), emptyList()))
     private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
@@ -52,7 +51,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
                 updateInfoPanelState(party)
                 _party.update {
                     val sinners = getAllSinners()
-                    parseIdentityListToSinnerList(
+                    parsePartyToSinnerList(
                         party,
                         sinners
                     )
@@ -76,7 +75,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
             listOf(identity.slashRes, identity.pierceRes, identity.bluntRes).map { resist ->
                 when (resist) {
                     IdentityDamageResistType.NORMAL -> 100
-                    IdentityDamageResistType.INEFFECTIVE -> 50
+                    IdentityDamageResistType.INEFF -> 50
                     IdentityDamageResistType.FATAL -> 200
                 }
             }.also {
@@ -154,6 +153,10 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
     }
 
+    fun onEgoDeleteButtonClick(ego: Ego) {
+        viewModelScope.launch { removeEgoFromPartyUseCase(party = rawParty.value, ego = ego) }
+    }
+
     fun onIdentityLongPress(identityId: Int, sinnerId: Int) {
         viewModelScope.launch {
             changeActiveIdentityIdForParty(
@@ -176,17 +179,19 @@ class PartyBuildingScreenViewModel @Inject constructor(
         viewModelScope.launch { removeIdentityFromPartyUseCase(identity, rawParty.value) }
     }
 
-    private fun parseIdentityListToSinnerList(
+    private fun parsePartyToSinnerList(
         party: Party,
         sinners: List<Sinner>
     ): List<PartySinnerModel> {
-        val identities = party.identityList.groupBy { it.identity.sinnerId }
-        val egos = party.egoList.groupBy { it.sinnerId }
-        return identities.map { sinner ->
+        return sinners.associateWith { sinner ->
+            val identities = party.identityList.filter { it.identity.sinnerId == sinner.id }
+            val egos = party.egoList.filter { it.sinnerId == sinner.id }
+            (identities to egos)
+        }.map { entry ->
             PartySinnerModel(
-                sinners.find { it.id == sinner.key }!!,
-                sinner.value,
-                egos[sinner.key] ?: emptyList()
+                sinner = entry.key,
+                identities = entry.value.first,
+                egos = entry.value.second
             )
         }.sortedBy { it.sinner.id }
     }

@@ -7,6 +7,6 @@ import javax.inject.Inject
 
 class RemoveEgoFromPartyUseCase @Inject constructor(private val repository: PartyRepository) {
     suspend operator fun invoke(ego: Ego, party: Party) {
-        repository.deleteEgoFromParty(party.id, ego)
+        repository.removeEgoFromParty(party.id, ego)
     }
 }

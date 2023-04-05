@@ -114,7 +114,7 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
 
         val ineffective = checkIdentityResistance(
             identity,
-            IdentityDamageResistType.INEFFECTIVE,
+            IdentityDamageResistType.INEFF,
             filter.ineffective
         )
         val normal = checkIdentityResistance(

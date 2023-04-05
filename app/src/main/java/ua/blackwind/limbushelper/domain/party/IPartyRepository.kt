@@ -23,6 +23,6 @@ interface IPartyRepository {
 
     suspend fun addEgoToParty(partyId: Int, ego: Ego)
 
-    suspend fun deleteEgoFromParty(partyId: Int, ego: Ego)
+    suspend fun removeEgoFromParty(partyId: Int, ego: Ego)
 
 }

@@ -26,7 +26,7 @@ class GetFilteredIdentitiesUseCaseTest {
     private val firstIdentity = generateIdentity(
         name = "TEST IDENTITY #1",
         sinnerId = 1,
-        slashResist = IdentityDamageResistType.INEFFECTIVE,
+        slashResist = IdentityDamageResistType.INEFF,
         pierceResist = IdentityDamageResistType.NORMAL,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.SLASH, Sin.LUST, listOf(Effect.BURN)),
@@ -43,7 +43,7 @@ class GetFilteredIdentitiesUseCaseTest {
         name = "TEST IDENTITY #2",
         sinnerId = 2,
         slashResist = IdentityDamageResistType.NORMAL,
-        pierceResist = IdentityDamageResistType.INEFFECTIVE,
+        pierceResist = IdentityDamageResistType.INEFF,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.PIERCE, Sin.PRIDE, listOf(Effect.POISE)),
         secondSkill = generateSkill(
@@ -60,7 +60,7 @@ class GetFilteredIdentitiesUseCaseTest {
         name = "TEST IDENTITY #3",
         sinnerId = 3,
         slashResist = IdentityDamageResistType.NORMAL,
-        pierceResist = IdentityDamageResistType.INEFFECTIVE,
+        pierceResist = IdentityDamageResistType.INEFF,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.BLEED)),
         secondSkill = generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
@@ -72,7 +72,7 @@ class GetFilteredIdentitiesUseCaseTest {
     private val fourthIdentity = generateIdentity(
         name = "TEST IDENTITY #4",
         sinnerId = 1,
-        slashResist = IdentityDamageResistType.INEFFECTIVE,
+        slashResist = IdentityDamageResistType.INEFF,
         pierceResist = IdentityDamageResistType.FATAL,
         bluntResist = IdentityDamageResistType.NORMAL,
         firstSkill = generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),

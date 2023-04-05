@@ -207,7 +207,7 @@ fun ResistanceBlock(
         modifier = Modifier.width(105.dp)
     ) {
         ResistanceItem(
-            dmgType = (res[IdentityDamageResistType.INEFFECTIVE]!!),
+            dmgType = (res[IdentityDamageResistType.INEFF]!!),
             label = "Ineff."
         )
         ResistanceItem(

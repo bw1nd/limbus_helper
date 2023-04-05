@@ -68,14 +68,14 @@ class PartyRepository @Inject constructor(
         dao.addEgoToParty(entity)
     }
 
-    override suspend fun deleteEgoFromParty(partyId: Int, ego: Ego) {
+    override suspend fun removeEgoFromParty(partyId: Int, ego: Ego) {
         val entity = PartyEgoEntity(
             partyId = partyId,
             sinnerId = ego.sinnerId,
             risk = ego.risk,
-            egoId = NO_EGO_FOR_THIS_RISK_SINNER_ADDED
+            egoId = ego.id
         )
-        dao.addEgoToParty(entity)
+        dao.removeEgoFromParty(entity)
     }
 
     override suspend fun getActiveIdentityIdForPartyAndSinner(partyId: Int, sinnerId: Int): Int {
