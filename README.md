@@ -34,12 +34,12 @@ It is currently under development.
 
 ## Features 
 
-Current version: ```v0.1.0``` 
+Current version: ```v0.2.0``` 
 
 
 This version features:
 
-- `Identity` filtering by `Damage` and `Sin` types, `Damage Resistance` type, `Skill Effects`
+- `Identity` and `Ego` filtering by `Damage` and `Sin` types, `Damage Resistance` type, `Skill Effects`
   and `Sinners`.
 - `Party Building` screen with aggregate `Identity` info, ability to toggle active Identity.
 - User `Filter` and `Party` settings are persisted in `Room DB` and `Data Store`.
@@ -47,7 +47,6 @@ This version features:
 
 ##  Planned features
 
-- `E.G.O.` in filter and party building.
 - saving and sharing parties.
 - user `Identity` and `EGO` collection.
 
@@ -55,7 +54,8 @@ This version features:
 
 |    Party Screen        |            Filter Screen             |
 |:-------------------:|:-------------------------------:|
-| ![](readme-assets/images/party_screen.png) | ![](readme-assets/images/filter_screen.png) |
+| ![](readme-assets/images/party_screen_one.png) | ![](readme-assets/images/filter_screen_one.png) |
+| ![](readme-assets/images/party_screen_two.png) | ![](readme-assets/images/filter_screen_two.png) |
 
 
 
