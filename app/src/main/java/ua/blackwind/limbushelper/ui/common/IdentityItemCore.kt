@@ -185,7 +185,7 @@ fun SkillItemCore(
             fontSize = 14.sp,
             modifier = Modifier.padding(top = 2.dp),
             text = "${baseDie}" +
-                    (if (coinBonus > 0) "+" else "-") +
+                    (if (coinBonus > 0) "+" else "") +
                     "${coinBonus}\u00D7${coinCount}"
         )
     }
