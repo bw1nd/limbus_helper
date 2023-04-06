@@ -25,7 +25,7 @@
 It is currently under development.
 
 <div align="center">
-<a  href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.1.0/limbus_helper_v0.1.0.apk">
+<a  href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.2.0/limbus_helper_v0.2.0.apk">
 <img alt="Get it on Github"
  src="./readme-assets/images/badge_github_alt.png" height="120"
  />
