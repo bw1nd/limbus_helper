@@ -187,7 +187,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
             val identities = party.identityList.filter { it.identity.sinnerId == sinner.id }
             val egos = party.egoList.filter { it.sinnerId == sinner.id }
             (identities to egos)
-        }.map { entry ->
+        }.filter { it.value.first.isNotEmpty() || it.value.second.isNotEmpty() }.map { entry ->
             PartySinnerModel(
                 sinner = entry.key,
                 identities = entry.value.first,
