@@ -24,8 +24,6 @@ import ua.blackwind.limbushelper.ui.theme.activeIdentityBorderColor
 import ua.blackwind.limbushelper.ui.theme.inactiveIdentityBorderColor
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
-private const val PORTRAIT_WIDTH_DP = 70
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PartyIdentityItem(
@@ -60,7 +58,7 @@ fun PartyIdentityItem(
     ) {
         val identity = viewIdentity.identity
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Row(content = identityItemCore(identity, PORTRAIT_WIDTH_DP))
+            Row(content = identityItemCore(identity))
             Spacer(Modifier.weight(1f))
             Icon(
                 painter = painterResource(id = R.drawable.delete_ic),

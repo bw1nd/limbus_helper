@@ -1,21 +1,22 @@
 package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
-import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.ChangeSinnerActiveIdentityForParty
-import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
+import ua.blackwind.limbushelper.domain.party.usecase.*
+import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
@@ -28,12 +29,17 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val getAllSinners: GetAllSinners,
     private val preferencesRepository: PreferencesRepository,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
-    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
-    private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty
+    private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
+    private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty,
+    private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase,
+    private val clearPartyByIdUseCase: ClearPartyByIdUseCase
 ): ViewModel() {
-    private val rawParty = MutableStateFlow(Party(0, "empty", emptyList()))
+    private val rawParty = MutableStateFlow(Party(0, "empty", emptyList(), emptyList()))
     private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
     val party = _party.asStateFlow()
+
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog = _showDialog.asStateFlow()
 
     private val _showOnlyActiveIdentities = MutableStateFlow(false)
     val showOnlyActiveIdentities = _showOnlyActiveIdentities.asStateFlow()
@@ -50,7 +56,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
                 updateInfoPanelState(party)
                 _party.update {
                     val sinners = getAllSinners()
-                    parseIdentityListToSinnerList(
+                    parsePartyToSinnerList(
                         party,
                         sinners
                     )
@@ -59,23 +65,44 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
         viewModelScope.launch {
             preferencesRepository.getPartySettings().collectLatest { settings ->
-                Log.d("DATA_STORE", "Getting $settings")
                 _showOnlyActiveIdentities.update { settings.showOnlyActive }
             }
         }
     }
 
+    fun onAlertDialogDismiss() {
+        _showDialog.update { false }
+    }
+
+    fun onClearPartyClick() {
+        _showDialog.update { true }
+    }
+
+    fun onCleaPartyAcceptClick() {
+        _showDialog.update { false }
+        viewModelScope.launch {
+            clearPartyByIdUseCase(rawParty.value.id)
+        }
+    }
+
     private fun updateInfoPanelState(party: Party) {
+        //TODO HERESY!! THIS PLACE MUST BE PURGED!!
         val activeList = party.identityList.filter { it.isActive }
+        val egoList =
+            party.egoList.filter { ego -> activeList.any { it.identity.sinnerId == ego.sinnerId } }
         val attackByDamage = intArrayOf(0, 0, 0)
         val attackBySin = intArrayOf(0, 0, 0, 0, 0, 0, 0)
         val defenceByDamage = intArrayOf(0, 0, 0)
+        val resistBySin = mutableMapOf(
+            Sin.WRATH to 0, Sin.LUST to 0, Sin.SLOTH to 0, Sin.GLUTTONY to 0,
+            Sin.GLOOM to 0, Sin.PRIDE to 0, Sin.ENVY to 0
+        )
         activeList.forEach { pIdentity ->
             val identity = pIdentity.identity
             listOf(identity.slashRes, identity.pierceRes, identity.bluntRes).map { resist ->
                 when (resist) {
                     IdentityDamageResistType.NORMAL -> 100
-                    IdentityDamageResistType.INEFFECTIVE -> 50
+                    IdentityDamageResistType.INEFF -> 50
                     IdentityDamageResistType.FATAL -> 200
                 }
             }.also {
@@ -106,6 +133,19 @@ class PartyBuildingScreenViewModel @Inject constructor(
             }
         }
 
+        val minEgo =
+            egoList.groupBy { it.sinnerId }.map { list -> list.value.minBy { it.risk.ordinal } }
+        minEgo.forEach { ego ->
+            Sin.values().forEach { sin ->
+                when (ego.sinResistances[sin]) {
+                    EgoSinResistType.NORMAL -> resistBySin[sin] = resistBySin[sin]!! + 100
+                    EgoSinResistType.INEFF -> resistBySin[sin] = resistBySin[sin]!! + 50
+                    EgoSinResistType.ENDURE -> resistBySin[sin] = resistBySin[sin]!! + 75
+                    EgoSinResistType.FATAL -> resistBySin[sin] = resistBySin[sin]!! + 200
+                    null -> resistBySin[sin] = resistBySin[sin]!! + 100
+                }
+            }
+        }
 
         _infoPanelState.update {
             val activeIdentityCount = rawParty.value.identityList.count { it.isActive }
@@ -125,6 +165,15 @@ class PartyBuildingScreenViewModel @Inject constructor(
                     calculateDamageResistPotency(defenceByDamage[0], activeList.size),
                     calculateDamageResistPotency(defenceByDamage[1], activeList.size),
                     calculateDamageResistPotency(defenceByDamage[2], activeList.size),
+                ),
+                ResistBySinInfo(
+                    calculateDamageResistPotency(resistBySin[Sin.WRATH]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.LUST]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.SLOTH]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.GLUTTONY]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.GLOOM]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.PRIDE]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.ENVY]!!, activeList.size),
                 ),
                 activeIdentityCount,
                 totalIdentityCount
@@ -153,6 +202,10 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
     }
 
+    fun onEgoDeleteButtonClick(ego: Ego) {
+        viewModelScope.launch { removeEgoFromPartyUseCase(party = rawParty.value, ego = ego) }
+    }
+
     fun onIdentityLongPress(identityId: Int, sinnerId: Int) {
         viewModelScope.launch {
             changeActiveIdentityIdForParty(
@@ -172,18 +225,22 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     fun onIdentityDeleteButtonClick(identity: Identity) {
-        viewModelScope.launch { deleteIdentityFromPartyUseCase(identity, rawParty.value) }
+        viewModelScope.launch { removeIdentityFromPartyUseCase(identity, rawParty.value) }
     }
 
-    private fun parseIdentityListToSinnerList(
+    private fun parsePartyToSinnerList(
         party: Party,
         sinners: List<Sinner>
     ): List<PartySinnerModel> {
-        return party.identityList.groupBy { it.identity.sinnerId }.map { pair ->
-
+        return sinners.associateWith { sinner ->
+            val identities = party.identityList.filter { it.identity.sinnerId == sinner.id }
+            val egos = party.egoList.filter { it.sinnerId == sinner.id }
+            (identities to egos)
+        }.filter { it.value.first.isNotEmpty() || it.value.second.isNotEmpty() }.map { entry ->
             PartySinnerModel(
-                sinners.find { it.id == pair.key }!!,
-                pair.value
+                sinner = entry.key,
+                identities = entry.value.first,
+                egos = entry.value.second
             )
         }.sortedBy { it.sinner.id }
     }
@@ -195,6 +252,15 @@ class PartyBuildingScreenViewModel @Inject constructor(
             InfoPanelDamageResist.Normal,
             InfoPanelDamageResist.Normal,
             InfoPanelDamageResist.Normal
+        ),
+        ResistBySinInfo(
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
         ),
         0, 0
     )

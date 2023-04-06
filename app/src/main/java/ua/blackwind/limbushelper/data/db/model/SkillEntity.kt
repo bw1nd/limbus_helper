@@ -12,7 +12,6 @@ data class SkillEntity(
     @PrimaryKey
     val id: Int,
     val name: String,
-    val identityId: Int,
     val dmgType: DamageType,
     val sin: Sin,
     val copiesCount: Int,
@@ -25,7 +24,6 @@ data class SkillEntity(
 fun SkillEntity.toSkill() = Skill(
     id = this.id,
     name = this.name,
-    identityId = this.identityId,
     dmgType = this.dmgType,
     sin = this.sin,
     copiesCount = this.copiesCount,

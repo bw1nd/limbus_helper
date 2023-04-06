@@ -1,13 +1,13 @@
-package ua.blackwind.limbushelper.data.db
+package ua.blackwind.limbushelper.data.db.dao
 
-import androidx.room.*
-import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import ua.blackwind.limbushelper.data.db.model.*
 
-// TODO : Refactor this global DAO into several other DAOs (e.g: `SinnerDao`, `PartyDao`)
-@Dao
-interface Dao {
+interface PartyDao {
     @Query("SELECT * FROM party WHERE id = :id")
     suspend fun getParty(id: Int): PartyEntity
 
@@ -37,24 +37,18 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun changeActiveIdentity(active: PartyActiveIdentityEntity)
 
-    @Query("SELECT * FROM sinner ORDER BY id ASC")
-    suspend fun getAllSinners(): List<SinnerEntity>
+    @Query("SELECT * FROM party_ego WHERE partyId = :id")
+    fun getEgoListByPartyId(id: Int): Flow<List<PartyEgoEntity>>
 
-    @Query("SELECT * FROM sinner WHERE id = :id")
-    suspend fun getSinnerById(id: Int): SinnerEntity
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addEgoToParty(partyEgoEntity: PartyEgoEntity)
 
-    @Query("SELECT * FROM identity")
-    suspend fun getAllIdentities(): List<IdentityEntity>
+    @Delete
+    suspend fun removeEgoFromParty(partyEgoEntity: PartyEgoEntity)
 
-    @Query("SELECT * FROM identity WHERE id = :id")
-    suspend fun getIdentityById(id: Int): IdentityEntity
+    @Query("DELETE FROM party_identity WHERE partyId = :partyId")
+    suspend fun removeAllIdentityFromParty(partyId: Int)
 
-    @Query("SELECT * FROM identity WHERE sinnerId = :id")
-    suspend fun getIdentityBySinnerId(id: Int): List<IdentityEntity>
-
-    @Query("SELECT * FROM skill WHERE id = :id")
-    suspend fun getSkillById(id: Int): SkillEntity
-
-    @Query("SELECT * FROM skill WHERE identityId = :id")
-    suspend fun getSkillsByIdentityId(id: Int): List<SkillEntity>
+    @Query("DELETE FROM party_ego WHERE partyId = :partyId")
+    suspend fun removeAllEgoFromParty(partyId: Int)
 }

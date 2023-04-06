@@ -10,8 +10,10 @@ import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
 
 class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: ISinnerRepository) {
+
     suspend operator fun invoke(filter: IdentityFilter): List<Identity> {
         val identities = repository.getAllIdentities()
+
         if (filter.isEmpty()) return identities
 
         val sinnerIsEmpty = filter.sinners.isEmpty()
@@ -41,7 +43,10 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         return filter.any { it == identity.sinnerId }
     }
 
-    private fun identityPassSkillFilter(identity: Identity, filter: FilterSkillsSetArg): Boolean {
+    private fun identityPassSkillFilter(
+        identity: Identity,
+        filter: IdentityFilterSkillsSetArg
+    ): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
         val filterSkills = filter.toSkillList().toMutableList()
@@ -109,7 +114,7 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
 
         val ineffective = checkIdentityResistance(
             identity,
-            IdentityDamageResistType.INEFFECTIVE,
+            IdentityDamageResistType.INEFF,
             filter.ineffective
         )
         val normal = checkIdentityResistance(
@@ -146,73 +151,4 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
             identity.thirdSkill.effects
         ).flatten().containsAll(filter)
     }
-}
-
-data class IdentityFilter(
-    val resist: FilterResistSetArg,
-    val skills: FilterSkillsSetArg,
-    val effects: List<Effect>,
-    val sinners: List<Int>
-)
-
-fun IdentityFilter.isEmpty() =
-    resist.isEmpty() && skills.isEmpty() && effects.isEmpty() && sinners.isEmpty()
-
-data class FilterResistSetArg(
-    val ineffective: FilterDamageTypeArg,
-    val normal: FilterDamageTypeArg,
-    val fatal: FilterDamageTypeArg
-)
-
-fun FilterResistSetArg.isEmpty() =
-    this.ineffective == FilterDamageTypeArg.Empty
-            && this.normal == FilterDamageTypeArg.Empty
-            && this.fatal == FilterDamageTypeArg.Empty
-
-data class FilterSkillsSetArg(
-    val first: FilterSkillArg,
-    val second: FilterSkillArg,
-    val third: FilterSkillArg
-)
-
-fun FilterSkillsSetArg.toSkillList() = listOf(first, second, third)
-
-fun FilterSkillsSetArg.isEmpty() =
-    this.first.damageType == FilterDamageTypeArg.Empty
-            && first.sin == FilterSinTypeArg.Empty
-            && second.damageType == FilterDamageTypeArg.Empty
-            && second.sin == FilterSinTypeArg.Empty
-            && third.damageType == FilterDamageTypeArg.Empty
-            && third.sin == FilterSinTypeArg.Empty
-
-data class FilterSkillArg(
-    val damageType: FilterDamageTypeArg,
-    val sin: FilterSinTypeArg
-)
-
-fun FilterSkillArg.isStrict() = this.damageType !is FilterDamageTypeArg.Empty &&
-        this.sin !is FilterSinTypeArg.Empty
-
-sealed class FilterDamageTypeArg {
-    object Empty: FilterDamageTypeArg()
-    data class Type(
-        val type: DamageType
-    ): FilterDamageTypeArg()
-}
-
-fun FilterDamageTypeArg.toDamageType() = when (this) {
-    is FilterDamageTypeArg.Empty -> null
-    is FilterDamageTypeArg.Type -> this.type
-}
-
-sealed class FilterSinTypeArg {
-    object Empty: FilterSinTypeArg()
-    data class Type(
-        val type: Sin
-    ): FilterSinTypeArg()
-}
-
-fun FilterSinTypeArg.toSin() = when (this) {
-    FilterSinTypeArg.Empty -> null
-    is FilterSinTypeArg.Type -> this.type
 }

@@ -1,27 +1,27 @@
-package ua.blackwind.limbushelper.ui.screens.filter_screen.state
+package ua.blackwind.limbushelper.data.datastore
 
 import androidx.datastore.core.CorruptionException
-import ua.blackwind.limbus_helper.FilterSettings
+import ua.blackwind.limbus_helper.IdentityFilterSettings
 
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.StateType
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FilterSheetSettingsMapper @Inject constructor() {
-
+class IdentityFilterSettingsMapper @Inject constructor() {
     companion object {
         private const val EMPTY_STATE_VALUE = "Empty"
     }
 
     fun mapFilterSheetDataStoreSettingsToState(
-        settings: FilterSettings.FilterDrawerSheetSettings
-    ): FilterDrawerSheetState =
-        FilterDrawerSheetState(
+        settings: IdentityFilterSettings.IdentitySettings
+    ): FilterDrawerSheetState.IdentityMode =
+        FilterDrawerSheetState.IdentityMode(
             FilterSkillBlockState(
                 damage = FilterDamageStateBundle(
                     first = mapToDamageType(settings.skillState.damageBundle.first),
@@ -77,40 +77,40 @@ class FilterSheetSettingsMapper @Inject constructor() {
     }
 
     fun mapStateToSettings(
-        state: FilterDrawerSheetState,
-        old: FilterSettings.FilterDrawerSheetSettings
-    ): FilterSettings.FilterDrawerSheetSettings {
+        state: FilterDrawerSheetState.IdentityMode,
+        old: IdentityFilterSettings.IdentitySettings
+    ): IdentityFilterSettings.IdentitySettings {
         return old.toBuilder()
             .setSkillState(
-                FilterSettings.FilterDrawerSheetSettings.FilterSkillBlockState.newBuilder()
+                IdentityFilterSettings.IdentitySettings.FilterSkillBlockState.newBuilder()
                     .setDamageBundle(
-                        FilterSettings.FilterDrawerSheetSettings.FilterDamageStateBundle.newBuilder()
+                        IdentityFilterSettings.IdentitySettings.FilterDamageStateBundle.newBuilder()
                             .setFirst(damageSkillStateToSettings(state.skillState.damage.first))
                             .setSecond(damageSkillStateToSettings(state.skillState.damage.second))
                             .setThird(damageSkillStateToSettings(state.skillState.damage.third))
                     )
                     .setSinBundle(
-                        FilterSettings.FilterDrawerSheetSettings.FilterSinStateBundle.newBuilder()
+                        IdentityFilterSettings.IdentitySettings.FilterSinStateBundle.newBuilder()
                             .setFirst(sinSkillStateToSettings(state.skillState.sin.first))
                             .setSecond(sinSkillStateToSettings(state.skillState.sin.second))
                             .setThird(sinSkillStateToSettings(state.skillState.sin.third))
                     )
             )
             .setResistState(
-                FilterSettings.FilterDrawerSheetSettings.FilterDamageStateBundle.newBuilder()
+                IdentityFilterSettings.IdentitySettings.FilterDamageStateBundle.newBuilder()
                     .setFirst(damageSkillStateToSettings(state.resistState.first))
                     .setSecond(damageSkillStateToSettings(state.resistState.second))
                     .setThird(damageSkillStateToSettings(state.resistState.third))
             )
             .setEffectsState(
-                FilterSettings.FilterDrawerSheetSettings.FilterEffectBlockState.newBuilder()
+                IdentityFilterSettings.IdentitySettings.FilterEffectBlockState.newBuilder()
                     .putAllEffects(
                         state.effectsState.effects.mapKeys { (key, _) -> key.toString() }
                             .toMutableMap()
                     )
             )
             .setSinnersState(
-                FilterSettings.FilterDrawerSheetSettings.FilterSinnersBlockState.newBuilder()
+                IdentityFilterSettings.IdentitySettings.FilterSinnersBlockState.newBuilder()
                     .putAllSinners(
                         state.sinnersState.sinners.mapKeys { (key, _) -> key.id }
                             .toMutableMap()

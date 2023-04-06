@@ -1,5 +1,6 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -7,16 +8,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
+import ua.blackwind.limbushelper.data.datastore.EgoFilterSettingsMapper
+import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
+import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
-import ua.blackwind.limbushelper.domain.party.usecase.AddIdentityToPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.DeleteIdentityFromPartyUseCase
-import ua.blackwind.limbushelper.domain.party.usecase.GetPartyUseCase
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.domain.party.usecase.*
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.StateType
@@ -28,205 +30,448 @@ import javax.inject.Inject
 class FilterScreenViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val getFilteredIdentitiesUseCase: GetFilteredIdentitiesUseCase,
+    private val getFilteredEgoUseCase: GetFilteredEgoUseCase,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
-    private val deleteIdentityFromPartyUseCase: DeleteIdentityFromPartyUseCase,
+    private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
+    private val addEgoToPartyUseCase: AddEgoToPartyUseCase,
+    private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase,
     private val getPartyUseCase: GetPartyUseCase,
-    private val filterSheetSettingsMapper: FilterSheetSettingsMapper
+    private val filterSheetSettingsMapper: IdentityFilterSettingsMapper,
+    private val filterEgoSettingsMapper: EgoFilterSettingsMapper
 ): ViewModel() {
+    //TODO Everything inside of this class is a huge mess
+    private val party = MutableStateFlow(Party(0, "Default", emptyList(), emptyList()))
 
-    private val party = MutableStateFlow(Party(0, "Default", emptyList()))
+    private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())
+    val filteredItems: StateFlow<List<FilterDataModel>> = _filteredItems
 
-    private val _filteredIdentities = MutableStateFlow<List<FilterIdentityModel>>(emptyList())
-    val filteredIdentities: StateFlow<List<FilterIdentityModel>> = _filteredIdentities
+    private val _filterMode: MutableStateFlow<FilterMode> = MutableStateFlow(FilterMode.Ego)
+    val filterMode = _filterMode.asStateFlow()
 
-    private val _filterDrawerShitState = MutableStateFlow(
-        FilterDrawerSheetState.getDefaultState()
+    private val _filterDrawerShitState: MutableStateFlow<FilterDrawerSheetState> = MutableStateFlow(
+        FilterDrawerSheetState.IdentityMode.getDefaultState()
     )
     val filterDrawerShitState = _filterDrawerShitState.asStateFlow()
 
-    private val _filterDrawerSheetMode = MutableStateFlow<FilterSheetMode>(FilterSheetMode.Type)
-    val filterDrawerSheetMode = _filterDrawerSheetMode.asStateFlow()
+    private val _filterDrawerSheetTab = MutableStateFlow<FilterSheetTab>(FilterSheetTab.Type)
+    val filterDrawerSheetTab = _filterDrawerSheetTab.asStateFlow()
 
-    private val _sinPickerVisible = MutableStateFlow(false)
-    val sinPickerVisible = _sinPickerVisible.asStateFlow()
+    private val _sinPickerState = MutableStateFlow<SinPickerState>(SinPickerState.Gone)
+    val sinPickerState = _sinPickerState.asStateFlow()
 
-    private var selectedFilterSheetButtonPosition: SelectedButtonPosition =
-        SelectedButtonPosition.None
-
-    //filter list if this is first settings emission after initialization
-    private var initialFilterSettingsEmission = true
+    private var selectedSheetButtonPosition: FilterSheetButtonPosition =
+        FilterSheetButtonPosition.None
 
     init {
         viewModelScope.launch {
             getPartyUseCase().collectLatest { newParty ->
                 party.update { newParty }
-                if (_filteredIdentities.value.isNotEmpty() && party.value.id != 0) {
-                    _filteredIdentities.update { list ->
-                        identityListToFilterIdentityList(
-                            list.map { it.identity },
+                if (_filteredItems.value.isNotEmpty() && party.value.id != 0) {
+                    _filteredItems.update { list ->
+                        itemListToFilterItemList(
+                            list.map { it.item },
                             newParty
                         )
                     }
                 }
             }
         }
-        viewModelScope.launch {
-            preferencesRepository.getFilterSheetSettings().collectLatest { settings ->
-                val newState =
-                    filterSheetSettingsMapper.mapFilterSheetDataStoreSettingsToState(settings)
+        val filterModeFlow = preferencesRepository.getFilterModeSettings()
+        val filterSheetIdentitySettingsFlow =
+            preferencesRepository.getIdentityFilterSheetSettings()
+        val filterSheetEgoSettingsFlow =
+            preferencesRepository.getEgoFilterSheetSettings()
 
-                _filterDrawerShitState.update {
-                    newState
+        viewModelScope.launch {
+            filterSheetIdentitySettingsFlow.combine(filterSheetEgoSettingsFlow) { identity, ego ->
+                identity to ego
+            }.combine(
+                filterModeFlow
+            ) { (identity, ego), mode ->
+                when (mode.mode) {
+                    FilterMode.Identity.label -> {
+                        _filterMode.update { FilterMode.Identity }
+                        filterSheetSettingsMapper.mapFilterSheetDataStoreSettingsToState(identity)
+                    }
+                    FilterMode.Ego.label -> {
+                        _filterMode.update { FilterMode.Ego }
+                        filterEgoSettingsMapper.mapFilterSheetDataStoreSettingsToState(ego)
+                    }
+                    else -> {
+                        _filterMode.update { FilterMode.Identity }
+                        FilterDrawerSheetState.IdentityMode.getDefaultState()
+                    }
                 }
-                if (initialFilterSettingsEmission) {
-                    onFilterButtonClick()
-                    initialFilterSettingsEmission = false
+            }.collectLatest { newState ->
+                Log.d("FILTER", "Updating state")
+                _filterDrawerShitState.update { newState }
+                filter()
+            }
+        }
+    }
+
+    fun filter() {
+        //TODO add dispatchers injection
+        viewModelScope.launch(Dispatchers.Default) {
+            _filteredItems.update {
+                when (filterDrawerShitState.value) {
+                    is FilterDrawerSheetState.IdentityMode -> {
+                        val current =
+                            _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
+                        val skillState = current.skillState
+                        val resistState = current.resistState
+                        val effectState = current.effectsState
+                        val sinnerState = current.sinnersState
+                        itemListToFilterItemList(
+                            getFilteredIdentitiesUseCase(
+                                formIdentityFilter(
+                                    resistState,
+                                    skillState,
+                                    effectState,
+                                    sinnerState
+                                )
+                            ).map { FilterItemTypeModel.IdentityType(it) }, party.value
+                        )
+                    }
+                    is FilterDrawerSheetState.EgoMode -> {
+                        val current = _filterDrawerShitState.value as FilterDrawerSheetState.EgoMode
+                        itemListToFilterItemList(
+                            getFilteredEgoUseCase(
+                                formEgoFilter(state = current)
+                            ).map { FilterItemTypeModel.EgoType(it) }, party.value
+                        )
+                    }
                 }
             }
         }
     }
 
-    fun onFilterButtonClick() {
-        //TODO add dispatchers injection
-        viewModelScope.launch(Dispatchers.Default) {
-            _filteredIdentities.update {
-                val skillState = _filterDrawerShitState.value.skillState
-                val resistState = _filterDrawerShitState.value.resistState
-                val effectState = _filterDrawerShitState.value.effectsState
-                val sinnerState = _filterDrawerShitState.value.sinnersState
-                identityListToFilterIdentityList(
-                    getFilteredIdentitiesUseCase(
-                        formIdentityFilter(resistState, skillState, effectState, sinnerState)
-                    ), party.value
+    fun onItemInPartyChecked(item: FilterDataModel) {
+        viewModelScope.launch {
+            when (item.item) {
+                is FilterItemTypeModel.EgoType -> addEgoToPartyUseCase(
+                    item.item.ego,
+                    party.value
+                )
+                is FilterItemTypeModel.IdentityType -> addIdentityToPartyUseCase(
+                    item.item.identity,
+                    party.value
                 )
             }
         }
     }
 
-    fun onIdentityItemInPartyChecked(identity: Identity) {
+    fun onItemInPartyUnChecked(item: FilterDataModel) {
         viewModelScope.launch {
-            addIdentityToPartyUseCase(
-                identity,
-                party.value
-            )
+            when (item.item) {
+                is FilterItemTypeModel.EgoType -> removeEgoFromPartyUseCase(
+                    item.item.ego,
+                    party.value
+                )
+                is FilterItemTypeModel.IdentityType -> removeIdentityFromPartyUseCase(
+                    item.item.identity,
+                    party.value
+                )
+            }
+
         }
     }
 
-    fun onIdentityItemInPartyUnChecked(identity: Identity) {
-        viewModelScope.launch {
-            deleteIdentityFromPartyUseCase(identity, party.value)
+    fun onFilterTabSwitch(id: Int) {
+        val newTab = when (id) {
+            0 -> FilterSheetTab.Type
+            1 -> FilterSheetTab.Effects
+            2 -> FilterSheetTab.Sinners
+            else -> throw IllegalArgumentException("Wrong switch button id: $id")
         }
+        _filterDrawerSheetTab.update { newTab }
     }
 
     fun onFilterModeSwitch(id: Int) {
         val newMode = when (id) {
-            0 -> FilterSheetMode.Type
-            1 -> FilterSheetMode.Effects
-            2 -> FilterSheetMode.Sinners
+            0 -> FilterMode.Identity
+            1 -> FilterMode.Ego
             else -> throw IllegalArgumentException("Wrong switch button id: $id")
         }
-        _filterDrawerSheetMode.update { newMode }
+        viewModelScope.launch { preferencesRepository.updateFilterModeSettings(newMode) }
     }
 
     fun onClearFilterButtonPress() {
-        updateFilterDrawerSheetState(FilterDrawerSheetState.getDefaultState())
+        when (_filterDrawerShitState.value) {
+            is FilterDrawerSheetState.EgoMode -> updateFilterDrawerSheetState(
+                FilterDrawerSheetState.EgoMode.getDefaultState()
+            )
+            is FilterDrawerSheetState.IdentityMode -> updateFilterDrawerSheetState(
+                FilterDrawerSheetState.IdentityMode.getDefaultState()
+            )
+        }
+        updateFilterDrawerSheetState(FilterDrawerSheetState.IdentityMode.getDefaultState())
+        _sinPickerState.update { SinPickerState.Gone }
     }
 
     fun onEffectCheckedChange(checked: Boolean, effect: Effect) {
-        val new = filterDrawerShitState.value.effectsState.effects.toMutableMap()
+        val oldList = when (val value = _filterDrawerShitState.value) {
+            is FilterDrawerSheetState.EgoMode -> value.effectsState.effects
+            is FilterDrawerSheetState.IdentityMode -> value.effectsState.effects
+        }
+
+        val new = oldList.toMutableMap()
         new[effect] = !checked
         val newState = FilterEffectBlockState(new)
         updateFilterDrawerSheetState(
-            _filterDrawerShitState.value.copy(
-                effectsState = newState
-            )
+            when (val value = _filterDrawerShitState.value) {
+                is FilterDrawerSheetState.EgoMode -> value.copy(effectsState = newState)
+                is FilterDrawerSheetState.IdentityMode -> value.copy(effectsState = newState)
+            }
         )
-
     }
 
     fun onSinnerCheckedChange(sinner: FilterSinnerModel) {
-        val new = filterDrawerShitState.value.sinnersState.sinners.toMutableMap()
+        val oldList = when (val value = _filterDrawerShitState.value) {
+            is FilterDrawerSheetState.EgoMode -> value.sinnersState.sinners
+            is FilterDrawerSheetState.IdentityMode -> value.sinnersState.sinners
+        }
+
+        val new = oldList.toMutableMap()
         new[sinner] = new[sinner]?.not() ?: false
         val newState = FilterSinnersBlockState(new)
         updateFilterDrawerSheetState(
-            _filterDrawerShitState.value.copy(
-                sinnersState = newState
-            )
+            when (val value = _filterDrawerShitState.value) {
+                is FilterDrawerSheetState.EgoMode -> value.copy(sinnersState = newState)
+                is FilterDrawerSheetState.IdentityMode -> value.copy(sinnersState = newState)
+            }
         )
     }
 
-    fun onFilterSkillButtonLongPress(selected: SelectedButtonPosition) {
-        selectedFilterSheetButtonPosition = selected
-        _sinPickerVisible.update { true }
+    fun onFilterSkillButtonLongPress(selected: FilterSheetButtonPosition) {
+        selectedSheetButtonPosition = selected
+        _sinPickerState.update { SinPickerState.SkillSelected }
+    }
+
+    fun onEgoResistButtonLongPress(selected: FilterSheetButtonPosition) {
+        selectedSheetButtonPosition = selected
+        _sinPickerState.update { SinPickerState.EgoResistSelected }
     }
 
     fun onFilterSinPickerPress(sin: StateType<Sin>) {
-        _sinPickerVisible.update { false }
-        val oldSinState = when (selectedFilterSheetButtonPosition) {
-            SelectedButtonPosition.None -> {
-                throw IllegalStateException("Trying to update filter buttons state with none selected")
+        when (val value = _filterDrawerShitState.value) {
+            is FilterDrawerSheetState.EgoMode -> {
+                if (_sinPickerState.value is SinPickerState.SkillSelected) {
+                    updateFilterDrawerSheetState(
+                        value.copy(
+                            skillState = EgoFilterSkillBlockState(
+                                value.skillState.damageType,
+                                sin
+                            )
+                        )
+                    )
+                }
+                if (_sinPickerState.value is SinPickerState.EgoPriceSelected) {
+                    updateFilterDrawerSheetState(
+                        value.copy(
+                            priceState = when (selectedSheetButtonPosition) {
+                                FilterSheetButtonPosition.First -> value.priceState.copy(
+                                    first = sin
+                                )
+                                FilterSheetButtonPosition.Second -> value.priceState.copy(
+                                    second = sin
+                                )
+                                FilterSheetButtonPosition.Third -> value.priceState.copy(
+                                    third = sin
+                                )
+                                FilterSheetButtonPosition.None -> throw IllegalArgumentException(
+                                    "Trying to update price button with none selected"
+                                )
+                            }
+                        )
+                    )
+                }
+                if (_sinPickerState.value is SinPickerState.EgoResistSelected) {
+                    updateFilterDrawerSheetState(
+                        value.copy(
+                            resistState =
+                            when (selectedSheetButtonPosition) {
+                                FilterSheetButtonPosition.First -> {
+                                    value.resistState.copy(
+                                        first = EgoFilterResistArg(
+                                            resist = value.resistState.first.resist,
+                                            sin = sin
+                                        )
+                                    )
+                                }
+                                FilterSheetButtonPosition.Second -> {
+                                    value.resistState.copy(
+                                        second = EgoFilterResistArg(
+                                            resist = value.resistState.second.resist,
+                                            sin = sin
+                                        )
+                                    )
+                                }
+                                FilterSheetButtonPosition.Third -> {
+                                    value.resistState.copy(
+                                        third = EgoFilterResistArg(
+                                            resist = value.resistState.third.resist,
+                                            sin = sin
+                                        )
+                                    )
+                                }
+                                FilterSheetButtonPosition.None -> throw IllegalArgumentException(
+                                    "Trying to update resist button with none selected"
+                                )
+                            }
+                        )
+                    )
+                }
             }
-            SelectedButtonPosition.First -> {
-                _filterDrawerShitState.value.skillState
-            }
-            SelectedButtonPosition.Second -> {
-                _filterDrawerShitState.value.skillState
-            }
-            SelectedButtonPosition.Third -> {
-                _filterDrawerShitState.value.skillState
+            is FilterDrawerSheetState.IdentityMode -> {
+                val oldSinState = when (selectedSheetButtonPosition) {
+                    FilterSheetButtonPosition.None -> {
+                        throw IllegalStateException("Trying to update filter buttons state with none selected")
+                    }
+                    FilterSheetButtonPosition.First -> {
+                        value.skillState
+                    }
+                    FilterSheetButtonPosition.Second -> {
+                        value.skillState
+                    }
+                    FilterSheetButtonPosition.Third -> {
+                        value.skillState
+                    }
+                }
+                updateFilterDrawerSheetState(
+                    value.copy(
+                        skillState = FilterSkillBlockState(
+                            oldSinState.damage,
+                            updateSinStateBundle(
+                                selectedSheetButtonPosition,
+                                sin,
+                                oldSinState.sin
+                            )
+                        )
+                    )
+                )
             }
         }
-
-        updateFilterDrawerSheetState(
-            _filterDrawerShitState.value.copy(
-                skillState = FilterSkillBlockState(
-                    oldSinState.damage,
-                    updateSinStateBundle(selectedFilterSheetButtonPosition, sin, oldSinState.sin)
-                )
-            )
-        )
-
-        selectedFilterSheetButtonPosition = SelectedButtonPosition.None
+        _sinPickerState.update { SinPickerState.Gone }
+        selectedSheetButtonPosition = FilterSheetButtonPosition.None
     }
 
-    fun onFilterSkillButtonClick(button: SelectedButtonPosition) {
-        val old = _filterDrawerShitState.value
-        updateFilterDrawerSheetState(
-            old.copy(
-                skillState = FilterSkillBlockState(
-                    updateDamageStateBundle(button, old.skillState.damage, false),
-                    old.skillState.sin
+    fun onFilterSkillButtonClick(button: FilterSheetButtonPosition) {
+        when (val old = _filterDrawerShitState.value) {
+            is FilterDrawerSheetState.EgoMode -> {
+                updateFilterDrawerSheetState(
+                    old.copy(
+                        skillState = old.skillState.copy(damageType = cycleSkillDamageTypes(old.skillState.damageType))
+                    )
                 )
-            )
-        )
+            }
+            is FilterDrawerSheetState.IdentityMode -> {
+                updateFilterDrawerSheetState(
+                    old.copy(
+                        skillState = FilterSkillBlockState(
+                            updateDamageStateBundle(button, old.skillState.damage, false),
+                            old.skillState.sin
+                        )
+                    )
+                )
+            }
+        }
     }
 
-    fun onFilterResistButtonClick(button: SelectedButtonPosition) {
-        val oldState = _filterDrawerShitState.value.resistState
-        updateFilterDrawerSheetState(
-            _filterDrawerShitState.value.copy(
-                resistState = updateDamageStateBundle(button, oldState, true)
+    fun onIdentityFilterResistButtonClick(button: FilterSheetButtonPosition) {
+        if (_filterDrawerShitState.value is FilterDrawerSheetState.IdentityMode) {
+            val oldState = _filterDrawerShitState.value as FilterDrawerSheetState.IdentityMode
+            updateFilterDrawerSheetState(
+                oldState.copy(
+                    resistState = updateDamageStateBundle(button, oldState.resistState, true)
+                )
             )
-        )
+        }
+    }
+
+    fun onEgoFilterPriceButtonLongPress(button: FilterSheetButtonPosition) {
+        selectedSheetButtonPosition = button
+        _sinPickerState.update { SinPickerState.EgoPriceSelected }
+    }
+
+    //TODO refactor this heresy to use dataStore for all such operations
+    fun onEgoFilterResistButtonClick(buttonPosition: FilterSheetButtonPosition) {
+        if (_filterDrawerShitState.value is FilterDrawerSheetState.EgoMode) {
+            val old = _filterDrawerShitState.value as FilterDrawerSheetState.EgoMode
+            val new = when (buttonPosition) {
+                FilterSheetButtonPosition.First -> {
+                    old.copy(
+                        resistState = old.resistState.copy(
+                            first = old.resistState.first.copy(
+                                resist = cycleEgoResistButtonState(old.resistState.first.resist)
+                            )
+                        )
+                    )
+
+                }
+                FilterSheetButtonPosition.Second -> old.copy(
+                    resistState = old.resistState.copy(
+                        second = old.resistState.second.copy(
+                            resist = cycleEgoResistButtonState(old.resistState.second.resist)
+                        )
+                    )
+                )
+                FilterSheetButtonPosition.Third -> old.copy(
+                    resistState = old.resistState.copy(
+                        third = old.resistState.third.copy(
+                            resist = cycleEgoResistButtonState(old.resistState.third.resist)
+                        )
+                    )
+                )
+                FilterSheetButtonPosition.None -> throw IllegalArgumentException("Impossible button position")
+            }
+            updateFilterDrawerSheetState(new)
+        }
+    }
+
+    private fun cycleEgoResistButtonState(
+        type: EgoSinResistType
+    ): EgoSinResistType {
+        return when (type) {
+            EgoSinResistType.INEFF -> EgoSinResistType.ENDURE
+            EgoSinResistType.ENDURE -> EgoSinResistType.NORMAL
+            EgoSinResistType.NORMAL -> EgoSinResistType.FATAL
+            EgoSinResistType.FATAL -> EgoSinResistType.INEFF
+        }
     }
 
     private fun updateFilterDrawerSheetState(newState: FilterDrawerSheetState) {
         viewModelScope.launch {
-            preferencesRepository.updateFilterSheetSettings(
-                newState
-            )
+            when (newState) {
+                is FilterDrawerSheetState.EgoMode -> {
+                    preferencesRepository.updateEgoFilterSheetSettings(
+                        newState
+                    )
+                }
+                is FilterDrawerSheetState.IdentityMode -> {
+                    preferencesRepository.updateIdentityFilterSheetSettings(
+                        newState
+                    )
+                }
+            }
         }
     }
 
-    private fun identityListToFilterIdentityList(
-        list: List<Identity>,
+    private fun itemListToFilterItemList(
+        list: List<FilterItemTypeModel>,
         party: Party
-    ): List<FilterIdentityModel> {
-        return list.map { identity ->
-            FilterIdentityModel(
-                identity,
-                party.identityList.any { it.identity.id == identity.id }
-            )
+    ): List<FilterDataModel> {
+        return list.map { item ->
+            when (item) {
+                is FilterItemTypeModel.IdentityType ->
+                    FilterDataModel(
+                        item,
+                        party.identityList.any { it.identity.id == item.identity.id }
+                    )
+                is FilterItemTypeModel.EgoType ->
+                    FilterDataModel(item,
+                        party.egoList.any { it.id == item.ego.id })
+            }
         }
     }
 
@@ -236,16 +481,16 @@ class FilterScreenViewModel @Inject constructor(
      * (for resistance block) or non unique (for skills block)
      */
     private fun updateDamageStateBundle(
-        button: SelectedButtonPosition,
+        button: FilterSheetButtonPosition,
         input: FilterDamageStateBundle,
         unique: Boolean
     ): FilterDamageStateBundle {
         var (first, second, third) = input
         when (button) {
-            SelectedButtonPosition.First -> first = cycleSkillDamageTypes(first)
-            SelectedButtonPosition.Second -> second = cycleSkillDamageTypes(second)
-            SelectedButtonPosition.Third -> third = cycleSkillDamageTypes(third)
-            SelectedButtonPosition.None ->
+            FilterSheetButtonPosition.First -> first = cycleSkillDamageTypes(first)
+            FilterSheetButtonPosition.Second -> second = cycleSkillDamageTypes(second)
+            FilterSheetButtonPosition.Third -> third = cycleSkillDamageTypes(third)
+            FilterSheetButtonPosition.None ->
                 throw IllegalStateException(UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED)
         }
         val result = FilterDamageStateBundle(first, second, third)
@@ -255,16 +500,16 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     private fun updateSinStateBundle(
-        button: SelectedButtonPosition,
+        button: FilterSheetButtonPosition,
         sin: StateType<Sin>,
         input: FilterSinStateBundle
     ): FilterSinStateBundle {
         var (first, second, third) = input
         when (button) {
-            SelectedButtonPosition.First -> first = sin
-            SelectedButtonPosition.Second -> second = sin
-            SelectedButtonPosition.Third -> third = sin
-            SelectedButtonPosition.None ->
+            FilterSheetButtonPosition.First -> first = sin
+            FilterSheetButtonPosition.Second -> second = sin
+            FilterSheetButtonPosition.Third -> third = sin
+            FilterSheetButtonPosition.None ->
                 throw IllegalStateException(UPDATE_FILTER_BUTTONS_WITH_NONE_SELECTED)
         }
         return FilterSinStateBundle(first, second, third)
@@ -292,7 +537,7 @@ class FilterScreenViewModel @Inject constructor(
                 normal = resistState.second.toFilterDamageTypeArg(),
                 fatal = resistState.third.toFilterDamageTypeArg()
             ),
-            skills = FilterSkillsSetArg(
+            skills = IdentityFilterSkillsSetArg(
                 FilterSkillArg(
                     skillState.damage.first.toFilterDamageTypeArg(),
                     skillState.sin.first.toFilterSinTypeArg()
@@ -308,6 +553,24 @@ class FilterScreenViewModel @Inject constructor(
             ),
             effects = effectState.effects.filter { it.value }.keys.toList(),
             sinners = sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
+        )
+    }
+
+    private fun formEgoFilter(state: FilterDrawerSheetState.EgoMode): EgoFilter {
+
+        return EgoFilter(
+            skillFilterArg = FilterSkillArg(
+                damageType = state.skillState.damageType.toFilterDamageTypeArg(),
+                sin = state.skillState.sinType.toFilterSinTypeArg()
+            ),
+            resistSetArg = EgoFilterSinResistTypeArg(
+                state.resistState.toFilterArg()
+            ),
+            priceSetArg = state.priceState.toFilterArg(),
+            effects =
+            state.effectsState.effects.filter { it.value }.keys.toList(),
+            sinners = state.sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
+
         )
     }
 

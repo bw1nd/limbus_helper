@@ -1,8 +1,8 @@
 package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
-import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -17,14 +17,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.common.AlternativeCheckbox
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
+import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.InfoPanelDamageResist
+import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyBuildingInfoPanelState
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
@@ -35,7 +35,8 @@ private const val INFO_PANEL_COLUMNS_PLUS_ONE = 12
 fun PartyBuildingInfoPanel(
     state: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
-    onShowActiveIdentitiesClick: (Boolean) -> Unit
+    onShowActiveIdentitiesClick: (Boolean) -> Unit,
+    onClearPartyClick: () -> Unit
 ) {
     val columnWidth = LocalConfiguration.current.screenWidthDp / INFO_PANEL_COLUMNS_PLUS_ONE
     val (partySizeCheckerColor, partySizeCheckerSign) = when (true) {
@@ -66,12 +67,22 @@ fun PartyBuildingInfoPanel(
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.titleMedium,
             )
-            Text(text = "(${state.totalIdentityCount})",
+            Text(
+                text = "(${state.totalIdentityCount})",
                 color = MaterialTheme.colorScheme.onPrimary.copy(
                     alpha = 0.7f
                 ),
-                style = MaterialTheme.typography.titleMedium,)
+                style = MaterialTheme.typography.titleMedium,
+            )
             Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                "Clear Party",
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.clickable { onClearPartyClick() }
+            )
+            Spacer(modifier = Modifier.width(20.dp))
             AlternativeCheckbox(
                 checked = isShowActiveIdentitiesChecked,
                 onCheckedChange = onShowActiveIdentitiesClick,
@@ -104,15 +115,16 @@ private fun InfoPanelSinItem(
 ) {
     Sin.values().forEach { sin ->
         @DrawableRes val res = getSinIcon(sin)
-        val text = when (sin) {
-            Sin.WRATH -> state.attackBySin.wrath
-            Sin.LUST -> state.attackBySin.lust
-            Sin.SLOTH -> state.attackBySin.sloth
-            Sin.GLUTTONY -> state.attackBySin.gluttony
-            Sin.GLOOM -> state.attackBySin.gloom
-            Sin.PRIDE -> state.attackBySin.pride
-            Sin.ENVY -> state.attackBySin.envy
+        val (text, resistPotency) = when (sin) {
+            Sin.WRATH -> state.attackBySin.wrath to state.resistBySin.wrath
+            Sin.LUST -> state.attackBySin.lust to state.resistBySin.lust
+            Sin.SLOTH -> state.attackBySin.sloth to state.resistBySin.sloth
+            Sin.GLUTTONY -> state.attackBySin.gluttony to state.resistBySin.gluttony
+            Sin.GLOOM -> state.attackBySin.gloom to state.resistBySin.gloom
+            Sin.PRIDE -> state.attackBySin.pride to state.resistBySin.pride
+            Sin.ENVY -> state.attackBySin.envy to state.resistBySin.envy
         }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -132,10 +144,33 @@ private fun InfoPanelSinItem(
                 contentDescription = null,
                 Modifier.size(columnWidth.dp)
             )
-            Spacer(modifier = Modifier.size(columnWidth.dp))
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(columnWidth.dp)
+            ) {
+                //TODO make custom colors for these statuses
+                val (iconResId, color) = when (resistPotency) {
+                    InfoPanelDamageResist.NA -> 0 to Color.Transparent
+                    InfoPanelDamageResist.Bad -> R.drawable.info_warning_ic to Color.Red
+                    InfoPanelDamageResist.Poor -> R.drawable.info_down_ic to Color.Yellow
+                    InfoPanelDamageResist.Normal -> R.drawable.info_normal_ic to Color.Cyan
+                    InfoPanelDamageResist.Good -> R.drawable.info_up_ic to Color.Green
+                    InfoPanelDamageResist.Perfect -> R.drawable.info_perfect_ic to Color.Green
+                }
+                if (iconResId != 0) {
+                    Icon(
+                        painterResource(id = iconResId),
+                        contentDescription = null,
+                        tint = color,
+                        modifier = Modifier.size(columnWidth.dp * 0.6f)
+                    )
+                }
+
+            }
         }
     }
 }
+
 
 @Composable
 private fun InfoPanelDamageItem(
@@ -220,24 +255,32 @@ private fun InfoPanelTypeIconsBlock(columnWidth: Int) {
     }
 }
 
-@Preview(
-    showSystemUi = true,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED,
-    device = Devices.NEXUS_5
-)
-@Composable
-private fun PartyInfoPanelPreview() {
-    PartyBuildingInfoPanel(
-        PartyBuildingInfoPanelState(
-            AttackByDamageInfo(5, 10, 10),
-            AttackBySinInfo(1, 2, 3, 5, 1, 1, 0),
-            DefenceByDamageInfo(
-                InfoPanelDamageResist.Normal,
-                InfoPanelDamageResist.Good,
-                InfoPanelDamageResist.Bad
-            ),
-            4, 8
-        ), true, {}
-    )
-}
+//    @Preview(
+//        showSystemUi = true,
+//        showBackground = true,
+//        uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED,
+//        device = Devices.NEXUS_5
+//    )
+//    @Composable
+//    private fun PartyInfoPanelPreview() {
+//        PartyBuildingInfoPanel(
+//            PartyBuildingInfoPanelState(
+//                AttackByDamageInfo(5, 10, 10),
+//                AttackBySinInfo(1, 2, 3, 5, 1, 1, 0),
+//                DefenceByDamageInfo(
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Good,
+//                    InfoPanelDamageResist.Bad
+//                ),
+//                ResistBySinInfo(
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Normal,
+//                    InfoPanelDamageResist.Normal,
+//                ), 4, 8
+//            ), true, {}
+//        )
+//    }

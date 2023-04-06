@@ -26,6 +26,8 @@ import coil.size.Size
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
+import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.sinner.model.EgoSkill
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import ua.blackwind.limbushelper.ui.theme.identityRarity0
@@ -41,8 +43,7 @@ private const val PORTRAIT_IMAGE_WIDTH = 70
 
 @Composable
 fun identityItemCore(
-    identity: Identity,
-    portraitWidthDp: Int
+    identity: Identity
 ): @Composable (RowScope.() -> Unit) =
     {
         val density = LocalConfiguration.current.densityDpi
@@ -62,7 +63,7 @@ fun identityItemCore(
             alignment = Alignment.Center,
             contentScale = ContentScale.Crop,
             contentDescription = null, modifier = Modifier
-                .size(portraitWidthDp.dp, ITEM_VERTICAL_SIZE_DP.dp)
+                .size(PORTRAIT_IMAGE_WIDTH.dp, ITEM_VERTICAL_SIZE_DP.dp)
         )
         Divider(
             color = when (identity.rarity) {
@@ -135,16 +136,44 @@ fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
 
 @Composable
 fun SkillItem(skill: Skill) {
+    SkillItemCore(
+        dmgType = skill.dmgType,
+        sin = skill.sin,
+        baseDie = skill.baseDie,
+        coinBonus = skill.coinBonus,
+        coinCount = skill.coinCount
+    )
+}
+
+@Composable
+fun EgoSkillItem(skill: EgoSkill) {
+    SkillItemCore(
+        dmgType = skill.dmgType,
+        sin = skill.sin,
+        baseDie = skill.baseDie,
+        coinBonus = skill.coinBonus,
+        coinCount = skill.coinCount
+    )
+}
+
+@Composable
+fun SkillItemCore(
+    dmgType: DamageType,
+    sin: Sin,
+    baseDie: Int,
+    coinBonus: Int,
+    coinCount: Int
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(52.dp)
-                .background(getSinColor(skill.sin))
+                .background(getSinColor(sin))
                 .border(2.dp, MaterialTheme.colorScheme.onPrimary)
         ) {
             Image(
-                painter = painterResource(id = getDamageTypeIcon(skill.dmgType)),
+                painter = painterResource(id = getDamageTypeIcon(dmgType)),
                 contentDescription = null,
                 modifier = Modifier.size(45.dp)
             )
@@ -154,9 +183,9 @@ fun SkillItem(skill: Skill) {
             textAlign = TextAlign.Start,
             fontSize = 14.sp,
             modifier = Modifier.padding(top = 2.dp),
-            text = "${skill.baseDie}" +
-                    (if (skill.coinBonus > 0) "+" else "-") +
-                    "${skill.coinBonus}\u00D7${skill.coinCount}"
+            text = "${baseDie}" +
+                    (if (coinBonus > 0) "+" else "") +
+                    "${coinBonus}\u00D7${coinCount}"
         )
     }
 }
@@ -177,7 +206,7 @@ fun ResistanceBlock(
         modifier = Modifier.width(105.dp)
     ) {
         ResistanceItem(
-            dmgType = (res[IdentityDamageResistType.INEFFECTIVE]!!),
+            dmgType = (res[IdentityDamageResistType.INEFF]!!),
             label = "Ineff."
         )
         ResistanceItem(
@@ -233,7 +262,7 @@ fun EffectsBlock(effects: Set<Effect>) {
 @Composable
 private fun IdentityItemPreview() {
     Row {
-        identityItemCore(identity = previewIdentity, 70).invoke(this)
+        identityItemCore(identity = previewIdentity).invoke(this)
     }
 
 }

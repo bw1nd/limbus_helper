@@ -3,6 +3,7 @@
     <string name="res_ineff">Ineff.</string>
     <string name="res_normal">Normal</string>
     <string name="res_fatal">Fatal</string>
+    <string name="res_endure">Endure</string>
     <string name="undo_delete">UNDO</string>
     <string name="removed_from_party">%s removed from party</string>
     <string name="active_only">Active Only</string>
@@ -10,4 +11,9 @@
     <string name="empty_filter">Looks like there is nobody\nwho could fulfill your request, Manager.\nTry to be less strict.</string>
     <string name="party">Party</string>
     <string name="filter">Filter</string>
+    <string name="tab_type">Type</string>
+    <string name="tab_effect">Effect</string>
+    <string name="tab_sinner">Sinner</string>
+    <string name="filter_mode_identity">Identity</string>
+    <string name="filter_mode_ego">Ego</string>
 </resources>

@@ -14,9 +14,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import ua.blackwind.limbushelper.R
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.FilterDrawerSheet
-import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterIdentityModel
+import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.*
 
@@ -25,70 +24,76 @@ import ua.blackwind.limbushelper.ui.util.*
 @Composable
 fun FilterScreen() {
     val viewModel = hiltViewModel<FilterScreenViewModel>()
-    val identities by viewModel.filteredIdentities.collectAsState()
+    val identities by viewModel.filteredItems.collectAsState()
     val filterDrawerSheetState by viewModel.filterDrawerShitState.collectAsState()
-    val filterDrawerMode by viewModel.filterDrawerSheetMode.collectAsState()
-    val filterSkillSinPickerVisible by viewModel.sinPickerVisible.collectAsState()
-    val labels = FilterResistButtonLabels(
-        stringResource(R.string.res_ineff),
-        stringResource(R.string.res_normal),
-        stringResource(R.string.res_fatal)
-    )
+    val filterDrawerTab by viewModel.filterDrawerSheetTab.collectAsState()
+    val sinPickerState by viewModel.sinPickerState.collectAsState()
+    val filterMode by viewModel.filterMode.collectAsState()
+
+
     val filterSheetStateMethods = FilterDrawerSheetMethods(
-        onSwitchChange = viewModel::onFilterModeSwitch,
-        onFilterButtonClick = viewModel::onFilterButtonClick,
+        onSwitchChange = viewModel::onFilterTabSwitch,
+        onFilterButtonClick = viewModel::filter,
         onClearFilterButtonPress = viewModel::onClearFilterButtonPress,
         onSkillButtonClick = viewModel::onFilterSkillButtonClick,
         onSkillButtonLongPress = viewModel::onFilterSkillButtonLongPress,
         onSinPickerClick = viewModel::onFilterSinPickerPress,
-        onResistButtonClick = viewModel::onFilterResistButtonClick,
+        onIdentityResistButtonClick = viewModel::onIdentityFilterResistButtonClick,
+        onEgoResistButtonClick = viewModel::onEgoFilterResistButtonClick,
+        onEgoResistButtonLongPress = viewModel::onEgoResistButtonLongPress,
+        onEgoPriceButtonLongPress = viewModel::onEgoFilterPriceButtonLongPress,
         onEffectCheckedChange = viewModel::onEffectCheckedChange,
         onSinnerCheckedChange = viewModel::onSinnerCheckedChange
     )
 
     FilterScreenUi(
-        identities = identities,
-        filterDrawerMode = filterDrawerMode,
+        list = identities,
+        filterDrawerSheetTab = filterDrawerTab,
         filterDrawerSheetState = filterDrawerSheetState,
-        filterSkillSinPickerVisible = filterSkillSinPickerVisible,
-        resistLabels = labels,
+        filterMode = filterMode,
+        sinPickerState = sinPickerState,
         filterSheetMethods = filterSheetStateMethods,
-        onInPartyChecked = viewModel::onIdentityItemInPartyChecked,
-        onInPartyUnChecked = viewModel::onIdentityItemInPartyUnChecked
+        onFilterModeChanged = viewModel::onFilterModeSwitch,
+        onInPartyChecked = viewModel::onItemInPartyChecked,
+        onInPartyUnChecked = viewModel::onItemInPartyUnChecked
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreenUi(
-    identities: List<FilterIdentityModel>,
-    filterDrawerMode: FilterSheetMode,
+    list: List<FilterDataModel>,
+    filterDrawerSheetTab: FilterSheetTab,
     filterDrawerSheetState: FilterDrawerSheetState,
-    filterSkillSinPickerVisible: Boolean,
-    resistLabels: FilterResistButtonLabels,
+    filterMode: FilterMode,
+    sinPickerState: SinPickerState,
     filterSheetMethods: FilterDrawerSheetMethods,
-    onInPartyChecked: (Identity) -> Unit,
-    onInPartyUnChecked: (Identity) -> Unit
+    onFilterModeChanged: (Int) -> Unit,
+    onInPartyChecked: (FilterDataModel) -> Unit,
+    onInPartyUnChecked: (FilterDataModel) -> Unit
 ) {
     BottomSheetScaffold(
         scaffoldState = rememberBottomSheetScaffoldState(),
         sheetContent = {
             FilterDrawerSheet(
-                mode = filterDrawerMode,
+                tab = filterDrawerSheetTab,
+                filterMode = filterMode,
                 filterState = filterDrawerSheetState,
-                sinPickerVisible = filterSkillSinPickerVisible,
-                resistLabels = resistLabels,
-                methods = filterSheetMethods
+                sinPickerState = sinPickerState,
+                methods = filterSheetMethods,
+                onFilterModeChanged = onFilterModeChanged
             )
         }
     ) { padding ->
-        if (identities.isEmpty()) {
+        if (list.isEmpty()) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Spacer(modifier = Modifier
-                    .fillMaxHeight(.3f))
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxHeight(.3f)
+                )
                 Text(
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -100,6 +105,7 @@ fun FilterScreenUi(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(padding)
             ) {
+
                 Surface(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
                         contentPadding = PaddingValues(5.dp),
@@ -109,9 +115,9 @@ fun FilterScreenUi(
                             .fillMaxWidth()
                             .fillMaxHeight(0.9f)
                     ) {
-                        items(identities.size) {
-                            FilterIdentityItem(
-                                viewIdentity = identities[it],
+                        items(list.size) {
+                            FilterListItem(
+                                listItem = list[it],
                                 onInPartyChecked = onInPartyChecked,
                                 onInPartyUnChecked = onInPartyUnChecked
                             )

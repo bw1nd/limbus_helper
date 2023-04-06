@@ -20,6 +20,12 @@ val gloom = Color(0xFF356D7A)
 val pride = Color(0xFF15497B)
 val envy = Color(0xFF744888)
 
+val zayin =  Color(0xFF7CB342)
+val teth =  Color(0xFF039BE5)
+val he =  Color(0xFFFDD835)
+val waw =  Color(0xFF6D38D9)
+val aleph =  Color(0xFFE53935)
+
 //custom theme colors
 val activeIdentityBorderColor = LightBlue
 val inactiveIdentityBorderColor = LighterGrey

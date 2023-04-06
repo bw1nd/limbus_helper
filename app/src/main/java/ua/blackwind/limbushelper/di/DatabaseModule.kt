@@ -10,7 +10,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ua.blackwind.limbushelper.data.SinnerRepository
 import ua.blackwind.limbushelper.data.db.AppDatabase
-import ua.blackwind.limbushelper.data.db.Dao
+import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.party.PartyRepository
 import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository

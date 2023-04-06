@@ -26,7 +26,7 @@ class GetFilteredIdentitiesUseCaseTest {
     private val firstIdentity = generateIdentity(
         name = "TEST IDENTITY #1",
         sinnerId = 1,
-        slashResist = IdentityDamageResistType.INEFFECTIVE,
+        slashResist = IdentityDamageResistType.INEFF,
         pierceResist = IdentityDamageResistType.NORMAL,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.SLASH, Sin.LUST, listOf(Effect.BURN)),
@@ -43,7 +43,7 @@ class GetFilteredIdentitiesUseCaseTest {
         name = "TEST IDENTITY #2",
         sinnerId = 2,
         slashResist = IdentityDamageResistType.NORMAL,
-        pierceResist = IdentityDamageResistType.INEFFECTIVE,
+        pierceResist = IdentityDamageResistType.INEFF,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.PIERCE, Sin.PRIDE, listOf(Effect.POISE)),
         secondSkill = generateSkill(
@@ -60,7 +60,7 @@ class GetFilteredIdentitiesUseCaseTest {
         name = "TEST IDENTITY #3",
         sinnerId = 3,
         slashResist = IdentityDamageResistType.NORMAL,
-        pierceResist = IdentityDamageResistType.INEFFECTIVE,
+        pierceResist = IdentityDamageResistType.INEFF,
         bluntResist = IdentityDamageResistType.FATAL,
         firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.BLEED)),
         secondSkill = generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
@@ -72,7 +72,7 @@ class GetFilteredIdentitiesUseCaseTest {
     private val fourthIdentity = generateIdentity(
         name = "TEST IDENTITY #4",
         sinnerId = 1,
-        slashResist = IdentityDamageResistType.INEFFECTIVE,
+        slashResist = IdentityDamageResistType.INEFF,
         pierceResist = IdentityDamageResistType.FATAL,
         bluntResist = IdentityDamageResistType.NORMAL,
         firstSkill = generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),
@@ -117,7 +117,7 @@ class GetFilteredIdentitiesUseCaseTest {
             thirdIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
             emptySkillArg,
             emptySkillArg,
@@ -133,7 +133,7 @@ class GetFilteredIdentitiesUseCaseTest {
             thirdIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             emptySkillArg,
@@ -148,7 +148,7 @@ class GetFilteredIdentitiesUseCaseTest {
             thirdIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
@@ -163,7 +163,7 @@ class GetFilteredIdentitiesUseCaseTest {
             secondIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
@@ -176,7 +176,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with pierce pierce blunt type damage returns empty list`() {
         val expected = emptyList<Identity>()
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
@@ -191,7 +191,7 @@ class GetFilteredIdentitiesUseCaseTest {
             firstIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             emptySkillArg,
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.WRATH)),
             emptySkillArg,
@@ -208,7 +208,7 @@ class GetFilteredIdentitiesUseCaseTest {
             fourthIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
             emptySkillArg,
             emptySkillArg,
@@ -224,7 +224,7 @@ class GetFilteredIdentitiesUseCaseTest {
             fourthIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
             emptySkillArg,
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
@@ -239,7 +239,7 @@ class GetFilteredIdentitiesUseCaseTest {
             thirdIdentity
         ).sortedBy { it.name }
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.GLOOM)),
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.GLUTTONY)),
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
@@ -252,7 +252,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with pride lust sins returns empty list`() {
         val expected = emptyList<Identity>()
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.PRIDE)),
             emptySkillArg,
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
@@ -265,7 +265,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `strict filter with blunt_gloom returns identity #3`() {
         val expected = listOf(thirdIdentity)
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             emptySkillArg,
             emptySkillArg,
             FilterSkillArg(
@@ -281,7 +281,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `strict filter with pierce_sloth and loose slash returns emptyList`() {
         val expected = emptyList<Identity>()
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
             emptySkillArg,
             FilterSkillArg(
@@ -297,7 +297,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `loose filter with blunt lust envy returns identities #1 #4`() {
         val expected = listOf(firstIdentity, fourthIdentity)
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             FilterSkillArg(
@@ -313,7 +313,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with pierce_gloom envy returns identities #1 #4`() {
         val expected = listOf(firstIdentity, fourthIdentity)
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             FilterSkillArg(
@@ -368,7 +368,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with fatal blunt resist and skill with lust sin returns identity #1 #3`() {
         val expected = listOf(firstIdentity, thirdIdentity)
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
             emptySkillArg,
             emptySkillArg,
@@ -387,7 +387,7 @@ class GetFilteredIdentitiesUseCaseTest {
     fun `filter with normal slash resist and skill with two blunt returns identity #3`() {
         val expected = listOf(thirdIdentity)
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
             emptySkillArg,
@@ -435,7 +435,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
         val effects = listOf(Effect.BLEED)
 
-        val skillArgs = FilterSkillsSetArg(
+        val skillArgs = IdentityFilterSkillsSetArg(
             emptySkillArg,
             FilterSkillArg(
                 FilterDamageTypeArg.Type(DamageType.SLASH),
@@ -486,7 +486,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
     private fun testBase(
         expected: List<Identity>,
-        skillArgs: FilterSkillsSetArg = FilterSkillsSetArg(
+        skillArgs: IdentityFilterSkillsSetArg = IdentityFilterSkillsSetArg(
             emptySkillArg,
             emptySkillArg,
             emptySkillArg
@@ -510,7 +510,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
 
     private fun generateSkill(damage: DamageType, sin: Sin, effects: List<Effect>) =
-        Skill(0, "test skill", 0, damage, sin, 3, 3, 2, 2, effects)
+        Skill(0, "test skill", damage, sin, 3, 3, 2, 2, effects)
 
     private fun generateIdentity(
         name: String,

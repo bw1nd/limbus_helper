@@ -21,36 +21,38 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterPriceState
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterSkillBlockState
+import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetButtonPosition
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSkillBlockState
-import ua.blackwind.limbushelper.ui.screens.filter_screen.state.SelectedButtonPosition
 import ua.blackwind.limbushelper.ui.util.HexagonShape
 import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.getSinColor
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
 @Composable
-fun FilterSkillBlock(
+fun IdentityFilterSkillBlock(
     state: FilterSkillBlockState,
-    onButtonClick: (SelectedButtonPosition) -> Unit,
-    onButtonLongPress: (SelectedButtonPosition) -> Unit
+    onButtonClick: (FilterSheetButtonPosition) -> Unit,
+    onButtonLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
     Row {
         FilterSkillButton(
-            id = SelectedButtonPosition.First,
+            id = FilterSheetButtonPosition.First,
             damage = state.damage.first,
             sin = state.sin.first,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = SelectedButtonPosition.Second,
+            id = FilterSheetButtonPosition.Second,
             damage = state.damage.second,
             sin = state.sin.second,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
         )
         FilterSkillButton(
-            id = SelectedButtonPosition.Third,
+            id = FilterSheetButtonPosition.Third,
             damage = state.damage.third,
             sin = state.sin.third,
             onClick = onButtonClick,
@@ -59,14 +61,72 @@ fun FilterSkillBlock(
     }
 }
 
+@Composable
+fun EgoFilterSkillBlock(
+    state: EgoFilterSkillBlockState,
+    onButtonClick: () -> Unit,
+    onButtonLongPress: () -> Unit
+) {
+    FilterSkillButton(
+        id = FilterSheetButtonPosition.First,
+        damage = state.damageType,
+        sin = state.sinType,
+        onClick = { onButtonClick() },
+        onButtonLongPress = { onButtonLongPress() }
+    )
+}
+
+@Composable
+fun EgoFilterPriceBlock(
+    state: EgoFilterPriceState,
+    onItemLongPress: (FilterSheetButtonPosition) -> Unit
+) {
+    Row() {
+        EgoFilterPriceButton(
+            position = FilterSheetButtonPosition.First,
+            state = state.first,
+            onItemClick = onItemLongPress
+        )
+        EgoFilterPriceButton(
+            position = FilterSheetButtonPosition.Second,
+            state = state.second,
+            onItemClick = onItemLongPress
+        )
+        EgoFilterPriceButton(
+            position = FilterSheetButtonPosition.Third,
+            state = state.third,
+            onItemClick = onItemLongPress
+        )
+    }
+}
+
+@Composable
+fun EgoFilterPriceButton(
+    state: StateType<Sin>,
+    position: FilterSheetButtonPosition,
+    onItemClick: (FilterSheetButtonPosition) -> Unit
+) {
+    Image(
+        painter = painterResource(
+            id = when (state) {
+                StateType.Empty -> R.drawable.sin_empty_ic
+                is StateType.Value -> getSinIcon(state.value)
+            }
+        ), contentDescription = null,
+        modifier = Modifier
+            .size(40.dp)
+            .clickable { onItemClick(position) }
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterSkillButton(
-    id: SelectedButtonPosition,
+    id: FilterSheetButtonPosition,
     damage: StateType<DamageType>,
     sin: StateType<Sin>,
-    onClick: (SelectedButtonPosition) -> Unit,
-    onButtonLongPress: (SelectedButtonPosition) -> Unit
+    onClick: (FilterSheetButtonPosition) -> Unit,
+    onButtonLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.primary
@@ -110,7 +170,6 @@ fun FilterSkillButton(
         }
     }
 }
-
 
 
 @Composable

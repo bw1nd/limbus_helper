@@ -1,0 +1,7 @@
+syntax = "proto3";
+option java_package = "ua.blackwind.limbus_helper";
+option java_multiple_files = false;
+
+message FilterMode{
+    string mode = 1;
+}

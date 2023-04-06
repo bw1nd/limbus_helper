@@ -7,7 +7,6 @@ import ua.blackwind.limbushelper.domain.common.Sin
 data class Skill(
     val id: Int,
     val name: String,
-    val identityId: Int,
     val dmgType: DamageType,
     val sin: Sin,
     val copiesCount: Int,
