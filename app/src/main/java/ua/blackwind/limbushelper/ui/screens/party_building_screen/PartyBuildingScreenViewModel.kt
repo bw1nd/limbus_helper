@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.domain.common.DamageType
+import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
@@ -66,10 +67,17 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     private fun updateInfoPanelState(party: Party) {
+        //TODO HERESY!! THIS PLACE MUST BE PURGED!!
         val activeList = party.identityList.filter { it.isActive }
+        val egoList =
+            party.egoList.filter { ego -> activeList.any { it.identity.sinnerId == ego.sinnerId } }
         val attackByDamage = intArrayOf(0, 0, 0)
         val attackBySin = intArrayOf(0, 0, 0, 0, 0, 0, 0)
         val defenceByDamage = intArrayOf(0, 0, 0)
+        val resistBySin = mutableMapOf(
+            Sin.WRATH to 0, Sin.LUST to 0, Sin.SLOTH to 0, Sin.GLUTTONY to 0,
+            Sin.GLOOM to 0, Sin.PRIDE to 0, Sin.ENVY to 0
+        )
         activeList.forEach { pIdentity ->
             val identity = pIdentity.identity
             listOf(identity.slashRes, identity.pierceRes, identity.bluntRes).map { resist ->
@@ -106,6 +114,19 @@ class PartyBuildingScreenViewModel @Inject constructor(
             }
         }
 
+        val minEgo =
+            egoList.groupBy { it.sinnerId }.map { list -> list.value.minBy { it.risk.ordinal } }
+        minEgo.forEach { ego ->
+            Sin.values().forEach { sin ->
+                when (ego.sinResistances[sin]) {
+                    EgoSinResistType.NORMAL -> resistBySin[sin] = resistBySin[sin]!! + 100
+                    EgoSinResistType.INEFF -> resistBySin[sin] = resistBySin[sin]!! + 50
+                    EgoSinResistType.ENDURE -> resistBySin[sin] = resistBySin[sin]!! + 75
+                    EgoSinResistType.FATAL -> resistBySin[sin] = resistBySin[sin]!! + 200
+                    null -> resistBySin[sin] = resistBySin[sin]!! + 100
+                }
+            }
+        }
 
         _infoPanelState.update {
             val activeIdentityCount = rawParty.value.identityList.count { it.isActive }
@@ -125,6 +146,15 @@ class PartyBuildingScreenViewModel @Inject constructor(
                     calculateDamageResistPotency(defenceByDamage[0], activeList.size),
                     calculateDamageResistPotency(defenceByDamage[1], activeList.size),
                     calculateDamageResistPotency(defenceByDamage[2], activeList.size),
+                ),
+                ResistBySinInfo(
+                    calculateDamageResistPotency(resistBySin[Sin.WRATH]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.LUST]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.SLOTH]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.GLUTTONY]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.GLOOM]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.PRIDE]!!, activeList.size),
+                    calculateDamageResistPotency(resistBySin[Sin.ENVY]!!, activeList.size),
                 ),
                 activeIdentityCount,
                 totalIdentityCount
@@ -203,6 +233,15 @@ class PartyBuildingScreenViewModel @Inject constructor(
             InfoPanelDamageResist.Normal,
             InfoPanelDamageResist.Normal,
             InfoPanelDamageResist.Normal
+        ),
+        ResistBySinInfo(
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
+            InfoPanelDamageResist.Normal,
         ),
         0, 0
     )

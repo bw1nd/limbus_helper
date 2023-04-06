@@ -5,6 +5,7 @@ data class PartyBuildingInfoPanelState(
     val attackByDamage: AttackByDamageInfo,
     val attackBySin: AttackBySinInfo,
     val defenceByDamage: DefenceByDamageInfo,
+    val resistBySin: ResistBySinInfo,
     val activeIdentityCount: Int,
     val totalIdentityCount: Int
 )
@@ -29,6 +30,16 @@ data class DefenceByDamageInfo(
     val slash: InfoPanelDamageResist,
     val pierce: InfoPanelDamageResist,
     val blunt: InfoPanelDamageResist
+)
+
+data class ResistBySinInfo(
+    val wrath: InfoPanelDamageResist,
+    val lust: InfoPanelDamageResist,
+    val sloth: InfoPanelDamageResist,
+    val gluttony: InfoPanelDamageResist,
+    val gloom: InfoPanelDamageResist,
+    val pride: InfoPanelDamageResist,
+    val envy: InfoPanelDamageResist
 )
 
 enum class InfoPanelDamageResist {
