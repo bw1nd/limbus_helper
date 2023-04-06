@@ -31,7 +31,7 @@ It is currently under development.
  />
 </a>
 
-`IMPORTANT` Version `0.2.0` is not compatable with version `0.1.0`.<br>
+`IMPORTANT` Version `0.2.0` is not compatible with version `0.1.0`.<br>
 If you had previous version on your device, don't forget to delete it before installing `0.2.0`.
 </div>
 
