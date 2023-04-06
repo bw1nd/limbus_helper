@@ -30,6 +30,9 @@ It is currently under development.
  src="./readme-assets/images/badge_github_alt.png" height="120"
  />
 </a>
+
+`IMPORTANT` Version `0.2.0` is not compatable with version `0.1.0`.<br>
+If you had previous version on your device, don't forget to delete it before installing `0.2.0`.
 </div>
 
 ## Features 
