@@ -20,9 +20,6 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
-
-private const val IDENTITY_PORTRAIT_WIDTH = 60
-
 //TODO need better naming for this
 @Composable
 fun FilterListItem(
@@ -34,7 +31,9 @@ fun FilterListItem(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimaryContainer),
         shape = CutCornerShape(topStart = 10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-        modifier = Modifier.width(380.dp).height(100.dp)
+        modifier = Modifier
+            .width(380.dp)
+            .height(100.dp)
     ) {
         val item = listItem.item
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -42,14 +41,12 @@ fun FilterListItem(
                 is FilterItemTypeModel.IdentityType ->
                     Row(
                         content = identityItemCore(
-                            item.identity,
-                            IDENTITY_PORTRAIT_WIDTH
+                            item.identity
                         )
                     )
                 is FilterItemTypeModel.EgoType -> Row(
                     content = egoItemCore(
-                        ego = item.ego,
-                        portraitWidthDp = IDENTITY_PORTRAIT_WIDTH
+                        ego = item.ego
                     )
                 )
             }

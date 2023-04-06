@@ -20,8 +20,6 @@ import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.ui.common.egoItemCore
 
-private const val PORTRAIT_WIDTH_DP = 70
-
 @Composable
 fun PartyEgoItem(
     ego: Ego,
@@ -39,7 +37,7 @@ fun PartyEgoItem(
     )
     {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Row(content = egoItemCore(ego = ego, portraitWidthDp = PORTRAIT_WIDTH_DP))
+            Row(content = egoItemCore(ego = ego))
             Spacer(Modifier.weight(1f))
             Icon(
                 painter = painterResource(id = R.drawable.delete_ic),

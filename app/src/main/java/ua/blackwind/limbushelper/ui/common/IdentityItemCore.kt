@@ -43,8 +43,7 @@ private const val PORTRAIT_IMAGE_WIDTH = 70
 
 @Composable
 fun identityItemCore(
-    identity: Identity,
-    portraitWidthDp: Int
+    identity: Identity
 ): @Composable (RowScope.() -> Unit) =
     {
         val density = LocalConfiguration.current.densityDpi
@@ -64,7 +63,7 @@ fun identityItemCore(
             alignment = Alignment.Center,
             contentScale = ContentScale.Crop,
             contentDescription = null, modifier = Modifier
-                .size(portraitWidthDp.dp, ITEM_VERTICAL_SIZE_DP.dp)
+                .size(PORTRAIT_IMAGE_WIDTH.dp, ITEM_VERTICAL_SIZE_DP.dp)
         )
         Divider(
             color = when (identity.rarity) {
@@ -263,7 +262,7 @@ fun EffectsBlock(effects: Set<Effect>) {
 @Composable
 private fun IdentityItemPreview() {
     Row {
-        identityItemCore(identity = previewIdentity, 70).invoke(this)
+        identityItemCore(identity = previewIdentity).invoke(this)
     }
 
 }

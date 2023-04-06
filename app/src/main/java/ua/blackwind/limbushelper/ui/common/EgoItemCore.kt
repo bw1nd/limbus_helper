@@ -41,7 +41,7 @@ private const val PORTRAIT_IMAGE_WIDTH = 70
 private const val SIN_ICON_SIZE_DP = 26
 
 @Composable
-fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Unit) =
+fun egoItemCore(ego: Ego): @Composable (RowScope.() -> Unit) =
     {
         val density = LocalConfiguration.current.densityDpi
         Box(
@@ -63,7 +63,7 @@ fun egoItemCore(ego: Ego, portraitWidthDp: Int): @Composable (RowScope.() -> Uni
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Crop,
                 contentDescription = null, modifier = Modifier
-                    .size(portraitWidthDp.dp, PORTRAIT_VERTICAL_SIZE_DP.dp)
+                    .size(PORTRAIT_IMAGE_WIDTH.dp, PORTRAIT_VERTICAL_SIZE_DP.dp)
             )
             EgoRiskLevel(ego = ego)
         }
