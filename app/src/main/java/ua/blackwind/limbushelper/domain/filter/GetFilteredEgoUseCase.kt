@@ -60,6 +60,6 @@ class GetFilteredEgoUseCase @Inject constructor(
         filter.any { it == ego.sinnerId }
 
     private fun egoPassEffectFilter(ego: Ego, filter: List<Effect>) =
-        filter.any { it in ego.awakeningSkill.effects }
+        ego.awakeningSkill.effects.containsAll(filter)
 
 }
