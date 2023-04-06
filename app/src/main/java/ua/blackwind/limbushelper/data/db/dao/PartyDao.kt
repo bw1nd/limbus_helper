@@ -45,4 +45,10 @@ interface PartyDao {
 
     @Delete
     suspend fun removeEgoFromParty(partyEgoEntity: PartyEgoEntity)
+
+    @Query("DELETE FROM party_identity WHERE partyId = :partyId")
+    suspend fun removeAllIdentityFromParty(partyId: Int)
+
+    @Query("DELETE FROM party_ego WHERE partyId = :partyId")
+    suspend fun removeAllEgoFromParty(partyId: Int)
 }

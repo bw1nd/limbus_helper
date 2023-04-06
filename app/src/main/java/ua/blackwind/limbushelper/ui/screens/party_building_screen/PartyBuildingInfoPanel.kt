@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
@@ -33,7 +35,8 @@ private const val INFO_PANEL_COLUMNS_PLUS_ONE = 12
 fun PartyBuildingInfoPanel(
     state: PartyBuildingInfoPanelState,
     isShowActiveIdentitiesChecked: Boolean,
-    onShowActiveIdentitiesClick: (Boolean) -> Unit
+    onShowActiveIdentitiesClick: (Boolean) -> Unit,
+    onClearPartyClick: () -> Unit
 ) {
     val columnWidth = LocalConfiguration.current.screenWidthDp / INFO_PANEL_COLUMNS_PLUS_ONE
     val (partySizeCheckerColor, partySizeCheckerSign) = when (true) {
@@ -72,6 +75,14 @@ fun PartyBuildingInfoPanel(
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                "Clear Party",
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.clickable { onClearPartyClick() }
+            )
+            Spacer(modifier = Modifier.width(20.dp))
             AlternativeCheckbox(
                 checked = isShowActiveIdentitiesChecked,
                 onCheckedChange = onShowActiveIdentitiesClick,
@@ -161,89 +172,88 @@ private fun InfoPanelSinItem(
 }
 
 
-
-    @Composable
-    private fun InfoPanelDamageItem(
-        state: PartyBuildingInfoPanelState,
-        columnWidth: Int
-    ) {
-        DamageType.values().forEach { type ->
-            @DrawableRes val res = getDamageTypeIcon(type)
-            val (damageCount, defencePotency) = when (type) {
-                DamageType.SLASH -> state.attackByDamage.slash to state.defenceByDamage.slash
-                DamageType.PIERCE -> state.attackByDamage.pierce to state.defenceByDamage.pierce
-                DamageType.BLUNT -> state.attackByDamage.blunt to state.defenceByDamage.blunt
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
+@Composable
+private fun InfoPanelDamageItem(
+    state: PartyBuildingInfoPanelState,
+    columnWidth: Int
+) {
+    DamageType.values().forEach { type ->
+        @DrawableRes val res = getDamageTypeIcon(type)
+        val (damageCount, defencePotency) = when (type) {
+            DamageType.SLASH -> state.attackByDamage.slash to state.defenceByDamage.slash
+            DamageType.PIERCE -> state.attackByDamage.pierce to state.defenceByDamage.pierce
+            DamageType.BLUNT -> state.attackByDamage.blunt to state.defenceByDamage.blunt
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(columnWidth.dp)
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(columnWidth.dp)
-                ) {
-                    Text(
-                        text = damageCount.toString(),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleMedium,
+                Text(
+                    text = damageCount.toString(),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            Image(
+                painter = painterResource(id = res),
+                contentDescription = null,
+                Modifier.size(columnWidth.dp)
+            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(columnWidth.dp)
+            ) {
+                //TODO make custom colors for these statuses
+                val (iconResId, color) = when (defencePotency) {
+                    InfoPanelDamageResist.NA -> 0 to Color.Transparent
+                    InfoPanelDamageResist.Bad -> R.drawable.info_warning_ic to Color.Red
+                    InfoPanelDamageResist.Poor -> R.drawable.info_down_ic to Color.Yellow
+                    InfoPanelDamageResist.Normal -> R.drawable.info_normal_ic to Color.Cyan
+                    InfoPanelDamageResist.Good -> R.drawable.info_up_ic to Color.Green
+                    InfoPanelDamageResist.Perfect -> R.drawable.info_perfect_ic to Color.Green
+                }
+                if (iconResId != 0) {
+                    Icon(
+                        painterResource(id = iconResId),
+                        contentDescription = null,
+                        tint = color,
+                        modifier = Modifier.size(columnWidth.dp * 0.6f)
                     )
                 }
-                Image(
-                    painter = painterResource(id = res),
-                    contentDescription = null,
-                    Modifier.size(columnWidth.dp)
-                )
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(columnWidth.dp)
-                ) {
-                    //TODO make custom colors for these statuses
-                    val (iconResId, color) = when (defencePotency) {
-                        InfoPanelDamageResist.NA -> 0 to Color.Transparent
-                        InfoPanelDamageResist.Bad -> R.drawable.info_warning_ic to Color.Red
-                        InfoPanelDamageResist.Poor -> R.drawable.info_down_ic to Color.Yellow
-                        InfoPanelDamageResist.Normal -> R.drawable.info_normal_ic to Color.Cyan
-                        InfoPanelDamageResist.Good -> R.drawable.info_up_ic to Color.Green
-                        InfoPanelDamageResist.Perfect -> R.drawable.info_perfect_ic to Color.Green
-                    }
-                    if (iconResId != 0) {
-                        Icon(
-                            painterResource(id = iconResId),
-                            contentDescription = null,
-                            tint = color,
-                            modifier = Modifier.size(columnWidth.dp * 0.6f)
-                        )
-                    }
 
-                }
             }
         }
     }
+}
 
-    @Composable
-    private fun InfoPanelTypeIconsBlock(columnWidth: Int) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.width(columnWidth.dp * 0.8f)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.att_ic),
-                contentDescription = null,
-                Modifier.size(columnWidth.dp)
-            )
-            Divider(
-                thickness = 3.dp, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(3.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.def_ic),
-                contentDescription = null,
-                Modifier.size(columnWidth.dp)
-            )
-        }
+@Composable
+private fun InfoPanelTypeIconsBlock(columnWidth: Int) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.width(columnWidth.dp * 0.8f)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.att_ic),
+            contentDescription = null,
+            Modifier.size(columnWidth.dp)
+        )
+        Divider(
+            thickness = 3.dp, modifier = Modifier
+                .fillMaxWidth()
+                .padding(3.dp)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.def_ic),
+            contentDescription = null,
+            Modifier.size(columnWidth.dp)
+        )
     }
+}
 
 //    @Preview(
 //        showSystemUi = true,

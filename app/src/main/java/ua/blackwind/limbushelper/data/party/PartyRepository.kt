@@ -91,6 +91,14 @@ class PartyRepository @Inject constructor(
         )
     }
 
+    override suspend fun removeAllIdentityFromParty(partyId: Int) {
+        dao.removeAllIdentityFromParty(partyId)
+    }
+
+    override suspend fun removeAllEgoFromParty(partyId: Int) {
+        dao.removeAllEgoFromParty(partyId)
+    }
+
     private suspend fun egoEntityToEgo(egoEntity: EgoEntity): Ego {
         return egoEntity.toEgo(
             ::getEgoSkillById,

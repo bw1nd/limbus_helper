@@ -25,4 +25,8 @@ interface IPartyRepository {
 
     suspend fun removeEgoFromParty(partyId: Int, ego: Ego)
 
+    suspend fun removeAllIdentityFromParty(partyId: Int)
+
+    suspend fun removeAllEgoFromParty(partyId: Int)
+
 }

@@ -31,11 +31,15 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
     private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty,
-    private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase
+    private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase,
+    private val clearPartyByIdUseCase: ClearPartyByIdUseCase
 ): ViewModel() {
     private val rawParty = MutableStateFlow(Party(0, "empty", emptyList(), emptyList()))
     private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
     val party = _party.asStateFlow()
+
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog = _showDialog.asStateFlow()
 
     private val _showOnlyActiveIdentities = MutableStateFlow(false)
     val showOnlyActiveIdentities = _showOnlyActiveIdentities.asStateFlow()
@@ -63,6 +67,21 @@ class PartyBuildingScreenViewModel @Inject constructor(
             preferencesRepository.getPartySettings().collectLatest { settings ->
                 _showOnlyActiveIdentities.update { settings.showOnlyActive }
             }
+        }
+    }
+
+    fun onAlertDialogDismiss() {
+        _showDialog.update { false }
+    }
+
+    fun onClearPartyClick() {
+        _showDialog.update { true }
+    }
+
+    fun onCleaPartyAcceptClick() {
+        _showDialog.update { false }
+        viewModelScope.launch {
+            clearPartyByIdUseCase(rawParty.value.id)
         }
     }
 
