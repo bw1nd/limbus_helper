@@ -26,14 +26,23 @@ class GetFilteredEgoUseCase @Inject constructor(
                     filter.resistSetArg.resistList
                 )
             }
-            bySinner() && byEffect() && bySkill() && byResist()
+            val byPrice = {
+                filter.priceSetArg.priceList.isEmpty() || egoPassPriceFilter(
+                    ego,
+                    filter.priceSetArg.priceList
+                )
+            }
+            bySinner() && byEffect() && bySkill() && byResist() && byPrice()
         }
     }
+
+    private fun egoPassPriceFilter(ego: Ego, filter: List<Sin>): Boolean =
+        filter.all { it in ego.resourceCost.keys }
 
     private fun egoPassResistFilter(ego: Ego, filter: List<Pair<EgoSinResistType, Sin>>): Boolean {
         return filter.all { arg ->
             if (arg.first == EgoSinResistType.NORMAL)
-                ego.sinResistances.none {it.key == arg.second } else
+                ego.sinResistances.none { it.key == arg.second } else
                 ego.sinResistances.any { it.value == arg.first && it.key == arg.second }
         }
     }

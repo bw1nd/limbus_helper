@@ -266,6 +266,26 @@ class FilterScreenViewModel @Inject constructor(
                         )
                     )
                 }
+                if (_sinPickerState.value is SinPickerState.EgoPriceSelected) {
+                    updateFilterDrawerSheetState(
+                        value.copy(
+                            priceState = when (selectedSheetButtonPosition) {
+                                FilterSheetButtonPosition.First -> value.priceState.copy(
+                                    first = sin
+                                )
+                                FilterSheetButtonPosition.Second -> value.priceState.copy(
+                                    second = sin
+                                )
+                                FilterSheetButtonPosition.Third -> value.priceState.copy(
+                                    third = sin
+                                )
+                                FilterSheetButtonPosition.None -> throw IllegalArgumentException(
+                                    "Trying to update price button with none selected"
+                                )
+                            }
+                        )
+                    )
+                }
                 if (_sinPickerState.value is SinPickerState.EgoResistSelected) {
                     updateFilterDrawerSheetState(
                         value.copy(
@@ -370,7 +390,8 @@ class FilterScreenViewModel @Inject constructor(
     }
 
     fun onEgoFilterPriceButtonLongPress(button: FilterSheetButtonPosition) {
-
+        selectedSheetButtonPosition = button
+        _sinPickerState.update { SinPickerState.EgoPriceSelected }
     }
 
     //TODO refactor this heresy to use dataStore for all such operations
@@ -545,7 +566,7 @@ class FilterScreenViewModel @Inject constructor(
             resistSetArg = EgoFilterSinResistTypeArg(
                 state.resistState.toFilterArg()
             ),
-            priceSetArg = EgoFilterPriceSetArg(emptyList<Sin>()),
+            priceSetArg = state.priceState.toFilterArg(),
             effects =
             state.effectsState.effects.filter { it.value }.keys.toList(),
             sinners = state.sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()

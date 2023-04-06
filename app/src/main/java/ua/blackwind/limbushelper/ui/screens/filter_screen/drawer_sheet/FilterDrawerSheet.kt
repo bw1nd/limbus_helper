@@ -223,7 +223,7 @@ fun EgoFilterTypeBlock(
                 onButtonClick = onSkillButtonClick,
                 onButtonLongPress = onSkillButtonLongPress
             )
-            EgoFilterPriceBlock(state = priceState, onClick = onPriceButtonLongPress)
+            EgoFilterPriceBlock(state = priceState, onItemLongPress = onPriceButtonLongPress)
         }
     }
     Divider(

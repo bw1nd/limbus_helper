@@ -5,12 +5,19 @@ option java_multiple_files = false;
     message EgoSettings {
         FilterSkillState skillState = 1;
         FilterResistStateBundle resistState = 2;
-        FilterEffectBlockState effectsState = 3;
-        FilterSinnersBlockState sinnersState = 4;
+        EgoFilterPriceState priceState = 3;
+        FilterEffectBlockState effectsState = 4;
+        FilterSinnersBlockState sinnersState = 5;
 
     message FilterSkillState{
         string damageType = 1;
         string sinType = 2;
+    }
+
+    message EgoFilterPriceState {
+        string first = 1;
+        string second = 2;
+        string third = 3;
     }
 
     message FilterResistStateBundle{

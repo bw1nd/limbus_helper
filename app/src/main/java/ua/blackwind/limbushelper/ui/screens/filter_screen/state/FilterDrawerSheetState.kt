@@ -4,6 +4,7 @@ import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.filter.EgoFilterPriceSetArg
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.util.StateType
 
@@ -91,6 +92,12 @@ data class EgoFilterPriceState(
     val second: StateType<Sin>,
     val third: StateType<Sin>
 )
+
+fun EgoFilterPriceState.toFilterArg() =
+    EgoFilterPriceSetArg(
+        listOf(first, second, third, first).filter { it !is StateType.Empty }
+            .map { (it as StateType.Value<Sin>).value }
+    )
 
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,

@@ -77,21 +77,24 @@ fun EgoFilterSkillBlock(
 }
 
 @Composable
-fun EgoFilterPriceBlock(state: EgoFilterPriceState, onClick: (FilterSheetButtonPosition) -> Unit) {
+fun EgoFilterPriceBlock(
+    state: EgoFilterPriceState,
+    onItemLongPress: (FilterSheetButtonPosition) -> Unit
+) {
     EgoFilterPriceButton(
         position = FilterSheetButtonPosition.First,
         state = state.first,
-        onButtonLongPress = onClick
+        onButtonLongPress = onItemLongPress
     )
     EgoFilterPriceButton(
         position = FilterSheetButtonPosition.Second,
-        state = state.first,
-        onButtonLongPress = onClick
+        state = state.second,
+        onButtonLongPress = onItemLongPress
     )
     EgoFilterPriceButton(
         position = FilterSheetButtonPosition.Third,
-        state = state.first,
-        onButtonLongPress = onClick
+        state = state.third,
+        onButtonLongPress = onItemLongPress
     )
 }
 
@@ -102,14 +105,20 @@ fun EgoFilterPriceButton(
     position: FilterSheetButtonPosition,
     onButtonLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
-    Box(
+    Image(
+        painter = painterResource(
+            id = when (state) {
+                StateType.Empty -> R.drawable.sin_empty_ic
+                is StateType.Value -> getSinIcon(state.value)
+            }
+        ), contentDescription = null,
         modifier = Modifier
+            .size(40.dp)
             .combinedClickable(
-            onLongClick = { onButtonLongPress(position) },
-                onClick = {})
-    ) {
-        SinPickerButton(state = state, onClick = {})
-    }
+                onClick = {},
+                onLongClick = { onButtonLongPress(position) }
+            )
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -108,7 +108,7 @@ fun PartyBuildingScreenUi(
                     val show = if (isShowActiveIdentitiesChecked) {
                         sinnerModel.identities.any { it.isActive }
                     } else {
-                        sinnerModel.identities.isNotEmpty() && sinnerModel.egos.isNotEmpty()
+                        sinnerModel.identities.isNotEmpty() || sinnerModel.egos.isNotEmpty()
                     }
                     if (show) {
                         PartySinnerItem(

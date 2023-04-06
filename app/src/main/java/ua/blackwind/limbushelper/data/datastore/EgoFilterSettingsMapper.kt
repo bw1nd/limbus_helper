@@ -20,7 +20,11 @@ class EgoFilterSettingsMapper @Inject constructor() {
                 mapToDamageType(settings.skillState.damageType),
                 mapToSinType(settings.skillState.sinType)
             ),
-            EgoFilterPriceState(StateType.Empty, StateType.Empty, StateType.Empty),
+            EgoFilterPriceState(
+                mapToSinType(settings.priceState.first),
+                mapToSinType(settings.priceState.second),
+                mapToSinType(settings.priceState.third)
+            ),
             EgoFilterResistBlockState(
                 EgoFilterResistArg(
                     mapToSinType(settings.resistState.first.sin),
@@ -63,31 +67,36 @@ class EgoFilterSettingsMapper @Inject constructor() {
         return old.toBuilder()
             .setSkillState(
                 EgoSettings.FilterSkillState.newBuilder()
-                    .setDamageType(damageSkillStateToSettings(state.skillState.damageType))
-                    .setSinType(sinSkillStateToSettings(state.skillState.sinType))
-                    .build()
+                    .setDamageType(damageStateToSettings(state.skillState.damageType))
+                    .setSinType(sinStateToSettings(state.skillState.sinType))
             ).setResistState(
                 EgoSettings.FilterResistStateBundle.newBuilder()
                     .setFirst(
                         EgoSettings.FilterResistStateArg.newBuilder()
-                            .setSin(sinSkillStateToSettings(state.resistState.first.sin))
+                            .setSin(sinStateToSettings(state.resistState.first.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.first.resist))
                     )
                     .setSecond(
                         EgoSettings.FilterResistStateArg.newBuilder()
-                            .setSin(sinSkillStateToSettings(state.resistState.second.sin))
+                            .setSin(sinStateToSettings(state.resistState.second.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.second.resist))
                     )
                     .setThird(
                         EgoSettings.FilterResistStateArg.newBuilder()
-                            .setSin(sinSkillStateToSettings(state.resistState.third.sin))
+                            .setSin(sinStateToSettings(state.resistState.third.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.third.resist))
                     )
                     .setFourth(
                         EgoSettings.FilterResistStateArg.newBuilder()
-                            .setSin(sinSkillStateToSettings(state.resistState.fourth.sin))
+                            .setSin(sinStateToSettings(state.resistState.fourth.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.fourth.resist))
-                    ).build()
+                    )
+            )
+            .setPriceState(
+                EgoSettings.EgoFilterPriceState.newBuilder()
+                    .setFirst(sinStateToSettings(state.priceState.first))
+                    .setSecond(sinStateToSettings(state.priceState.second))
+                    .setThird(sinStateToSettings(state.priceState.third))
             )
             .setEffectsState(
                 EgoSettings.FilterEffectBlockState.newBuilder()
@@ -139,12 +148,12 @@ class EgoFilterSettingsMapper @Inject constructor() {
         return stateType.name
     }
 
-    private fun damageSkillStateToSettings(stateType: StateType<DamageType>): String {
+    private fun damageStateToSettings(stateType: StateType<DamageType>): String {
         if (stateType is StateType.Empty) return EMPTY_STATE_VALUE
         return (stateType as StateType.Value<DamageType>).value.toString()
     }
 
-    private fun sinSkillStateToSettings(stateType: StateType<Sin>): String {
+    private fun sinStateToSettings(stateType: StateType<Sin>): String {
         if (stateType is StateType.Empty) return EMPTY_STATE_VALUE
         return (stateType as StateType.Value<Sin>).value.toString()
     }
