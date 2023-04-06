@@ -148,7 +148,6 @@ fun EgoRiskLevel(ego: Ego) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            //.padding(top = 5.dp)
             .background(color = MaterialTheme.colorScheme.primary)
             .width(PORTRAIT_IMAGE_WIDTH.dp)
     ) {
@@ -221,7 +220,7 @@ fun EgoResistItem(sin: Sin, egoSinResistType: EgoSinResistType) {
 fun EgoCostBlock(ego: Ego) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.Start,
         modifier = Modifier
             .padding(bottom = 2.dp)
             .fillMaxWidth()

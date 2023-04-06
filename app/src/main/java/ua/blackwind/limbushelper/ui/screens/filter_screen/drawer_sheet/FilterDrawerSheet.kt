@@ -223,14 +223,26 @@ fun EgoFilterTypeBlock(
                 onButtonClick = onSkillButtonClick,
                 onButtonLongPress = onSkillButtonLongPress
             )
-            EgoFilterPriceBlock(state = priceState, onItemLongPress = onPriceButtonLongPress)
+            Spacer(modifier = Modifier.width(10.dp))
+            Divider(
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(3.dp, 70.dp)
+            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier.height(100.dp)
+            ) {
+                EgoFilterPriceBlock(state = priceState, onItemLongPress = onPriceButtonLongPress)
+                Text(text = "Resources", color = MaterialTheme.colorScheme.onPrimary)
+            }
         }
     }
     Divider(
         thickness = 2.dp,
         color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
-            .width(300.dp)
+            .width(180.dp)
             .padding(5.dp)
     )
     if (sinPickerState is SinPickerState.EgoResistSelected) {

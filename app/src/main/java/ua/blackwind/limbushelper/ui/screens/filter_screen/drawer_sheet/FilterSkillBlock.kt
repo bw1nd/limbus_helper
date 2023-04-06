@@ -81,21 +81,23 @@ fun EgoFilterPriceBlock(
     state: EgoFilterPriceState,
     onItemLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
-    EgoFilterPriceButton(
-        position = FilterSheetButtonPosition.First,
-        state = state.first,
-        onButtonLongPress = onItemLongPress
-    )
-    EgoFilterPriceButton(
-        position = FilterSheetButtonPosition.Second,
-        state = state.second,
-        onButtonLongPress = onItemLongPress
-    )
-    EgoFilterPriceButton(
-        position = FilterSheetButtonPosition.Third,
-        state = state.third,
-        onButtonLongPress = onItemLongPress
-    )
+    Row() {
+        EgoFilterPriceButton(
+            position = FilterSheetButtonPosition.First,
+            state = state.first,
+            onButtonLongPress = onItemLongPress
+        )
+        EgoFilterPriceButton(
+            position = FilterSheetButtonPosition.Second,
+            state = state.second,
+            onButtonLongPress = onItemLongPress
+        )
+        EgoFilterPriceButton(
+            position = FilterSheetButtonPosition.Third,
+            state = state.third,
+            onButtonLongPress = onItemLongPress
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
