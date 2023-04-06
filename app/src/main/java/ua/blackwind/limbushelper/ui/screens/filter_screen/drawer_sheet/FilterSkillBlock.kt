@@ -85,27 +85,26 @@ fun EgoFilterPriceBlock(
         EgoFilterPriceButton(
             position = FilterSheetButtonPosition.First,
             state = state.first,
-            onButtonLongPress = onItemLongPress
+            onItemClick = onItemLongPress
         )
         EgoFilterPriceButton(
             position = FilterSheetButtonPosition.Second,
             state = state.second,
-            onButtonLongPress = onItemLongPress
+            onItemClick = onItemLongPress
         )
         EgoFilterPriceButton(
             position = FilterSheetButtonPosition.Third,
             state = state.third,
-            onButtonLongPress = onItemLongPress
+            onItemClick = onItemLongPress
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EgoFilterPriceButton(
     state: StateType<Sin>,
     position: FilterSheetButtonPosition,
-    onButtonLongPress: (FilterSheetButtonPosition) -> Unit
+    onItemClick: (FilterSheetButtonPosition) -> Unit
 ) {
     Image(
         painter = painterResource(
@@ -116,10 +115,7 @@ fun EgoFilterPriceButton(
         ), contentDescription = null,
         modifier = Modifier
             .size(40.dp)
-            .combinedClickable(
-                onClick = {},
-                onLongClick = { onButtonLongPress(position) }
-            )
+            .clickable { onItemClick(position) }
     )
 }
 

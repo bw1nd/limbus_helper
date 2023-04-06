@@ -2,13 +2,13 @@ package ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
@@ -28,7 +28,7 @@ fun FilterDrawerSheet(
     tab: FilterSheetTab,
     filterState: FilterDrawerSheetState,
     filterMode: FilterMode,
-    onFilterModeChanged:(Int) -> Unit,
+    onFilterModeChanged: (Int) -> Unit,
     sinPickerState: SinPickerState,
     methods: FilterDrawerSheetMethods
 ) {
@@ -43,25 +43,26 @@ fun FilterDrawerSheet(
             Spacer(modifier = Modifier.width(10.dp))
             Surface(
                 color = MaterialTheme.colorScheme.primary,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary),
-                shape = CircleShape,
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary),
+                shape = RoundedCornerShape(5.dp),
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(60.dp, 30.dp)
                     .combinedClickable(
                         enabled = true,
                         onClick = {},
                         onLongClick = { methods.onClearFilterButtonPress() },
                     )
             ) {
-                Icon(
-                    Icons.Rounded.Close,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    contentDescription = null,
-                    modifier = Modifier
-
-                )
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Clear",
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
-            Spacer(modifier = Modifier.weight(.4f))
+            Spacer(modifier = Modifier.weight(.1f))
             FilterDrawerTabSegmentedButton(
                 state = tab,
                 color = MaterialTheme.colorScheme.onPrimary,
