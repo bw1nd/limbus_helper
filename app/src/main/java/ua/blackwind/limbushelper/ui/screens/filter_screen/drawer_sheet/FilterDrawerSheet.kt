@@ -1,24 +1,19 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.ui.common.FilterDrawerTabSegmentedButton
+import ua.blackwind.limbushelper.ui.common.FilterModeSegmentedButton
 import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
@@ -30,8 +25,10 @@ private const val FILTER_BLOCK_HEIGHT_DP = 170
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterDrawerSheet(
-    mode: FilterSheetTab,
+    tab: FilterSheetTab,
     filterState: FilterDrawerSheetState,
+    filterMode: FilterMode,
+    onFilterModeChanged:(Int) -> Unit,
     sinPickerState: SinPickerState,
     methods: FilterDrawerSheetMethods
 ) {
@@ -66,14 +63,14 @@ fun FilterDrawerSheet(
             }
             Spacer(modifier = Modifier.weight(.4f))
             FilterDrawerTabSegmentedButton(
-                state = mode,
+                state = tab,
                 color = MaterialTheme.colorScheme.onPrimary,
                 onItemSelection = methods.onSwitchChange
             )
             Spacer(modifier = Modifier.weight(.6f))
         }
         FilterBlock(
-            mode = mode,
+            mode = tab,
             state = filterState,
             sinPickerState = sinPickerState,
             onSkillButtonClick = methods.onSkillButtonClick,
@@ -86,26 +83,11 @@ fun FilterDrawerSheet(
             onEffectCheckedChange = methods.onEffectCheckedChange,
             onSinnerCheckedChange = methods.onSinnerCheckedChange
         )
-        Box {
-            val interactionEmitter = remember {
-                MutableInteractionSource()
-            }
-            val isPressed by interactionEmitter.collectIsPressedAsState()
-            val scale by animateFloatAsState(targetValue = if (isPressed) .93f else 1f)
-            OutlinedButton(
-                onClick = { methods.onFilterButtonClick() },
-                interactionSource = interactionEmitter,
-                modifier = Modifier
-                    .wrapContentSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                    }
-            ) {
-                Text("FILTER", color = MaterialTheme.colorScheme.onPrimary)
-            }
-        }
-
+        FilterModeSegmentedButton(
+            state = filterMode,
+            color = MaterialTheme.colorScheme.onPrimary,
+            onItemSelection = onFilterModeChanged
+        )
     }
 }
 

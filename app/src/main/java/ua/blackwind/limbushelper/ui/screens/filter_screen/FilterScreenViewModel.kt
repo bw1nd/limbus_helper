@@ -105,12 +105,12 @@ class FilterScreenViewModel @Inject constructor(
             }.collectLatest { newState ->
                 Log.d("FILTER", "Updating state")
                 _filterDrawerShitState.update { newState }
-                onFilterButtonClick()
+                filter()
             }
         }
     }
 
-    fun onFilterButtonClick() {
+    fun filter() {
         //TODO add dispatchers injection
         viewModelScope.launch(Dispatchers.Default) {
             _filteredItems.update {
