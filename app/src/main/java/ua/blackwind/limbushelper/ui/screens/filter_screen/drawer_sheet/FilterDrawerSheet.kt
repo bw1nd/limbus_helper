@@ -31,7 +31,7 @@ fun FilterDrawerSheet(
     filterMode: FilterMode,
     onFilterModeChanged: (Int) -> Unit,
     sinPickerState: SinPickerState,
-    methods: FilterDrawerSheetMethods
+    filterElementsMethods: FilterDrawerSheetMethods
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,7 +51,7 @@ fun FilterDrawerSheet(
                     .combinedClickable(
                         enabled = true,
                         onClick = {},
-                        onLongClick = { methods.onClearFilterButtonPress() },
+                        onLongClick = { filterElementsMethods.onClearFilterButtonPress() },
                     )
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -67,7 +67,7 @@ fun FilterDrawerSheet(
             FilterDrawerTabSegmentedButton(
                 state = tab,
                 color = MaterialTheme.colorScheme.onPrimary,
-                onItemSelection = methods.onSwitchChange
+                onItemSelection = filterElementsMethods.onSwitchChange
             )
             Spacer(modifier = Modifier.weight(.6f))
         }
@@ -75,15 +75,15 @@ fun FilterDrawerSheet(
             mode = tab,
             state = filterState,
             sinPickerState = sinPickerState,
-            onSkillButtonClick = methods.onSkillButtonClick,
-            onSkillButtonLongPress = methods.onSkillButtonLongPress,
-            onIdentityResistButtonClick = methods.onIdentityResistButtonClick,
-            onEgoResistButtonClick = methods.onEgoResistButtonClick,
-            onEgoResistButtonLongPress = methods.onEgoResistButtonLongPress,
-            onPriceButtonLongPress = methods.onEgoPriceButtonLongPress,
-            onSinPickerClick = methods.onSinPickerClick,
-            onEffectCheckedChange = methods.onEffectCheckedChange,
-            onSinnerCheckedChange = methods.onSinnerCheckedChange
+            onSkillButtonClick = filterElementsMethods.onSkillButtonClick,
+            onSkillButtonLongPress = filterElementsMethods.onSkillButtonLongPress,
+            onIdentityResistButtonClick = filterElementsMethods.onIdentityResistButtonClick,
+            onEgoResistButtonClick = filterElementsMethods.onEgoResistButtonClick,
+            onEgoResistButtonLongPress = filterElementsMethods.onEgoResistButtonLongPress,
+            onPriceButtonLongPress = filterElementsMethods.onEgoPriceButtonLongPress,
+            onSinPickerClick = filterElementsMethods.onSinPickerClick,
+            onEffectCheckedChange = filterElementsMethods.onEffectCheckedChange,
+            onSinnerCheckedChange = filterElementsMethods.onSinnerCheckedChange
         )
         FilterModeSegmentedButton(
             state = filterMode,

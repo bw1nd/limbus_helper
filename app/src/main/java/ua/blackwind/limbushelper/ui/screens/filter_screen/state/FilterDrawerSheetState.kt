@@ -88,8 +88,8 @@ data class EgoFilterPriceState(
 )
 
 fun EgoFilterPriceState.toFilterArg() =
-        listOf(first, second, third, first).filter { it !is TypeHolder.Empty }
-            .map { (it as TypeHolder.Value<Sin>).value }
+    listOf(first, second, third, first).filter { it !is TypeHolder.Empty }
+        .map { (it as TypeHolder.Value<Sin>).value }
 
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,
