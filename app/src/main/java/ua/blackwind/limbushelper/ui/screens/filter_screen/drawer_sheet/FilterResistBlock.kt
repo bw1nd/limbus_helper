@@ -61,7 +61,7 @@ fun EgoFilterResistBlock(
     onButtonLongPress: (FilterSheetButtonPosition) -> Unit,
 ) {
     val (first, second, third) = state
-    Row() {
+    Row {
         listOf(
             FilterSheetButtonPosition.First to first,
             FilterSheetButtonPosition.Second to second,
@@ -100,7 +100,7 @@ fun EgoFilterResistButton(
         val size = with(LocalDensity.current) {
             60.dp.toPx()
         }
-        Box() {
+        Box {
             Surface(
                 shape = HexagonShape(Size(size, size)),
                 color = when (state.sin) {

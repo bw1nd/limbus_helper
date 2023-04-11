@@ -153,12 +153,6 @@ data class FilterSinnersBlockState(
     val sinners: Map<FilterSinnerModel, Boolean>
 )
 
-data class IdentityFilterResistButtonLabels(
-    val ineffective: String,
-    val normal: String,
-    val fatal: String
-)
-
 sealed class FilterSheetButtonPosition {
     object None: FilterSheetButtonPosition()
     object First: FilterSheetButtonPosition()
