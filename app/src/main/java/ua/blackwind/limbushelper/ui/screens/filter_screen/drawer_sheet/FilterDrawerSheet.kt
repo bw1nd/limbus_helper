@@ -12,6 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.TypeHolder
 import ua.blackwind.limbushelper.ui.common.FilterDrawerTabSegmentedButton
 import ua.blackwind.limbushelper.ui.common.FilterModeSegmentedButton
 import ua.blackwind.limbushelper.ui.screens.filter_screen.drawer_sheet.*
@@ -99,7 +100,7 @@ fun FilterBlock(
     sinPickerState: SinPickerState,
     onSkillButtonClick: (FilterSheetButtonPosition) -> Unit,
     onSkillButtonLongPress: (FilterSheetButtonPosition) -> Unit,
-    onSinPickerClick: (StateType<Sin>) -> Unit,
+    onSinPickerClick: (TypeHolder<Sin>) -> Unit,
     onIdentityResistButtonClick: (FilterSheetButtonPosition) -> Unit,
     onEgoResistButtonClick: (FilterSheetButtonPosition) -> Unit,
     onEgoResistButtonLongPress: (FilterSheetButtonPosition) -> Unit,
@@ -120,15 +121,15 @@ fun FilterBlock(
         }
         val skillState = when (state) {
             is FilterDrawerSheetState.EgoMode -> FilterSkillBlockState(
-                FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
-                FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+                FilterDamageStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
+                FilterSinStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty)
             )
             is FilterDrawerSheetState.IdentityMode -> state.skillState
         }
 
         val resistState = when (state) {
             is FilterDrawerSheetState.EgoMode -> FilterDamageStateBundle(
-                StateType.Empty, StateType.Empty, StateType.Empty
+                TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty
             )
             is FilterDrawerSheetState.IdentityMode -> state.resistState
         }
@@ -181,7 +182,7 @@ fun FilterBlock(
 @Composable
 fun EgoFilterTypeBlock(
     sinPickerState: SinPickerState,
-    onSinPickerClick: (StateType<Sin>) -> Unit,
+    onSinPickerClick: (TypeHolder<Sin>) -> Unit,
     skillState: EgoFilterSkillBlockState,
     resistState: EgoFilterResistBlockState,
     priceState: EgoFilterPriceState,
@@ -242,7 +243,7 @@ fun EgoFilterTypeBlock(
 @Composable
 private fun IdentityFilterTypeBlock(
     sinPickerState: SinPickerState,
-    onSinPickerClick: (StateType<Sin>) -> Unit,
+    onSinPickerClick: (TypeHolder<Sin>) -> Unit,
     skillState: FilterSkillBlockState,
     onSkillButtonClick: (FilterSheetButtonPosition) -> Unit,
     onSkillButtonLongPress: (FilterSheetButtonPosition) -> Unit,

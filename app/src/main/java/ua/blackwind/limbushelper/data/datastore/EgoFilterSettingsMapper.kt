@@ -2,13 +2,9 @@ package ua.blackwind.limbushelper.data.datastore
 
 import androidx.datastore.core.CorruptionException
 import ua.blackwind.limbus_helper.EgoFilterSettings.EgoSettings
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
-import ua.blackwind.limbushelper.ui.util.StateType
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -120,24 +116,24 @@ class EgoFilterSettingsMapper @Inject constructor() {
         }
     }
 
-    private fun mapToDamageType(input: String): StateType<DamageType> {
-        if (input.isBlank()) return StateType.Empty
+    private fun mapToDamageType(input: String): TypeHolder<DamageType> {
+        if (input.isBlank()) return TypeHolder.Empty
         try {
             return when (input) {
-                EMPTY_STATE_VALUE -> StateType.Empty
-                else -> StateType.Value(DamageType.valueOf(input))
+                EMPTY_STATE_VALUE -> TypeHolder.Empty
+                else -> TypeHolder.Value(DamageType.valueOf(input))
             }
         } catch (e: IllegalArgumentException) {
             throw CorruptionException("Ego filter Damage data type corrupted with value: $input")
         }
     }
 
-    private fun mapToSinType(input: String): StateType<Sin> {
-        if (input.isBlank()) return StateType.Empty
+    private fun mapToSinType(input: String): TypeHolder<Sin> {
+        if (input.isBlank()) return TypeHolder.Empty
         try {
             return when (input) {
-                EMPTY_STATE_VALUE -> StateType.Empty
-                else -> StateType.Value(Sin.valueOf(input))
+                EMPTY_STATE_VALUE -> TypeHolder.Empty
+                else -> TypeHolder.Value(Sin.valueOf(input))
             }
         } catch (e: IllegalArgumentException) {
             throw CorruptionException("Ego filter Sin data type corrupted with value: $input")
@@ -148,14 +144,14 @@ class EgoFilterSettingsMapper @Inject constructor() {
         return stateType.name
     }
 
-    private fun damageStateToSettings(stateType: StateType<DamageType>): String {
-        if (stateType is StateType.Empty) return EMPTY_STATE_VALUE
-        return (stateType as StateType.Value<DamageType>).value.toString()
+    private fun damageStateToSettings(typeHolder: TypeHolder<DamageType>): String {
+        if (typeHolder is TypeHolder.Empty) return EMPTY_STATE_VALUE
+        return (typeHolder as TypeHolder.Value<DamageType>).value.toString()
     }
 
-    private fun sinStateToSettings(stateType: StateType<Sin>): String {
-        if (stateType is StateType.Empty) return EMPTY_STATE_VALUE
-        return (stateType as StateType.Value<Sin>).value.toString()
+    private fun sinStateToSettings(typeHolder: TypeHolder<Sin>): String {
+        if (typeHolder is TypeHolder.Empty) return EMPTY_STATE_VALUE
+        return (typeHolder as TypeHolder.Value<Sin>).value.toString()
     }
 
     companion object {

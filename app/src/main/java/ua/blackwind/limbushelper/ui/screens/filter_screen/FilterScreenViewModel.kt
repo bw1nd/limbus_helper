@@ -10,10 +10,7 @@ import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.data.datastore.EgoFilterSettingsMapper
 import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.*
@@ -21,7 +18,6 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
-import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.toFilterDamageTypeArg
 import ua.blackwind.limbushelper.ui.util.toFilterSinTypeArg
 import javax.inject.Inject
@@ -253,7 +249,7 @@ class FilterScreenViewModel @Inject constructor(
         _sinPickerState.update { SinPickerState.EgoResistSelected }
     }
 
-    fun onFilterSinPickerPress(sin: StateType<Sin>) {
+    fun onFilterSinPickerPress(sin: TypeHolder<Sin>) {
         when (val value = _filterDrawerShitState.value) {
             is FilterDrawerSheetState.EgoMode -> {
                 if (_sinPickerState.value is SinPickerState.SkillSelected) {
@@ -501,7 +497,7 @@ class FilterScreenViewModel @Inject constructor(
 
     private fun updateSinStateBundle(
         button: FilterSheetButtonPosition,
-        sin: StateType<Sin>,
+        sin: TypeHolder<Sin>,
         input: FilterSinStateBundle
     ): FilterSinStateBundle {
         var (first, second, third) = input
@@ -515,13 +511,13 @@ class FilterScreenViewModel @Inject constructor(
         return FilterSinStateBundle(first, second, third)
     }
 
-    private fun cycleSkillDamageTypes(type: StateType<DamageType>): StateType<DamageType> {
-        if (type is StateType.Empty) return StateType.Value(DamageType.SLASH)
-        val value = type as StateType.Value<DamageType>
+    private fun cycleSkillDamageTypes(type: TypeHolder<DamageType>): TypeHolder<DamageType> {
+        if (type is TypeHolder.Empty) return TypeHolder.Value(DamageType.SLASH)
+        val value = type as TypeHolder.Value<DamageType>
         return when (value.value) {
-            DamageType.SLASH -> StateType.Value(DamageType.PIERCE)
-            DamageType.PIERCE -> StateType.Value(DamageType.BLUNT)
-            DamageType.BLUNT -> StateType.Empty
+            DamageType.SLASH -> TypeHolder.Value(DamageType.PIERCE)
+            DamageType.PIERCE -> TypeHolder.Value(DamageType.BLUNT)
+            DamageType.BLUNT -> TypeHolder.Empty
         }
     }
 

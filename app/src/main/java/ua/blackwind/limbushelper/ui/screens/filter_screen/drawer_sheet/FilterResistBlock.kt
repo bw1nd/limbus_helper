@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
+import ua.blackwind.limbushelper.domain.common.TypeHolder
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
 import ua.blackwind.limbushelper.ui.util.HexagonShape
-import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.getSinColor
 
 @Composable
@@ -104,8 +104,8 @@ fun EgoFilterResistButton(
             Surface(
                 shape = HexagonShape(Size(size, size)),
                 color = when (state.sin) {
-                    StateType.Empty -> MaterialTheme.colorScheme.secondary
-                    is StateType.Value -> getSinColor(state.sin.value)
+                    TypeHolder.Empty -> MaterialTheme.colorScheme.secondary
+                    is TypeHolder.Value -> getSinColor(state.sin.value)
                 },
                 modifier = Modifier
                     .size(60.dp)
@@ -124,7 +124,7 @@ fun EgoFilterResistButton(
 fun FilterResistButton(
     id: FilterSheetButtonPosition,
     label: String,
-    state: StateType<DamageType>,
+    state: TypeHolder<DamageType>,
     onClick: (FilterSheetButtonPosition) -> Unit
 ) {
     require(id !is FilterSheetButtonPosition.None)
@@ -135,8 +135,8 @@ fun FilterResistButton(
             Image(
                 painter = painterResource(
                     id = when (state) {
-                        is StateType.Empty -> R.drawable.def_empty_ic
-                        is StateType.Value<DamageType> -> when (state.value) {
+                        is TypeHolder.Empty -> R.drawable.def_empty_ic
+                        is TypeHolder.Value<DamageType> -> when (state.value) {
                             DamageType.SLASH -> R.drawable.def_slash_ic
                             DamageType.PIERCE -> R.drawable.def_pierce_ic
                             DamageType.BLUNT -> R.drawable.def_blunt_ic

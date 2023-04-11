@@ -21,12 +21,12 @@ import androidx.compose.ui.unit.dp
 import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.TypeHolder
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterPriceState
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterSkillBlockState
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetButtonPosition
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSkillBlockState
 import ua.blackwind.limbushelper.ui.util.HexagonShape
-import ua.blackwind.limbushelper.ui.util.StateType
 import ua.blackwind.limbushelper.ui.util.getSinColor
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
@@ -102,15 +102,15 @@ fun EgoFilterPriceBlock(
 
 @Composable
 fun EgoFilterPriceButton(
-    state: StateType<Sin>,
+    state: TypeHolder<Sin>,
     position: FilterSheetButtonPosition,
     onItemClick: (FilterSheetButtonPosition) -> Unit
 ) {
     Image(
         painter = painterResource(
             id = when (state) {
-                StateType.Empty -> R.drawable.sin_empty_ic
-                is StateType.Value -> getSinIcon(state.value)
+                TypeHolder.Empty -> R.drawable.sin_empty_ic
+                is TypeHolder.Value -> getSinIcon(state.value)
             }
         ), contentDescription = null,
         modifier = Modifier
@@ -123,8 +123,8 @@ fun EgoFilterPriceButton(
 @Composable
 fun FilterSkillButton(
     id: FilterSheetButtonPosition,
-    damage: StateType<DamageType>,
-    sin: StateType<Sin>,
+    damage: TypeHolder<DamageType>,
+    sin: TypeHolder<Sin>,
     onClick: (FilterSheetButtonPosition) -> Unit,
     onButtonLongPress: (FilterSheetButtonPosition) -> Unit
 ) {
@@ -142,8 +142,8 @@ fun FilterSkillButton(
             Surface(
                 shape = HexagonShape(Size(size, size)),
                 color = when (sin) {
-                    StateType.Empty -> MaterialTheme.colorScheme.secondary
-                    is StateType.Value -> getSinColor(sin.value)
+                    TypeHolder.Empty -> MaterialTheme.colorScheme.secondary
+                    is TypeHolder.Value -> getSinColor(sin.value)
                 },
                 modifier = Modifier
                     .size(70.dp)
@@ -151,8 +151,8 @@ fun FilterSkillButton(
             Image(
                 painter = painterResource(
                     id = when (damage) {
-                        is StateType.Empty -> R.drawable.empty_big_ic
-                        is StateType.Value<DamageType> -> when (damage.value) {
+                        is TypeHolder.Empty -> R.drawable.empty_big_ic
+                        is TypeHolder.Value<DamageType> -> when (damage.value) {
                             DamageType.SLASH -> R.drawable.slash_big_ic
                             DamageType.PIERCE -> R.drawable.pierce_big_ic
                             DamageType.BLUNT -> R.drawable.blunt_big_ic
@@ -173,26 +173,26 @@ fun FilterSkillButton(
 
 
 @Composable
-fun SinPicker(onClick: (StateType<Sin>) -> Unit) {
+fun SinPicker(onClick: (TypeHolder<Sin>) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
-        SinPickerButton(state = StateType.Empty, onClick = onClick)
+        SinPickerButton(state = TypeHolder.Empty, onClick = onClick)
         Sin.values().forEach { sin ->
-            SinPickerButton(state = StateType.Value(sin), onClick = onClick)
+            SinPickerButton(state = TypeHolder.Value(sin), onClick = onClick)
         }
     }
 }
 
 
 @Composable
-fun SinPickerButton(state: StateType<Sin>, onClick: (StateType<Sin>) -> Unit) {
+fun SinPickerButton(state: TypeHolder<Sin>, onClick: (TypeHolder<Sin>) -> Unit) {
     Image(
         painter = painterResource(
             id = when (state) {
-                StateType.Empty -> R.drawable.sin_empty_ic
-                is StateType.Value -> getSinIcon(state.value)
+                TypeHolder.Empty -> R.drawable.sin_empty_ic
+                is TypeHolder.Value -> getSinIcon(state.value)
             }
         ), contentDescription = null,
         modifier = Modifier
