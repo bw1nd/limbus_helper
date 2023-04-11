@@ -63,9 +63,9 @@ class GetFilteredEgoUseCaseTest {
 
     private val testData = listOf(firstEgo, secondEgo, thirdEgo)
 
-    private val emptySkillArg = FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Empty)
-    private val emptyResistArg = EgoFilterSinResistTypeArg(emptyMap())
-    private val emptyResourceArg = EgoFilterPriceSetArg(emptyList())
+    private val emptySkillArg = FilterSkillArg(TypeHolder.Empty, TypeHolder.Empty)
+    private val emptyResistArg = emptyMap<EgoSinResistType, Sin>()
+    private val emptyResourceArg = emptyList<Sin>()
     private val emptyEffectsArg = emptyList<Effect>()
     private val emptySinnerArg = emptyList<Int>()
 
@@ -87,8 +87,8 @@ class GetFilteredEgoUseCaseTest {
         val expected = emptyList<Ego>()
 
         val skillArg = FilterSkillArg(
-            FilterDamageTypeArg.Type(DamageType.PIERCE),
-            FilterSinTypeArg.Empty
+            TypeHolder.Value(DamageType.PIERCE),
+            TypeHolder.Empty
         )
 
         return testBase(expected, skillArg)
@@ -99,8 +99,8 @@ class GetFilteredEgoUseCaseTest {
         val expected = listOf(secondEgo, thirdEgo)
 
         val skillArg = FilterSkillArg(
-            FilterDamageTypeArg.Type(DamageType.SLASH),
-            FilterSinTypeArg.Empty
+            TypeHolder.Value(DamageType.SLASH),
+            TypeHolder.Empty
         )
 
         return testBase(expected, skillArg)
@@ -111,8 +111,8 @@ class GetFilteredEgoUseCaseTest {
         val expected = emptyList<Ego>()
 
         val skillArg = FilterSkillArg(
-            FilterDamageTypeArg.Empty,
-            FilterSinTypeArg.Type(Sin.SLOTH)
+            TypeHolder.Empty,
+            TypeHolder.Value(Sin.SLOTH)
         )
 
         return testBase(expected, skillArg)
@@ -123,8 +123,8 @@ class GetFilteredEgoUseCaseTest {
         val expected = listOf(thirdEgo)
 
         val skillArg = FilterSkillArg(
-            FilterDamageTypeArg.Type(DamageType.SLASH),
-            FilterSinTypeArg.Type(Sin.ENVY)
+            TypeHolder.Value(DamageType.SLASH),
+            TypeHolder.Value(Sin.ENVY)
         )
 
         return testBase(expected, skillArg)
@@ -152,7 +152,7 @@ class GetFilteredEgoUseCaseTest {
     fun `filter with gloom resource cost returns empty list`() {
         val expected = emptyList<Ego>()
 
-        val resourceCostArg = EgoFilterPriceSetArg(listOf(Sin.GLOOM))
+        val resourceCostArg = listOf(Sin.GLOOM)
 
         return testBase(expected, resourceArg = resourceCostArg)
     }
@@ -161,7 +161,7 @@ class GetFilteredEgoUseCaseTest {
     fun `filter with pride resource cost returns ego #1 #2`() {
         val expected = listOf(firstEgo, secondEgo)
 
-        val resourceCostArg = EgoFilterPriceSetArg(listOf(Sin.PRIDE))
+        val resourceCostArg = listOf(Sin.PRIDE)
 
         return testBase(expected, resourceArg = resourceCostArg)
     }
@@ -170,9 +170,8 @@ class GetFilteredEgoUseCaseTest {
     fun `filter with wrath innef gloom endure resist returns empty list`() {
         val expected = emptyList<Ego>()
 
-        val resistArg = EgoFilterSinResistTypeArg(
+        val resistArg =
             mapOf(EgoSinResistType.INEFF to Sin.WRATH, EgoSinResistType.ENDURE to Sin.GLOOM)
-        )
 
         return testBase(expected, resistArg = resistArg)
     }
@@ -181,9 +180,7 @@ class GetFilteredEgoUseCaseTest {
     fun `filter with lust fatal resist filter returns ego #1 #3`() {
         val expected = listOf(firstEgo, thirdEgo)
 
-        val resistArg = EgoFilterSinResistTypeArg(
-            mapOf(EgoSinResistType.FATAL to Sin.LUST)
-        )
+        val resistArg = mapOf(EgoSinResistType.FATAL to Sin.LUST)
 
         return testBase(expected, resistArg = resistArg)
     }
@@ -211,8 +208,8 @@ class GetFilteredEgoUseCaseTest {
         val expected = listOf(firstEgo)
 
         val skillArg =
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty)
-        val resistArg = EgoFilterSinResistTypeArg(mapOf(EgoSinResistType.ENDURE to Sin.PRIDE))
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty)
+        val resistArg = mapOf(EgoSinResistType.ENDURE to Sin.PRIDE)
 
         return testBase(expected, skillArg, resistArg)
     }
@@ -222,8 +219,8 @@ class GetFilteredEgoUseCaseTest {
         val expected = listOf(thirdEgo)
 
         val skillArg =
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY))
-        val resistArg = EgoFilterSinResistTypeArg(mapOf(EgoSinResistType.FATAL to Sin.LUST))
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.ENVY))
+        val resistArg = mapOf(EgoSinResistType.FATAL to Sin.LUST)
         val sinnerArg = listOf(2)
 
         return testBase(expected, skillArg, resistArg, sinners = sinnerArg)
@@ -233,8 +230,8 @@ class GetFilteredEgoUseCaseTest {
     private fun testBase(
         expected: List<Ego>,
         skillArg: FilterSkillArg = emptySkillArg,
-        resistArg: EgoFilterSinResistTypeArg = emptyResistArg,
-        resourceArg: EgoFilterPriceSetArg = emptyResourceArg,
+        resistArg: Map<EgoSinResistType, Sin> = emptyResistArg,
+        resourceArg: List<Sin> = emptyResourceArg,
         effects: List<Effect> = emptyEffectsArg,
         sinners: List<Int> = emptySinnerArg
     ) {

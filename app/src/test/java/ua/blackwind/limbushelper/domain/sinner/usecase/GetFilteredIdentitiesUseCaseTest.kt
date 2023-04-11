@@ -7,10 +7,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ua.blackwind.limbushelper.data.SinnerRepository
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.sinner.model.*
 
@@ -90,12 +87,12 @@ class GetFilteredIdentitiesUseCaseTest {
     )
 
     private val emptyResistArgs = FilterResistSetArg(
-        FilterDamageTypeArg.Empty,
-        FilterDamageTypeArg.Empty,
-        FilterDamageTypeArg.Empty
+        TypeHolder.Empty,
+        TypeHolder.Empty,
+        TypeHolder.Empty
     )
 
-    private val emptySkillArg = FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Empty)
+    private val emptySkillArg = FilterSkillArg(TypeHolder.Empty, TypeHolder.Empty)
 
     @BeforeEach
     fun prepareTestData() {
@@ -118,7 +115,7 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
             emptySkillArg,
             emptySkillArg,
         )
@@ -134,8 +131,8 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             emptySkillArg,
         )
 
@@ -149,9 +146,9 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
         )
 
         return testBase(expected, skillArgs)
@@ -164,9 +161,9 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
         )
 
         return testBase(expected, skillArgs)
@@ -177,9 +174,9 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = emptyList<Identity>()
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.PIERCE), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
         )
 
         return testBase(expected, skillArgs)
@@ -193,7 +190,7 @@ class GetFilteredIdentitiesUseCaseTest {
 
         val skillArgs = IdentityFilterSkillsSetArg(
             emptySkillArg,
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.WRATH)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.WRATH)),
             emptySkillArg,
         )
 
@@ -209,7 +206,7 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
             emptySkillArg,
             emptySkillArg,
         )
@@ -225,9 +222,9 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
             emptySkillArg,
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.ENVY)),
         )
 
         return testBase(expected, skillArgs)
@@ -240,9 +237,9 @@ class GetFilteredIdentitiesUseCaseTest {
         ).sortedBy { it.name }
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.GLOOM)),
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.GLUTTONY)),
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.GLOOM)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.GLUTTONY)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
         )
 
         return testBase(expected, skillArgs)
@@ -253,9 +250,9 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = emptyList<Identity>()
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.PRIDE)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.PRIDE)),
             emptySkillArg,
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
         )
 
         return testBase(expected, skillArgs)
@@ -269,8 +266,8 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
             emptySkillArg,
             FilterSkillArg(
-                FilterDamageTypeArg.Type(DamageType.BLUNT),
-                FilterSinTypeArg.Type(Sin.GLOOM)
+                TypeHolder.Value(DamageType.BLUNT),
+                TypeHolder.Value(Sin.GLOOM)
             ),
         )
 
@@ -282,11 +279,11 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = emptyList<Identity>()
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.SLASH), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
             emptySkillArg,
             FilterSkillArg(
-                FilterDamageTypeArg.Type(DamageType.PIERCE),
-                FilterSinTypeArg.Type(Sin.SLOTH)
+                TypeHolder.Value(DamageType.PIERCE),
+                TypeHolder.Value(Sin.SLOTH)
             ),
         )
 
@@ -298,11 +295,11 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(firstIdentity, fourthIdentity)
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.ENVY)),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             FilterSkillArg(
-                FilterDamageTypeArg.Empty,
-                FilterSinTypeArg.Type(Sin.LUST)
+                TypeHolder.Empty,
+                TypeHolder.Value(Sin.LUST)
             ),
         )
 
@@ -314,11 +311,11 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(firstIdentity, fourthIdentity)
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY)),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.ENVY)),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             FilterSkillArg(
-                FilterDamageTypeArg.Empty,
-                FilterSinTypeArg.Type(Sin.LUST)
+                TypeHolder.Empty,
+                TypeHolder.Value(Sin.LUST)
             ),
         )
 
@@ -330,9 +327,9 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(firstIdentity, fourthIdentity)
 
         val resistArguments = FilterResistSetArg(
-            FilterDamageTypeArg.Type(DamageType.SLASH),
-            FilterDamageTypeArg.Empty,
-            FilterDamageTypeArg.Empty
+            TypeHolder.Value(DamageType.SLASH),
+            TypeHolder.Empty,
+            TypeHolder.Empty
         )
 
         return testBase(expected = expected, resistSetArg = resistArguments)
@@ -343,9 +340,9 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(secondIdentity, thirdIdentity)
 
         val resistArguments = FilterResistSetArg(
-            ineffective = FilterDamageTypeArg.Type(DamageType.PIERCE),
-            normal = FilterDamageTypeArg.Empty,
-            fatal = FilterDamageTypeArg.Type(DamageType.BLUNT)
+            ineffective = TypeHolder.Value(DamageType.PIERCE),
+            normal = TypeHolder.Empty,
+            fatal = TypeHolder.Value(DamageType.BLUNT)
         )
 
         return testBase(expected = expected, resistSetArg = resistArguments)
@@ -356,9 +353,9 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(fourthIdentity)
 
         val resistArguments = FilterResistSetArg(
-            ineffective = FilterDamageTypeArg.Type(DamageType.SLASH),
-            normal = FilterDamageTypeArg.Type(DamageType.BLUNT),
-            fatal = FilterDamageTypeArg.Type(DamageType.PIERCE)
+            ineffective = TypeHolder.Value(DamageType.SLASH),
+            normal = TypeHolder.Value(DamageType.BLUNT),
+            fatal = TypeHolder.Value(DamageType.PIERCE)
         )
 
         return testBase(expected = expected, resistSetArg = resistArguments)
@@ -369,15 +366,15 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(firstIdentity, thirdIdentity)
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.LUST)),
+            FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
             emptySkillArg,
             emptySkillArg,
         )
 
         val resistArguments = FilterResistSetArg(
-            ineffective = FilterDamageTypeArg.Empty,
-            normal = FilterDamageTypeArg.Empty,
-            fatal = FilterDamageTypeArg.Type(DamageType.BLUNT)
+            ineffective = TypeHolder.Empty,
+            normal = TypeHolder.Empty,
+            fatal = TypeHolder.Value(DamageType.BLUNT)
         )
 
         return testBase(expected, skillArgs, resistArguments)
@@ -388,15 +385,15 @@ class GetFilteredIdentitiesUseCaseTest {
         val expected = listOf(thirdIdentity)
 
         val skillArgs = IdentityFilterSkillsSetArg(
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
-            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
+            FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             emptySkillArg,
         )
 
         val resistArguments = FilterResistSetArg(
-            ineffective = FilterDamageTypeArg.Empty,
-            normal = FilterDamageTypeArg.Type(DamageType.SLASH),
-            fatal = FilterDamageTypeArg.Empty
+            ineffective = TypeHolder.Empty,
+            normal = TypeHolder.Value(DamageType.SLASH),
+            fatal = TypeHolder.Empty
         )
 
         return testBase(expected, skillArgs, resistArguments)
@@ -438,19 +435,19 @@ class GetFilteredIdentitiesUseCaseTest {
         val skillArgs = IdentityFilterSkillsSetArg(
             emptySkillArg,
             FilterSkillArg(
-                FilterDamageTypeArg.Type(DamageType.SLASH),
-                FilterSinTypeArg.Empty
+                TypeHolder.Value(DamageType.SLASH),
+                TypeHolder.Empty
             ),
             FilterSkillArg(
-                FilterDamageTypeArg.Empty,
-                FilterSinTypeArg.Type(Sin.LUST)
+                TypeHolder.Empty,
+                TypeHolder.Value(Sin.LUST)
             ),
         )
 
         val resistArguments = FilterResistSetArg(
-            ineffective = FilterDamageTypeArg.Empty,
-            normal = FilterDamageTypeArg.Empty,
-            fatal = FilterDamageTypeArg.Type(DamageType.BLUNT)
+            ineffective = TypeHolder.Empty,
+            normal = TypeHolder.Empty,
+            fatal = TypeHolder.Value(DamageType.BLUNT)
         )
 
         return testBase(expected, skillArgs, resistArguments, effects)
@@ -497,7 +494,7 @@ class GetFilteredIdentitiesUseCaseTest {
     ) {
         val useCase = GetFilteredIdentitiesUseCase(repository)
 
-        val filter = IdentityFilter(resistSetArg, skillArgs, effects, sinners)
+        val filter = IdentityFilter(skillArgs, resistSetArg, effects, sinners)
 
         return runTest {
             val result = useCase.invoke(filter).sortedBy { it.name }
@@ -507,7 +504,6 @@ class GetFilteredIdentitiesUseCaseTest {
             assertEquals(expected, result)
         }
     }
-
 
     private fun generateSkill(damage: DamageType, sin: Sin, effects: List<Effect>) =
         Skill(0, "test skill", damage, sin, 3, 3, 2, 2, effects)

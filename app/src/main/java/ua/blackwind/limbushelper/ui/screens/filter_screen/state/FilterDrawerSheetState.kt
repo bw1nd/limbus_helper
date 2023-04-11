@@ -1,7 +1,6 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.state
 
 import ua.blackwind.limbushelper.domain.common.*
-import ua.blackwind.limbushelper.domain.filter.EgoFilterPriceSetArg
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 
 private const val FIRST_SINNER_ID = 1
@@ -89,10 +88,8 @@ data class EgoFilterPriceState(
 )
 
 fun EgoFilterPriceState.toFilterArg() =
-    EgoFilterPriceSetArg(
         listOf(first, second, third, first).filter { it !is TypeHolder.Empty }
             .map { (it as TypeHolder.Value<Sin>).value }
-    )
 
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,

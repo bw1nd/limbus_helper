@@ -18,8 +18,6 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
-import ua.blackwind.limbushelper.ui.util.toFilterDamageTypeArg
-import ua.blackwind.limbushelper.ui.util.toFilterSinTypeArg
 import javax.inject.Inject
 
 @HiltViewModel
@@ -529,22 +527,22 @@ class FilterScreenViewModel @Inject constructor(
     ): IdentityFilter {
         return IdentityFilter(
             resist = FilterResistSetArg(
-                ineffective = resistState.first.toFilterDamageTypeArg(),
-                normal = resistState.second.toFilterDamageTypeArg(),
-                fatal = resistState.third.toFilterDamageTypeArg()
+                ineffective = resistState.first,
+                normal = resistState.second,
+                fatal = resistState.third
             ),
             skills = IdentityFilterSkillsSetArg(
                 FilterSkillArg(
-                    skillState.damage.first.toFilterDamageTypeArg(),
-                    skillState.sin.first.toFilterSinTypeArg()
+                    skillState.damage.first,
+                    skillState.sin.first
                 ),
                 FilterSkillArg(
-                    skillState.damage.second.toFilterDamageTypeArg(),
-                    skillState.sin.second.toFilterSinTypeArg()
+                    skillState.damage.second,
+                    skillState.sin.second
                 ),
                 FilterSkillArg(
-                    skillState.damage.third.toFilterDamageTypeArg(),
-                    skillState.sin.third.toFilterSinTypeArg()
+                    skillState.damage.third,
+                    skillState.sin.third
                 ),
             ),
             effects = effectState.effects.filter { it.value }.keys.toList(),
@@ -556,12 +554,10 @@ class FilterScreenViewModel @Inject constructor(
 
         return EgoFilter(
             skillFilterArg = FilterSkillArg(
-                damageType = state.skillState.damageType.toFilterDamageTypeArg(),
-                sin = state.skillState.sinType.toFilterSinTypeArg()
+                damageType = state.skillState.damageType,
+                sin = state.skillState.sinType
             ),
-            resistSetArg = EgoFilterSinResistTypeArg(
-                state.resistState.toFilterArg()
-            ),
+            resistSetArg = state.resistState.toFilterArg(),
             priceSetArg = state.priceState.toFilterArg(),
             effects =
             state.effectsState.effects.filter { it.value }.keys.toList(),
