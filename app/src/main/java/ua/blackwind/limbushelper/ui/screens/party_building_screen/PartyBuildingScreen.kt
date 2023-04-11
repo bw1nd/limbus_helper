@@ -19,11 +19,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.R
+import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyBuildingInfoPanelState
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
-import ua.blackwind.limbushelper.ui.theme.wrath
 
 @Destination
 @Composable
@@ -71,7 +70,7 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PartyBuildingScreenUi(
-    party: List<PartySinnerModel>,
+    party: Party,
     infoPanelState: PartyBuildingInfoPanelState,
     showDialog: Boolean,
     isShowActiveIdentitiesChecked: Boolean,
@@ -84,7 +83,7 @@ fun PartyBuildingScreenUi(
     onIdentityItemClick: (Int) -> Unit,
     onIdentityItemLongPress: (Int, Int) -> Unit,
 ) {
-    if (party.isEmpty()) {
+    if (party.sinners.isEmpty()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
@@ -148,12 +147,12 @@ fun PartyBuildingScreenUi(
                     .fillMaxSize()
                     .padding(5.dp)
             ) {
-                items(party.size, key = { it }) { index ->
-                    val sinnerModel = party[index]
+                items(party.sinners.size, key = { it }) { index ->
+                    val sinnerModel = party.sinners[index]
                     val show = if (isShowActiveIdentitiesChecked) {
                         sinnerModel.identities.any { it.isActive }
                     } else {
-                        sinnerModel.identities.isNotEmpty() || sinnerModel.egos.isNotEmpty()
+                        sinnerModel.identities.isNotEmpty() || sinnerModel.ego.isNotEmpty()
                     }
                     if (show) {
                         PartySinnerItem(

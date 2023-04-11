@@ -18,15 +18,12 @@ import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.*
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.domain.sinner.model.Sinner
-import ua.blackwind.limbushelper.domain.sinner.usecase.GetAllSinners
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import javax.inject.Inject
 
 @HiltViewModel
 class PartyBuildingScreenViewModel @Inject constructor(
     private val getPartyUseCase: GetPartyUseCase,
-    private val getAllSinners: GetAllSinners,
     private val preferencesRepository: PreferencesRepository,
     private val addIdentityToPartyUseCase: AddIdentityToPartyUseCase,
     private val removeIdentityFromPartyUseCase: RemoveIdentityFromPartyUseCase,
@@ -34,8 +31,8 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase,
     private val clearPartyByIdUseCase: ClearPartyByIdUseCase
 ): ViewModel() {
-    private val rawParty = MutableStateFlow(Party(0, "empty", emptyList(), emptyList()))
-    private val _party = MutableStateFlow<List<PartySinnerModel>>(emptyList())
+
+    private val _party = MutableStateFlow<Party>(Party(DEFAULT_PARTY_ID, "Default", emptyList()))
     val party = _party.asStateFlow()
 
     private val _showDialog = MutableStateFlow(false)
@@ -52,15 +49,8 @@ class PartyBuildingScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getPartyUseCase().collectLatest { party ->
-                rawParty.update { party }
+                _party.update { party }
                 updateInfoPanelState(party)
-                _party.update {
-                    val sinners = getAllSinners()
-                    parsePartyToSinnerList(
-                        party,
-                        sinners
-                    )
-                }
             }
         }
         viewModelScope.launch {
@@ -81,15 +71,16 @@ class PartyBuildingScreenViewModel @Inject constructor(
     fun onCleaPartyAcceptClick() {
         _showDialog.update { false }
         viewModelScope.launch {
-            clearPartyByIdUseCase(rawParty.value.id)
+            clearPartyByIdUseCase(_party.value.id)
         }
     }
 
     private fun updateInfoPanelState(party: Party) {
         //TODO HERESY!! THIS PLACE MUST BE PURGED!!
-        val activeList = party.identityList.filter { it.isActive }
+        val activeList = party.sinners.map { it.identities }.flatten().filter { it.isActive }
         val egoList =
-            party.egoList.filter { ego -> activeList.any { it.identity.sinnerId == ego.sinnerId } }
+            party.sinners.map { it.ego }.flatten()
+                .filter { ego -> activeList.any { it.identity.sinnerId == ego.sinnerId } }
         val attackByDamage = intArrayOf(0, 0, 0)
         val attackBySin = intArrayOf(0, 0, 0, 0, 0, 0, 0)
         val defenceByDamage = intArrayOf(0, 0, 0)
@@ -148,8 +139,9 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
 
         _infoPanelState.update {
-            val activeIdentityCount = rawParty.value.identityList.count { it.isActive }
-            val totalIdentityCount = rawParty.value.identityList.size
+            val identities = _party.value.sinners.map { it.identities }.flatten()
+            val activeIdentityCount = identities.count { it.isActive }
+            val totalIdentityCount = identities.size
             PartyBuildingInfoPanelState(
                 AttackByDamageInfo(attackByDamage[0], attackByDamage[1], attackByDamage[2]),
                 AttackBySinInfo(
@@ -203,7 +195,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     fun onEgoDeleteButtonClick(ego: Ego) {
-        viewModelScope.launch { removeEgoFromPartyUseCase(party = rawParty.value, ego = ego) }
+        viewModelScope.launch { removeEgoFromPartyUseCase(party = _party.value, ego = ego) }
     }
 
     fun onIdentityLongPress(identityId: Int, sinnerId: Int) {
@@ -221,28 +213,11 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     fun undoDelete(identity: Identity) {
-        viewModelScope.launch { addIdentityToPartyUseCase(identity, rawParty.value) }
+        viewModelScope.launch { addIdentityToPartyUseCase(identity, _party.value) }
     }
 
     fun onIdentityDeleteButtonClick(identity: Identity) {
-        viewModelScope.launch { removeIdentityFromPartyUseCase(identity, rawParty.value) }
-    }
-
-    private fun parsePartyToSinnerList(
-        party: Party,
-        sinners: List<Sinner>
-    ): List<PartySinnerModel> {
-        return sinners.associateWith { sinner ->
-            val identities = party.identityList.filter { it.identity.sinnerId == sinner.id }
-            val egos = party.egoList.filter { it.sinnerId == sinner.id }
-            (identities to egos)
-        }.filter { it.value.first.isNotEmpty() || it.value.second.isNotEmpty() }.map { entry ->
-            PartySinnerModel(
-                sinner = entry.key,
-                identities = entry.value.first,
-                egos = entry.value.second
-            )
-        }.sortedBy { it.sinner.id }
+        viewModelScope.launch { removeIdentityFromPartyUseCase(identity, _party.value) }
     }
 
     private fun initialPartyBuildingInfoPanelState() = PartyBuildingInfoPanelState(

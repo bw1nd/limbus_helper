@@ -13,6 +13,9 @@ import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
 import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.model.PartySinner
+import ua.blackwind.limbushelper.domain.party.model.getAllEgo
+import ua.blackwind.limbushelper.domain.party.model.getAllIdentities
 import ua.blackwind.limbushelper.domain.party.usecase.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
@@ -34,7 +37,7 @@ class FilterScreenViewModel @Inject constructor(
     private val filterEgoSettingsMapper: EgoFilterSettingsMapper
 ): ViewModel() {
     //TODO Everything inside of this class is a huge mess
-    private val party = MutableStateFlow(Party(0, "Default", emptyList(), emptyList()))
+    private val party = MutableStateFlow(Party(0, "Default", emptyList<PartySinner>()))
 
     private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())
     val filteredItems: StateFlow<List<FilterDataModel>> = _filteredItems
@@ -460,11 +463,11 @@ class FilterScreenViewModel @Inject constructor(
                 is FilterItemTypeModel.IdentityType ->
                     FilterDataModel(
                         item,
-                        party.identityList.any { it.identity.id == item.identity.id }
+                        party.getAllIdentities().any { it.id == item.identity.id }
                     )
                 is FilterItemTypeModel.EgoType ->
                     FilterDataModel(item,
-                        party.egoList.any { it.id == item.ego.id })
+                        party.getAllEgo().any { it.id == item.ego.id })
             }
         }
     }

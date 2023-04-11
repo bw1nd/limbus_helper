@@ -9,6 +9,7 @@ import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
+import ua.blackwind.limbushelper.domain.party.model.PartySinner
 import ua.blackwind.limbushelper.domain.sinner.model.*
 import javax.inject.Inject
 
@@ -26,17 +27,25 @@ class PartyRepository @Inject constructor(
                 identities to activeIdentities
             }.combine(dao.getEgoListByPartyId(DEFAULT_PARTY_ID)) { identities, ego ->
                 val party = dao.getParty(DEFAULT_PARTY_ID)
-
-                Party(party.id, party.name, identities.first.map { entity ->
-                    val identity = dao.getIdentityById(entity.identityId)
+                val sinners = dao.getAllSinners()
+                val partyIdentities = identities.first.map { identityEntity ->
+                    val identity = dao.getIdentityById(identityEntity.identityId)
                     PartyIdentity(
                         identityEntityToIdentity(identity),
-                        identity.id in identities.second.map { it.identityId }
-                    )
-                },
-                    ego.filter { it.egoId != NO_EGO_FOR_THIS_RISK_SINNER_ADDED }.map { entity ->
-                        egoEntityToEgo(dao.getEgoById(entity.egoId))
-                    })
+                        identity.id in identities.second.map { it.identityId })
+                }
+                val partyEgo = ego.map { dao.getEgoById(it.egoId) }
+
+                Party(party.id, party.name,
+                    sinners.map { sinnerEntity ->
+                        PartySinner(
+                            sinnerEntity.toSinner(),
+                            partyIdentities.filter { it.identity.sinnerId == sinnerEntity.id },
+                            partyEgo.filter { it.sinnerId == sinnerEntity.id }
+                                .map { egoEntityToEgo(it) }
+                        )
+                    }
+                )
             }
     }
 
@@ -116,6 +125,5 @@ class PartyRepository @Inject constructor(
 
     companion object {
         private const val NEW_VALUE_ID = 0
-        private const val NO_EGO_FOR_THIS_RISK_SINNER_ADDED = 0
     }
 }

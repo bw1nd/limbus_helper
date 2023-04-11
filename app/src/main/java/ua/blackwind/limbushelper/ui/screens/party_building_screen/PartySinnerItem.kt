@@ -18,15 +18,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ua.blackwind.limbushelper.domain.common.RiskLevel
+import ua.blackwind.limbushelper.domain.party.model.PartySinner
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartySinnerModel
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinColor
 
 @Composable
 fun PartySinnerItem(
-    sinner: PartySinnerModel,
+    sinner: PartySinner,
     showInactive: Boolean,
     onIdentityItemClick: (Int) -> Unit,
     onIdentityItemLongPress: (Int, Int) -> Unit,
@@ -45,7 +45,7 @@ fun PartySinnerItem(
             )
             Spacer(modifier = Modifier.weight(1f))
             SinnerEgoBlock(
-                sinner.egos
+                sinner.ego
             ) { risk -> mode.value = if (mode.value != risk) risk else null }
         }
         Divider(color = MaterialTheme.colorScheme.tertiary, thickness = 2.dp)
@@ -56,7 +56,7 @@ fun PartySinnerItem(
             horizontalAlignment = Alignment.End
         ) {
             mode.value?.let { risk ->
-                val ego = sinner.egos.find { it.risk == risk }
+                val ego = sinner.ego.find { it.risk == risk }
                 if (ego == null) {
                     mode.value = null
                 } else {
