@@ -79,7 +79,7 @@ fun EgoFilterResistBlockState.toFilterArg() =
         third.resist to third.sin,
         third.resist to third.sin
     ).filter { it.second !is StateType.Empty }
-        .map { it.first to (it.second as? StateType.Value<Sin>)?.value as Sin }
+        .associate { it.first to (it.second as? StateType.Value<Sin>)?.value as Sin }
 
 
 data class EgoFilterResistArg(

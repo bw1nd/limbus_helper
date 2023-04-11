@@ -24,7 +24,8 @@ class GetFilteredEgoUseCaseTest {
         awakeningSkill = generateEgoSkill(DamageType.BLUNT, Sin.PRIDE, listOf(Effect.ATT_UP)),
         resourceCost = mapOf(Sin.LUST to 2, Sin.PRIDE to 2),
         sinResistances = mapOf(
-            Sin.LUST to EgoSinResistType.FATAL, Sin.GLUTTONY to EgoSinResistType.FATAL,
+            Sin.LUST to EgoSinResistType.FATAL,
+            Sin.GLUTTONY to EgoSinResistType.FATAL,
             Sin.PRIDE to EgoSinResistType.ENDURE
         )
     )
@@ -40,8 +41,10 @@ class GetFilteredEgoUseCaseTest {
         ),
         mapOf(Sin.WRATH to 4, Sin.PRIDE to 2),
         mapOf(
-            Sin.WRATH to EgoSinResistType.INEFF, Sin.SLOTH to EgoSinResistType.FATAL,
-            Sin.GLOOM to EgoSinResistType.FATAL, Sin.ENVY to EgoSinResistType.ENDURE
+            Sin.WRATH to EgoSinResistType.INEFF,
+            Sin.SLOTH to EgoSinResistType.FATAL,
+            Sin.GLOOM to EgoSinResistType.FATAL,
+            Sin.ENVY to EgoSinResistType.ENDURE
         )
     )
 
@@ -61,7 +64,7 @@ class GetFilteredEgoUseCaseTest {
     private val testData = listOf(firstEgo, secondEgo, thirdEgo)
 
     private val emptySkillArg = FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Empty)
-    private val emptyResistArg = EgoFilterSinResistTypeArg(emptyList())
+    private val emptyResistArg = EgoFilterSinResistTypeArg(emptyMap())
     private val emptyResourceArg = EgoFilterPriceSetArg(emptyList())
     private val emptyEffectsArg = emptyList<Effect>()
     private val emptySinnerArg = emptyList<Int>()
@@ -101,6 +104,129 @@ class GetFilteredEgoUseCaseTest {
         )
 
         return testBase(expected, skillArg)
+    }
+
+    @Test
+    fun `filter with sloth skill sin type returns empty list`() {
+        val expected = emptyList<Ego>()
+
+        val skillArg = FilterSkillArg(
+            FilterDamageTypeArg.Empty,
+            FilterSinTypeArg.Type(Sin.SLOTH)
+        )
+
+        return testBase(expected, skillArg)
+    }
+
+    @Test
+    fun `filter with slash envy skill returns ego #3`() {
+        val expected = listOf(thirdEgo)
+
+        val skillArg = FilterSkillArg(
+            FilterDamageTypeArg.Type(DamageType.SLASH),
+            FilterSinTypeArg.Type(Sin.ENVY)
+        )
+
+        return testBase(expected, skillArg)
+    }
+
+    @Test
+    fun `filter with protect effect returns empty list`() {
+        val expected = emptyList<Ego>()
+
+        val effectsArg = listOf(Effect.PROTECT)
+
+        return testBase(expected, effects = effectsArg)
+    }
+
+    @Test
+    fun `filter with burn effect returns ego #2`() {
+        val expected = listOf(secondEgo)
+
+        val effectsArg = listOf(Effect.BURN)
+
+        return testBase(expected, effects = effectsArg)
+    }
+
+    @Test
+    fun `filter with gloom resource cost returns empty list`() {
+        val expected = emptyList<Ego>()
+
+        val resourceCostArg = EgoFilterPriceSetArg(listOf(Sin.GLOOM))
+
+        return testBase(expected, resourceArg = resourceCostArg)
+    }
+
+    @Test
+    fun `filter with pride resource cost returns ego #1 #2`() {
+        val expected = listOf(firstEgo, secondEgo)
+
+        val resourceCostArg = EgoFilterPriceSetArg(listOf(Sin.PRIDE))
+
+        return testBase(expected, resourceArg = resourceCostArg)
+    }
+
+    @Test
+    fun `filter with wrath innef gloom endure resist returns empty list`() {
+        val expected = emptyList<Ego>()
+
+        val resistArg = EgoFilterSinResistTypeArg(
+            mapOf(EgoSinResistType.INEFF to Sin.WRATH, EgoSinResistType.ENDURE to Sin.GLOOM)
+        )
+
+        return testBase(expected, resistArg = resistArg)
+    }
+
+    @Test
+    fun `filter with lust fatal resist filter returns ego #1 #3`() {
+        val expected = listOf(firstEgo, thirdEgo)
+
+        val resistArg = EgoFilterSinResistTypeArg(
+            mapOf(EgoSinResistType.FATAL to Sin.LUST)
+        )
+
+        return testBase(expected, resistArg = resistArg)
+    }
+
+    @Test
+    fun `filter with sinner id 5 returns empty list`() {
+        val expected = emptyList<Ego>()
+
+        val sinnerArg = listOf(5)
+
+        return testBase(expected, sinners = sinnerArg)
+    }
+
+    @Test
+    fun `filter with sinner id 2 returns ego #1 #3`() {
+        val expected = listOf(firstEgo, thirdEgo)
+
+        val sinnerArg = listOf(2)
+
+        return testBase(expected, sinners = sinnerArg)
+    }
+
+    @Test
+    fun `filter with skill blunt dng and pride endure resist returns ego #1`() {
+        val expected = listOf(firstEgo)
+
+        val skillArg =
+            FilterSkillArg(FilterDamageTypeArg.Type(DamageType.BLUNT), FilterSinTypeArg.Empty)
+        val resistArg = EgoFilterSinResistTypeArg(mapOf(EgoSinResistType.ENDURE to Sin.PRIDE))
+
+        return testBase(expected, skillArg, resistArg)
+    }
+
+    @Test
+    fun `filter with skill sin type envy, fatal lust resist and sinner id 2 returns ego #3`() {
+        val expected = listOf(thirdEgo)
+
+        val skillArg =
+            FilterSkillArg(FilterDamageTypeArg.Empty, FilterSinTypeArg.Type(Sin.ENVY))
+        val resistArg = EgoFilterSinResistTypeArg(mapOf(EgoSinResistType.FATAL to Sin.LUST))
+        val sinnerArg = listOf(2)
+
+        return testBase(expected, skillArg, resistArg, sinners = sinnerArg)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

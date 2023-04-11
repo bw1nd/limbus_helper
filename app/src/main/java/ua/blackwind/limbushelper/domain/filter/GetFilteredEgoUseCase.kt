@@ -39,11 +39,11 @@ class GetFilteredEgoUseCase @Inject constructor(
     private fun egoPassPriceFilter(ego: Ego, filter: List<Sin>): Boolean =
         filter.all { it in ego.resourceCost.keys }
 
-    private fun egoPassResistFilter(ego: Ego, filter: List<Pair<EgoSinResistType, Sin>>): Boolean {
-        return filter.all { arg ->
-            if (arg.first == EgoSinResistType.NORMAL)
-                ego.sinResistances.none { it.key == arg.second } else
-                ego.sinResistances.any { it.value == arg.first && it.key == arg.second }
+    private fun egoPassResistFilter(ego: Ego, filter: Map<EgoSinResistType, Sin>): Boolean {
+        return filter.all { (resist, sin) ->
+            if (resist == EgoSinResistType.NORMAL)
+                ego.sinResistances.none { it.key == sin } else
+                ego.sinResistances.any { it.value == resist && it.key == sin }
         }
     }
 

@@ -25,7 +25,7 @@ data class EgoFilter(
 )
 
 data class EgoFilterSinResistTypeArg(
-    val resistList: List<Pair<EgoSinResistType, Sin>>
+    val resistList: Map<EgoSinResistType, Sin>
 )
 
 data class EgoFilterPriceSetArg(
