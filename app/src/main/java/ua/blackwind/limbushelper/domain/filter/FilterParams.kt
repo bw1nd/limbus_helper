@@ -34,10 +34,13 @@ fun FilterResistSetArg.isEmpty() =
 data class IdentityFilterSkillsSetArg(
     val first: FilterSkillArg,
     val second: FilterSkillArg,
-    val third: FilterSkillArg
+    val third: FilterSkillArg,
+    val thirdIsCounter: Boolean
 )
 
-fun IdentityFilterSkillsSetArg.toSkillList() = listOf(first, second, third)
+fun IdentityFilterSkillsSetArg.toSkillList(thirdIsCounter: Boolean): List<FilterSkillArg> {
+    return if (thirdIsCounter) listOf(first, second) else listOf(first, second, third)
+}
 
 fun IdentityFilterSkillsSetArg.isEmpty() =
     first.isEmpty() && second.isEmpty() && third.isEmpty()

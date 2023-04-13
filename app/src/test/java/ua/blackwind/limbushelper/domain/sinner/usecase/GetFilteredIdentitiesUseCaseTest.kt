@@ -138,6 +138,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
             emptySkillArg,
             emptySkillArg,
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -154,6 +155,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             emptySkillArg,
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -169,6 +171,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Value(DamageType.SLASH), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -184,6 +187,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -197,6 +201,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.PIERCE), TypeHolder.Empty),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -212,6 +217,7 @@ class GetFilteredIdentitiesUseCaseTest {
             emptySkillArg,
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.WRATH)),
             emptySkillArg,
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -229,6 +235,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
             emptySkillArg,
             emptySkillArg,
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -245,6 +252,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
             emptySkillArg,
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.ENVY)),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -260,6 +268,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.GLOOM)),
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.GLUTTONY)),
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -273,6 +282,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.PRIDE)),
             emptySkillArg,
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -289,6 +299,7 @@ class GetFilteredIdentitiesUseCaseTest {
                 TypeHolder.Value(DamageType.BLUNT),
                 TypeHolder.Value(Sin.GLOOM)
             ),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -305,6 +316,7 @@ class GetFilteredIdentitiesUseCaseTest {
                 TypeHolder.Value(DamageType.PIERCE),
                 TypeHolder.Value(Sin.SLOTH)
             ),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -321,6 +333,7 @@ class GetFilteredIdentitiesUseCaseTest {
                 TypeHolder.Empty,
                 TypeHolder.Value(Sin.LUST)
             ),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -337,6 +350,7 @@ class GetFilteredIdentitiesUseCaseTest {
                 TypeHolder.Empty,
                 TypeHolder.Value(Sin.LUST)
             ),
+            false
         )
 
         return testBase(expected, skillArgs)
@@ -389,6 +403,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Empty, TypeHolder.Value(Sin.LUST)),
             emptySkillArg,
             emptySkillArg,
+            false
         )
 
         val resistArguments = FilterResistSetArg(
@@ -408,6 +423,7 @@ class GetFilteredIdentitiesUseCaseTest {
             FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             FilterSkillArg(TypeHolder.Value(DamageType.BLUNT), TypeHolder.Empty),
             emptySkillArg,
+            false
         )
 
         val resistArguments = FilterResistSetArg(
@@ -462,6 +478,7 @@ class GetFilteredIdentitiesUseCaseTest {
                 TypeHolder.Empty,
                 TypeHolder.Value(Sin.LUST)
             ),
+            false
         )
 
         val resistArguments = FilterResistSetArg(
@@ -506,7 +523,8 @@ class GetFilteredIdentitiesUseCaseTest {
         skillArgs: IdentityFilterSkillsSetArg = IdentityFilterSkillsSetArg(
             emptySkillArg,
             emptySkillArg,
-            emptySkillArg
+            emptySkillArg,
+            false
         ),
         resistSetArg: FilterResistSetArg = emptyResistArgs,
         effects: List<Effect> = emptyList(),

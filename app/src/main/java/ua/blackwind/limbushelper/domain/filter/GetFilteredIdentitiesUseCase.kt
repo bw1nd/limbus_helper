@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.domain.filter
 
 import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
+import ua.blackwind.limbushelper.domain.sinner.model.DefenceSkillType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
@@ -31,9 +32,23 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
             val bySkill = {
                 skillIsEmpty || identityPassSkillFilter(identity, filter.skills)
             }
-
-            bySinner() && byEffect() && byResist() && bySkill()
+            val byCounter = {
+                !filter.skills.thirdIsCounter || identityPassCounterFilter(
+                    identity,
+                    filter.skills.third.sin
+                )
+            }
+            bySinner() && byEffect() && byResist() && bySkill() && byCounter()
         }
+    }
+
+    private fun identityPassCounterFilter(
+        identity: Identity,
+        filter: TypeHolder<Sin>
+    ): Boolean {
+        return identity.defenceSkill.type == DefenceSkillType.COUNTER && if (filter is TypeHolder.Value) {
+            identity.defenceSkill.sin == filter.value
+        } else true
     }
 
     private fun identityPassSinnerFilter(identity: Identity, filter: List<Int>): Boolean {
@@ -46,7 +61,7 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
     ): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
-        val filterSkills = filter.toSkillList().toMutableList()
+        val filterSkills = filter.toSkillList(filter.thirdIsCounter).toMutableList()
         filterSkills.toList().forEach { skillFilter ->
             if (skillFilter.isStrict()) {
                 val filterDamageType = (skillFilter.damageType as TypeHolder.Value).value

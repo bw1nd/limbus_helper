@@ -578,7 +578,8 @@ class FilterScreenViewModel @Inject constructor(
                 FilterSkillArg(
                     skillState.damage.third,
                     skillState.sin.third
-                )
+                ),
+                thirdIsCounter = skillState.thirdSkillIsCounter
             ),
             effects = effectState.effects.filter { it.value }.keys.toList(),
             sinners = sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
