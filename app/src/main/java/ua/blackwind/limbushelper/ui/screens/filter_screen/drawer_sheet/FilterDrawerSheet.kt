@@ -71,7 +71,7 @@ fun FilterDrawerSheet(
             )
             Spacer(modifier = Modifier.weight(.6f))
         }
-        FilterBlock(
+        FilterUiElementsContainer(
             mode = tab,
             state = filterState,
             sinPickerState = sinPickerState,
@@ -94,7 +94,7 @@ fun FilterDrawerSheet(
 }
 
 @Composable
-fun FilterBlock(
+fun FilterUiElementsContainer(
     mode: FilterSheetTab,
     state: FilterDrawerSheetState,
     sinPickerState: SinPickerState,
@@ -138,13 +138,13 @@ fun FilterBlock(
             is FilterDrawerSheetState.IdentityMode -> state.sinnersState
         }
         when (mode) {
-            FilterSheetTab.Effects -> FilterEffectsBlock(
+            FilterSheetTab.Effects -> FilterEffectsUiContainer(
                 effectsState,
                 onEffectCheckedChange
             )
             FilterSheetTab.Type -> {
                 when (state) {
-                    is FilterDrawerSheetState.EgoMode -> EgoFilterTypeBlock(
+                    is FilterDrawerSheetState.EgoMode -> EgoFilterTypeUiContainer(
                         sinPickerState = sinPickerState,
                         onSinPickerClick = onSinPickerClick,
                         skillState = state.skillState,
@@ -160,7 +160,7 @@ fun FilterBlock(
                         onResistButtonLongPress = onEgoResistButtonLongPress,
                         onPriceButtonLongPress = onPriceButtonLongPress
                     )
-                    is FilterDrawerSheetState.IdentityMode -> IdentityFilterTypeBlock(
+                    is FilterDrawerSheetState.IdentityMode -> IdentityFilterTypeUiContainer(
                         sinPickerState = sinPickerState,
                         onSinPickerClick = onSinPickerClick,
                         skillState = skillState,
@@ -171,7 +171,7 @@ fun FilterBlock(
                     )
                 }
             }
-            FilterSheetTab.Sinners -> FilterSinnersBlock(
+            FilterSheetTab.Sinners -> FilterSinnersUiContainer(
                 state = sinnerState,
                 onSinnerCheckedChange = onSinnerCheckedChange
             )
@@ -180,7 +180,7 @@ fun FilterBlock(
 }
 
 @Composable
-fun EgoFilterTypeBlock(
+fun EgoFilterTypeUiContainer(
     sinPickerState: SinPickerState,
     onSinPickerClick: (TypeHolder<Sin>) -> Unit,
     skillState: EgoFilterSkillBlockState,
@@ -202,7 +202,7 @@ fun EgoFilterTypeBlock(
         ) {
             SinPicker(onClick = onSinPickerClick)
         } else {
-            EgoFilterSkillBlock(
+            EgoFilterSkillUiContainer(
                 state = skillState,
                 onButtonClick = onSkillButtonClick,
                 onButtonLongPress = onSkillButtonLongPress
@@ -232,7 +232,7 @@ fun EgoFilterTypeBlock(
     if (sinPickerState is SinPickerState.EgoResistSelected) {
         SinPicker(onClick = onSinPickerClick)
     } else {
-        EgoFilterResistBlock(
+        EgoFilterResistUiContainer(
             state = resistState,
             onResistButtonClick,
             onResistButtonLongPress
@@ -241,7 +241,7 @@ fun EgoFilterTypeBlock(
 }
 
 @Composable
-private fun IdentityFilterTypeBlock(
+private fun IdentityFilterTypeUiContainer(
     sinPickerState: SinPickerState,
     onSinPickerClick: (TypeHolder<Sin>) -> Unit,
     skillState: FilterSkillBlockState,
@@ -258,7 +258,7 @@ private fun IdentityFilterTypeBlock(
         if (sinPickerState is SinPickerState.SkillSelected) {
             SinPicker(onClick = onSinPickerClick)
         } else {
-            IdentityFilterSkillBlock(
+            IdentityFilterSkillUiContainer(
                 state = skillState,
                 onButtonClick = onSkillButtonClick,
                 onButtonLongPress = onSkillButtonLongPress
@@ -272,5 +272,5 @@ private fun IdentityFilterTypeBlock(
             .width(300.dp)
             .padding(5.dp)
     )
-    IdentityFilterResistBlock(state = resistState, onResistButtonClick)
+    IdentityFilterResistUiContainer(state = resistState, onResistButtonClick)
 }

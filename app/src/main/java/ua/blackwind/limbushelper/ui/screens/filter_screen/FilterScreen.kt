@@ -115,7 +115,7 @@ fun FilterScreenUi(
                             .fillMaxHeight(0.9f)
                     ) {
                         items(list.size) {
-                            FilterListItem(
+                            FilterScreenListItem(
                                 listItem = list[it],
                                 onInPartyChecked = onInPartyChecked,
                                 onInPartyUnChecked = onInPartyUnChecked

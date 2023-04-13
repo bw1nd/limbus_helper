@@ -20,9 +20,8 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
-//TODO need better naming for this
 @Composable
-fun FilterListItem(
+fun FilterScreenListItem(
     listItem: FilterDataModel,
     onInPartyChecked: (FilterDataModel) -> Unit,
     onInPartyUnChecked: (FilterDataModel) -> Unit
@@ -64,7 +63,7 @@ fun FilterListItem(
 @Preview
 @Composable
 private fun PreviewFilterIdentityItem() {
-    FilterListItem(listItem = FilterDataModel(
+    FilterScreenListItem(listItem = FilterDataModel(
         FilterItemTypeModel.IdentityType(
             previewIdentity,
         ), true

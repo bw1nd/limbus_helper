@@ -28,7 +28,7 @@ import ua.blackwind.limbushelper.ui.util.HexagonShape
 import ua.blackwind.limbushelper.ui.util.getSinColor
 
 @Composable
-fun IdentityFilterResistBlock(
+fun IdentityFilterResistUiContainer(
     state: FilterDamageStateBundle,
     onButtonClick: (FilterSheetButtonPosition) -> Unit
 ) {
@@ -55,7 +55,7 @@ fun IdentityFilterResistBlock(
 }
 
 @Composable
-fun EgoFilterResistBlock(
+fun EgoFilterResistUiContainer(
     state: EgoFilterResistBlockState,
     onButtonClick: (FilterSheetButtonPosition) -> Unit,
     onButtonLongPress: (FilterSheetButtonPosition) -> Unit,

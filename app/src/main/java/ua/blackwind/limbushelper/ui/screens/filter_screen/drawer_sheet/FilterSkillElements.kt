@@ -22,7 +22,6 @@ import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.common.TypeHolder
-import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterPriceState
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.EgoFilterSkillBlockState
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSheetButtonPosition
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.FilterSkillBlockState
@@ -31,7 +30,7 @@ import ua.blackwind.limbushelper.ui.util.getSinColor
 import ua.blackwind.limbushelper.ui.util.getSinIcon
 
 @Composable
-fun IdentityFilterSkillBlock(
+fun IdentityFilterSkillUiContainer(
     state: FilterSkillBlockState,
     onButtonClick: (FilterSheetButtonPosition) -> Unit,
     onButtonLongPress: (FilterSheetButtonPosition) -> Unit
@@ -62,7 +61,7 @@ fun IdentityFilterSkillBlock(
 }
 
 @Composable
-fun EgoFilterSkillBlock(
+fun EgoFilterSkillUiContainer(
     state: EgoFilterSkillBlockState,
     onButtonClick: () -> Unit,
     onButtonLongPress: () -> Unit
@@ -76,48 +75,6 @@ fun EgoFilterSkillBlock(
     )
 }
 
-@Composable
-fun EgoFilterPriceBlock(
-    state: EgoFilterPriceState,
-    onItemLongPress: (FilterSheetButtonPosition) -> Unit
-) {
-    Row() {
-        EgoFilterPriceButton(
-            position = FilterSheetButtonPosition.First,
-            state = state.first,
-            onItemClick = onItemLongPress
-        )
-        EgoFilterPriceButton(
-            position = FilterSheetButtonPosition.Second,
-            state = state.second,
-            onItemClick = onItemLongPress
-        )
-        EgoFilterPriceButton(
-            position = FilterSheetButtonPosition.Third,
-            state = state.third,
-            onItemClick = onItemLongPress
-        )
-    }
-}
-
-@Composable
-fun EgoFilterPriceButton(
-    state: TypeHolder<Sin>,
-    position: FilterSheetButtonPosition,
-    onItemClick: (FilterSheetButtonPosition) -> Unit
-) {
-    Image(
-        painter = painterResource(
-            id = when (state) {
-                TypeHolder.Empty -> R.drawable.sin_empty_ic
-                is TypeHolder.Value -> getSinIcon(state.value)
-            }
-        ), contentDescription = null,
-        modifier = Modifier
-            .size(40.dp)
-            .clickable { onItemClick(position) }
-    )
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
