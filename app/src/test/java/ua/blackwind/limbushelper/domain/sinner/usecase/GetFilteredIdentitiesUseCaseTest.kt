@@ -33,6 +33,7 @@ class GetFilteredIdentitiesUseCaseTest {
             listOf(Effect.BLEED, Effect.PARALYSIS)
         ),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.WRATH, emptyList()),
+        defenceSkill = DefenceSkill(0, "Guard", DefenceSkillType.GUARD, 0, 0, 0, null),
         passive = dummyPassive,
         support = dummySupport
     )
@@ -49,6 +50,15 @@ class GetFilteredIdentitiesUseCaseTest {
             listOf(Effect.POISE, Effect.FRAGILE)
         ),
         thirdSkill = generateSkill(DamageType.PIERCE, Sin.ENVY, emptyList()),
+        defenceSkill = DefenceSkill(
+            0,
+            "Counter Wrath",
+            DefenceSkillType.COUNTER,
+            0,
+            0,
+            0,
+            Sin.WRATH
+        ),
         passive = dummyPassive,
         support = dummySupport
     )
@@ -62,6 +72,15 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.BLEED)),
         secondSkill = generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
+        defenceSkill = DefenceSkill(
+            0,
+            "Counter Wrath",
+            DefenceSkillType.COUNTER,
+            0,
+            0,
+            0,
+            Sin.WRATH
+        ),
         passive = dummyPassive,
         support = dummySupport
     )
@@ -75,6 +94,7 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill = generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),
         secondSkill = generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
+        defenceSkill = DefenceSkill(0, "Counter Lust", DefenceSkillType.COUNTER, 0, 0, 0, Sin.LUST),
         passive = dummyPassive,
         support = dummySupport
     )
@@ -517,6 +537,7 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill: Skill,
         secondSkill: Skill,
         thirdSkill: Skill,
+        defenceSkill: DefenceSkill,
         passive: Passive,
         support: Support
     ) = Identity(
@@ -534,6 +555,7 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill = firstSkill,
         secondSkill = secondSkill,
         thirdSkill = thirdSkill,
+        defenceSkill = defenceSkill,
         passive = passive,
         support = support,
         imageUrl = ""
