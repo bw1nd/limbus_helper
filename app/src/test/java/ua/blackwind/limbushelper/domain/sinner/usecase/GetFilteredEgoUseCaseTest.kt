@@ -13,8 +13,6 @@ import ua.blackwind.limbushelper.domain.sinner.model.*
 
 class GetFilteredEgoUseCaseTest {
 
-//TODO write tests for this use case
-
     private val repository = mockk<SinnerRepository>()
 
     private val firstEgo = generateEgo(

@@ -84,7 +84,7 @@ fun egoItemCore(ego: Ego): @Composable (RowScope.() -> Unit) =
                 .padding(start = 5.dp)
                 .padding(vertical = 4.dp)
         ) {
-            Row() {
+            Row {
                 Text(
                     text = ego.name,
                     fontSize = 14.sp,
