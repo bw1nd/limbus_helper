@@ -15,11 +15,10 @@ data class DefenceSkillEntity(
     val skillPower: Int,
     val coinPower: Int,
     val coinCount: Int,
-    val sin: Sin?,
-    val defenceLevel: Int
+    val sin: Sin?
 )
 
 fun DefenceSkillEntity.toDefenceSkill() =
     DefenceSkill(
-        id, name, type, skillPower, coinPower, coinCount, sin, defenceLevel
+        id, name, type, skillPower, coinPower, coinCount, sin
     )

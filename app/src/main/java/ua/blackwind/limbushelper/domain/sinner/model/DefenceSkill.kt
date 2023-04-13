@@ -10,7 +10,6 @@ data class DefenceSkill(
     val coinPower: Int,
     val coinCount: Int,
     val sin: Sin?,
-    val defenceLevel: Int
 )
 
 enum class DefenceSkillType {

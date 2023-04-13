@@ -31,7 +31,7 @@ val previewIdentity = Identity(
     ),
     secondSkill = Skill(0, "Rip", DamageType.PIERCE, Sin.WRATH, 3, 3, 2, 2, emptyList()),
     thirdSkill = Skill(0, "Rip", DamageType.BLUNT, Sin.SLOTH, 3, 3, 15, 2, emptyList()),
-    defenceSkill = DefenceSkill(0, "Guard", DefenceSkillType.GUARD, 2, 10, 1, null, 30),
+    defenceSkill = DefenceSkill(0, "Guard", DefenceSkillType.GUARD, 2, 10, 1, null, ),
     passive = Passive(0, 0, SinCost(emptyList()), ""),
     support = Support(0, 0, SinCost(emptyList()), ""),
     imageUrl = ""
