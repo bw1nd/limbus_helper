@@ -4,10 +4,7 @@ package ua.blackwind.limbushelper.data.db.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.domain.sinner.model.Passive
-import ua.blackwind.limbushelper.domain.sinner.model.Skill
-import ua.blackwind.limbushelper.domain.sinner.model.Support
+import ua.blackwind.limbushelper.domain.sinner.model.*
 
 @Entity(tableName = "identity")
 data class IdentityEntity(
@@ -26,6 +23,7 @@ data class IdentityEntity(
     val firstSkillId: Int,
     val secondSkillId: Int,
     val thirdSkillId: Int,
+    val defenceSkillId: Int,
     val passiveId: Int,
     val supportId: Int,
     val imageUrl: String
@@ -36,6 +34,7 @@ data class IdentityEntity(
  */
 suspend fun IdentityEntity.toIdentity(
     getSkill: suspend (id: Int) -> Skill,
+    getDefenceSkill: suspend (id: Int) -> DefenceSkill,
     getPassive: suspend (id: Int) -> Passive,
     getSupport: suspend (id: Int) -> Support
 ) = Identity(
@@ -54,6 +53,7 @@ suspend fun IdentityEntity.toIdentity(
     firstSkill = getSkill(firstSkillId),
     secondSkill = getSkill(secondSkillId),
     thirdSkill = getSkill(thirdSkillId),
+    defenceSkill = getDefenceSkill(defenceSkillId),
     passive = getPassive(supportId),
     support = getSupport(passiveId),
     imageUrl = this.imageUrl

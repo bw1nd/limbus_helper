@@ -17,6 +17,7 @@ data class Identity(
     val firstSkill: Skill,
     val secondSkill: Skill,
     val thirdSkill: Skill,
+    val defenceSkill: DefenceSkill,
     val passive: Passive,
     val support: Support,
     val imageUrl: String

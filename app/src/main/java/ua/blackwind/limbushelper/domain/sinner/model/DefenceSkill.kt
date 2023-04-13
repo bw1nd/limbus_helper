@@ -14,7 +14,7 @@ data class DefenceSkill(
 )
 
 enum class DefenceSkillType {
-    Guard,
-    Evade,
-    Counter
+    GUARD,
+    EVADE,
+    COUNTER
 }

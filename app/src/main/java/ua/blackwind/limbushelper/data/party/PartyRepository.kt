@@ -2,6 +2,7 @@ package ua.blackwind.limbushelper.data.party
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import ua.blackwind.limbushelper.data.SinnerRepository
 import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.db.model.*
 import ua.blackwind.limbushelper.domain.common.Sin
@@ -15,6 +16,7 @@ import javax.inject.Inject
 
 class PartyRepository @Inject constructor(
     private val dao: Dao,
+    private val sinnerRepository: SinnerRepository
 ): IPartyRepository {
 
     override fun getParty(id: Int): Flow<Party> {
@@ -29,9 +31,9 @@ class PartyRepository @Inject constructor(
                 val party = dao.getParty(DEFAULT_PARTY_ID)
                 val sinners = dao.getAllSinners()
                 val partyIdentities = identities.first.map { identityEntity ->
-                    val identity = dao.getIdentityById(identityEntity.identityId)
+                    val identity = sinnerRepository.getIdentityById(identityEntity.identityId)
                     PartyIdentity(
-                        identityEntityToIdentity(identity),
+                        identity,
                         identity.id in identities.second.map { it.identityId })
                 }
                 val partyEgo = ego.map { dao.getEgoById(it.egoId) }
@@ -91,15 +93,6 @@ class PartyRepository @Inject constructor(
         return dao.getActiveIdentityBySinnerAndPartyId(partyId, sinnerId).identityId
     }
 
-    private suspend fun identityEntityToIdentity(identityEntity: IdentityEntity): Identity {
-        //TODO this function uses dummy data, must add passive and support db tables to implement it
-        return identityEntity.toIdentity(
-            getSkill = ::getSkillById,
-            getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") },
-            getSupport = { Support(0, 0, SinCost(listOf(2 to Sin.LUST)), "support") }
-        )
-    }
-
     override suspend fun removeAllIdentityFromParty(partyId: Int) {
         dao.removeAllIdentityFromParty(partyId)
     }
@@ -113,10 +106,6 @@ class PartyRepository @Inject constructor(
             ::getEgoSkillById,
             getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") },
         )
-    }
-
-    private suspend fun getSkillById(id: Int): Skill {
-        return dao.getSkillById(id).toSkill()
     }
 
     private suspend fun getEgoSkillById(id: Int): EgoSkill? {
