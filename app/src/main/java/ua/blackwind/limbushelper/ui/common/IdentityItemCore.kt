@@ -75,7 +75,6 @@ fun identityItemCore(
         )
         Column(
             Modifier
-                // .width(265.dp)
                 .padding(start = 5.dp)
                 .padding(vertical = 4.dp)
         ) {
@@ -163,7 +162,8 @@ fun DefenceSkillItem(item: DefenceSkill) {
                 .size(40.dp)
                 .padding(2.dp)
                 .border(2.dp, color = MaterialTheme.colorScheme.onPrimary)
-                .background(color = MaterialTheme.colorScheme.primary)
+                .background(color = item.sin?.let { sin -> getSinColor(sin) }
+                    ?: MaterialTheme.colorScheme.primary)
         ) {
             Image(
                 painter = painterResource(
