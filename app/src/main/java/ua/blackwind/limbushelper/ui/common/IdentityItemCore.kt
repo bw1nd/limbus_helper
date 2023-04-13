@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.common
 
-import ua.blackwind.limbushelper.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,13 +22,12 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Size
+import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
 import ua.blackwind.limbushelper.domain.common.Sin
-import ua.blackwind.limbushelper.domain.sinner.model.EgoSkill
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
-import ua.blackwind.limbushelper.domain.sinner.model.Skill
+import ua.blackwind.limbushelper.domain.sinner.model.*
 import ua.blackwind.limbushelper.ui.theme.identityRarity0
 import ua.blackwind.limbushelper.ui.theme.identityRarity00
 import ua.blackwind.limbushelper.ui.theme.identityRarity000
@@ -40,6 +38,7 @@ import ua.blackwind.limbushelper.ui.util.previewIdentity
 
 private const val ITEM_VERTICAL_SIZE_DP = 100
 private const val PORTRAIT_IMAGE_WIDTH = 70
+private const val SKILL_IMAGE_SIZE_DP = 52
 
 @Composable
 fun identityItemCore(
@@ -76,7 +75,7 @@ fun identityItemCore(
         )
         Column(
             Modifier
-                .width(265.dp)
+                // .width(265.dp)
                 .padding(start = 5.dp)
                 .padding(vertical = 4.dp)
         ) {
@@ -114,23 +113,30 @@ fun identityItemCore(
                 SkillBlock(
                     firstSkill = identity.firstSkill,
                     secondSkill = identity.secondSkill,
-                    thirdSkill = identity.thirdSkill
+                    thirdSkill = identity.thirdSkill,
+                    defenceSkill = identity.defenceSkill
                 )
             }
         }
     }
 
 @Composable
-fun SkillBlock(firstSkill: Skill, secondSkill: Skill, thirdSkill: Skill) {
+fun SkillBlock(
+    firstSkill: Skill,
+    secondSkill: Skill,
+    thirdSkill: Skill,
+    defenceSkill: DefenceSkill
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .width(190.dp)
+            .width(200.dp)
             .padding(top = 3.dp)
     ) {
         SkillItem(skill = firstSkill)
         SkillItem(skill = secondSkill)
         SkillItem(skill = thirdSkill)
+        DefenceSkillItem(item = defenceSkill)
     }
 }
 
@@ -143,6 +149,35 @@ fun SkillItem(skill: Skill) {
         coinBonus = skill.coinBonus,
         coinCount = skill.coinCount
     )
+}
+
+@Composable
+fun DefenceSkillItem(item: DefenceSkill) {
+    Column(
+        modifier = Modifier
+            .height(SKILL_IMAGE_SIZE_DP.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(40.dp)
+                .padding(2.dp)
+                .border(2.dp, color = MaterialTheme.colorScheme.onPrimary)
+                .background(color = MaterialTheme.colorScheme.primary)
+        ) {
+            Image(
+                painter = painterResource(
+                    id =
+                    when (item.type) {
+                        DefenceSkillType.GUARD -> R.drawable.ego_resist_ic
+                        DefenceSkillType.EVADE -> R.drawable.evade_50_ic
+                        DefenceSkillType.COUNTER -> R.drawable.counter_50_ic
+                    }
+                ), contentDescription = null,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -168,7 +203,7 @@ fun SkillItemCore(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(52.dp)
+                .size(SKILL_IMAGE_SIZE_DP.dp)
                 .background(getSinColor(sin))
                 .border(2.dp, MaterialTheme.colorScheme.onPrimary)
         ) {
@@ -183,7 +218,7 @@ fun SkillItemCore(
             textAlign = TextAlign.Start,
             fontSize = 14.sp,
             modifier = Modifier.padding(top = 2.dp),
-            text = "${baseDie}" +
+            text = "$baseDie" +
                     (if (coinBonus > 0) "+" else "") +
                     "${coinBonus}\u00D7${coinCount}"
         )
@@ -265,4 +300,15 @@ private fun IdentityItemPreview() {
         identityItemCore(identity = previewIdentity).invoke(this)
     }
 
+}
+
+@Preview
+@Composable
+fun SkillBlockPreview() {
+    SkillBlock(
+        firstSkill = previewIdentity.firstSkill,
+        secondSkill = previewIdentity.secondSkill,
+        thirdSkill = previewIdentity.thirdSkill,
+        defenceSkill = previewIdentity.defenceSkill
+    )
 }
