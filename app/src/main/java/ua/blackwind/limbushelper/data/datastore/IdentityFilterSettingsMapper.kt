@@ -22,7 +22,7 @@ class IdentityFilterSettingsMapper @Inject constructor() {
         settings: IdentityFilterSettings.IdentitySettings
     ): FilterDrawerSheetState.IdentityMode =
         FilterDrawerSheetState.IdentityMode(
-            FilterSkillBlockState(
+            skillState = FilterSkillBlockState(
                 damage = FilterDamageStateBundle(
                     first = mapToDamageType(settings.skillState.damageBundle.first),
                     second = mapToDamageType(settings.skillState.damageBundle.second),
@@ -32,21 +32,22 @@ class IdentityFilterSettingsMapper @Inject constructor() {
                     first = mapToSinType(settings.skillState.sinBundle.first),
                     second = mapToSinType(settings.skillState.sinBundle.second),
                     third = mapToSinType(settings.skillState.sinBundle.third)
-                )
+                ),
+                thirdSkillIsCounter = settings.skillState.thirdIsCounter
             ),
             resistState = FilterDamageStateBundle(
                 first = mapToDamageType(settings.resistState.first),
                 second = mapToDamageType(settings.resistState.second),
-                third = mapToDamageType(settings.resistState.third)
+                third = mapToDamageType(settings.resistState.third),
             ),
-            if (settings.effectsState.effectsCount > 1) {
+            effectsState = if (settings.effectsState.effectsCount > 1) {
                 FilterEffectBlockState(
                     settings.effectsState.effectsMap.mapKeys { (key, _) -> Effect.valueOf(key) }
                 )
             } else {
                 emptyFilterEffectBlockState()
             },
-            if (settings.sinnersState.sinnersCount > 1) {
+            sinnersState = if (settings.sinnersState.sinnersCount > 1) {
                 FilterSinnersBlockState(
                     settings.sinnersState.sinnersMap.mapKeys { (key, _) -> FilterSinnerModel(key) }
                 )
@@ -95,6 +96,7 @@ class IdentityFilterSettingsMapper @Inject constructor() {
                             .setSecond(sinSkillStateToSettings(state.skillState.sin.second))
                             .setThird(sinSkillStateToSettings(state.skillState.sin.third))
                     )
+                    .setThirdIsCounter(state.skillState.thirdSkillIsCounter)
             )
             .setResistState(
                 IdentityFilterSettings.IdentitySettings.FilterDamageStateBundle.newBuilder()

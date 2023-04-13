@@ -121,8 +121,13 @@ fun FilterUiElementsContainer(
         }
         val skillState = when (state) {
             is FilterDrawerSheetState.EgoMode -> FilterSkillBlockState(
-                FilterDamageStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
-                FilterSinStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty)
+                FilterDamageStateBundle(
+                    TypeHolder.Empty,
+                    TypeHolder.Empty,
+                    TypeHolder.Empty
+                ),
+                FilterSinStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
+                false
             )
             is FilterDrawerSheetState.IdentityMode -> state.skillState
         }

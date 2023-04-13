@@ -41,18 +41,21 @@ fun IdentityFilterSkillUiContainer(
             damage = state.damage.first,
             sin = state.sin.first,
             onClick = onButtonClick,
-            onButtonLongPress = onButtonLongPress
+            onButtonLongPress = onButtonLongPress,
+            showCounter = false
         )
         FilterSkillButton(
             id = FilterSheetButtonPosition.Second,
             damage = state.damage.second,
             sin = state.sin.second,
             onClick = onButtonClick,
-            onButtonLongPress = onButtonLongPress
+            onButtonLongPress = onButtonLongPress,
+            showCounter = false
         )
         FilterSkillButton(
             id = FilterSheetButtonPosition.Third,
             damage = state.damage.third,
+            showCounter = state.thirdSkillIsCounter,
             sin = state.sin.third,
             onClick = onButtonClick,
             onButtonLongPress = onButtonLongPress
@@ -71,7 +74,8 @@ fun EgoFilterSkillUiContainer(
         damage = state.damageType,
         sin = state.sinType,
         onClick = { onButtonClick() },
-        onButtonLongPress = { onButtonLongPress() }
+        onButtonLongPress = { onButtonLongPress() },
+        showCounter = false
     )
 }
 
@@ -81,6 +85,7 @@ fun EgoFilterSkillUiContainer(
 fun FilterSkillButton(
     id: FilterSheetButtonPosition,
     damage: TypeHolder<DamageType>,
+    showCounter: Boolean,
     sin: TypeHolder<Sin>,
     onClick: (FilterSheetButtonPosition) -> Unit,
     onButtonLongPress: (FilterSheetButtonPosition) -> Unit
@@ -107,12 +112,16 @@ fun FilterSkillButton(
             ) {}
             Image(
                 painter = painterResource(
-                    id = when (damage) {
-                        is TypeHolder.Empty -> R.drawable.empty_big_ic
-                        is TypeHolder.Value<DamageType> -> when (damage.value) {
-                            DamageType.SLASH -> R.drawable.slash_big_ic
-                            DamageType.PIERCE -> R.drawable.pierce_big_ic
-                            DamageType.BLUNT -> R.drawable.blunt_big_ic
+                    id = if (showCounter) {
+                        R.drawable.counter_100_ic
+                    } else {
+                        when (damage) {
+                            is TypeHolder.Empty -> R.drawable.empty_big_ic
+                            is TypeHolder.Value<DamageType> -> when (damage.value) {
+                                DamageType.SLASH -> R.drawable.slash_big_ic
+                                DamageType.PIERCE -> R.drawable.pierce_big_ic
+                                DamageType.BLUNT -> R.drawable.blunt_big_ic
+                            }
                         }
                     }
                 ), contentDescription = null,

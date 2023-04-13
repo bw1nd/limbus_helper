@@ -13,7 +13,6 @@ import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
 import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
-import ua.blackwind.limbushelper.domain.party.model.PartySinner
 import ua.blackwind.limbushelper.domain.party.model.getAllEgo
 import ua.blackwind.limbushelper.domain.party.model.getAllIdentities
 import ua.blackwind.limbushelper.domain.party.usecase.*
@@ -37,7 +36,7 @@ class FilterScreenViewModel @Inject constructor(
     private val filterEgoSettingsMapper: EgoFilterSettingsMapper
 ): ViewModel() {
     //TODO Everything inside of this class is a huge mess
-    private val party = MutableStateFlow(Party(0, "Default", emptyList<PartySinner>()))
+    private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
     private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())
     val filteredItems: StateFlow<List<FilterDataModel>> = _filteredItems
@@ -258,8 +257,9 @@ class FilterScreenViewModel @Inject constructor(
                         value.copy(
                             skillState = EgoFilterSkillBlockState(
                                 value.skillState.damageType,
-                                sin
-                            )
+                                sin,
+
+                                )
                         )
                     )
                 }
@@ -343,7 +343,8 @@ class FilterScreenViewModel @Inject constructor(
                                 selectedSheetButtonPosition,
                                 sin,
                                 oldSinState.sin
-                            )
+                            ),
+                            oldSinState.thirdSkillIsCounter
                         )
                     )
                 )
@@ -363,14 +364,41 @@ class FilterScreenViewModel @Inject constructor(
                 )
             }
             is FilterDrawerSheetState.IdentityMode -> {
-                updateFilterDrawerSheetState(
-                    old.copy(
-                        skillState = FilterSkillBlockState(
-                            updateDamageStateBundle(button, old.skillState.damage, false),
-                            old.skillState.sin
+                if (button is FilterSheetButtonPosition.Third && old.skillState.damage.third is TypeHolder.Value
+                    && old.skillState.damage.third.value == DamageType.BLUNT
+                ) {
+                    if (old.skillState.thirdSkillIsCounter) {
+                        updateFilterDrawerSheetState(
+                            old.copy(
+                                skillState = old.skillState.copy(
+                                    damage = updateDamageStateBundle(
+                                        FilterSheetButtonPosition.Third,
+                                        old.skillState.damage, false
+                                    ),
+                                    thirdSkillIsCounter = false
+                                )
+                            )
+                        )
+                    } else {
+                        updateFilterDrawerSheetState(
+                            old.copy(
+                                skillState = old.skillState.copy(
+                                    thirdSkillIsCounter = true
+                                )
+                            )
+                        )
+                    }
+                } else {
+                    updateFilterDrawerSheetState(
+                        old.copy(
+                            skillState = FilterSkillBlockState(
+                                updateDamageStateBundle(button, old.skillState.damage, false),
+                                old.skillState.sin,
+                                old.skillState.thirdSkillIsCounter
+                            )
                         )
                     )
-                )
+                }
             }
         }
     }
@@ -492,7 +520,11 @@ class FilterScreenViewModel @Inject constructor(
         }
         val result = FilterDamageStateBundle(first, second, third)
         return if (unique && !result.isUnique()) {
-            updateDamageStateBundle(button, FilterDamageStateBundle(first, second, third), true)
+            updateDamageStateBundle(
+                button,
+                FilterDamageStateBundle(first, second, third),
+                true
+            )
         } else result
     }
 
@@ -546,7 +578,7 @@ class FilterScreenViewModel @Inject constructor(
                 FilterSkillArg(
                     skillState.damage.third,
                     skillState.sin.third
-                ),
+                )
             ),
             effects = effectState.effects.filter { it.value }.keys.toList(),
             sinners = sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()

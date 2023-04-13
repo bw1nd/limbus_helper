@@ -14,7 +14,7 @@ class EgoFilterSettingsMapper @Inject constructor() {
         FilterDrawerSheetState.EgoMode(
             EgoFilterSkillBlockState(
                 mapToDamageType(settings.skillState.damageType),
-                mapToSinType(settings.skillState.sinType)
+                mapToSinType(settings.skillState.sinType),
             ),
             EgoFilterPriceState(
                 mapToSinType(settings.priceState.first),
@@ -33,10 +33,6 @@ class EgoFilterSettingsMapper @Inject constructor() {
                 EgoFilterResistArg(
                     mapToSinType(settings.resistState.third.sin),
                     mapToEgoResistType(settings.resistState.third.resist)
-                ),
-                EgoFilterResistArg(
-                    mapToSinType(settings.resistState.fourth.sin),
-                    mapToEgoResistType(settings.resistState.fourth.resist)
                 )
             ),
             if (settings.effectsState.effectsCount > 1) {
@@ -53,7 +49,6 @@ class EgoFilterSettingsMapper @Inject constructor() {
             } else {
                 emptyFilterSinnerBlockState()
             }
-
         )
 
     fun mapStateToSettings(
@@ -81,11 +76,6 @@ class EgoFilterSettingsMapper @Inject constructor() {
                         EgoSettings.FilterResistStateArg.newBuilder()
                             .setSin(sinStateToSettings(state.resistState.third.sin))
                             .setResist(resistStateTypeToSettings(state.resistState.third.resist))
-                    )
-                    .setFourth(
-                        EgoSettings.FilterResistStateArg.newBuilder()
-                            .setSin(sinStateToSettings(state.resistState.fourth.sin))
-                            .setResist(resistStateTypeToSettings(state.resistState.fourth.resist))
                     )
             )
             .setPriceState(

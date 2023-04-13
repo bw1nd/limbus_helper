@@ -62,7 +62,6 @@ data class EgoFilterResistBlockState(
     val first: EgoFilterResistArg,
     val second: EgoFilterResistArg,
     val third: EgoFilterResistArg,
-    val fourth: EgoFilterResistArg
 )
 
 //TODO this looks kinda sus, mb there is better way
@@ -117,7 +116,8 @@ sealed class FilterSheetTab(val index: Int) {
  */
 data class FilterSkillBlockState(
     val damage: FilterDamageStateBundle,
-    val sin: FilterSinStateBundle
+    val sin: FilterSinStateBundle,
+    val thirdSkillIsCounter: Boolean
 )
 
 /**
@@ -127,7 +127,7 @@ data class FilterSkillBlockState(
 data class FilterDamageStateBundle(
     val first: TypeHolder<DamageType>,
     val second: TypeHolder<DamageType>,
-    val third: TypeHolder<DamageType>,
+    val third: TypeHolder<DamageType>
 )
 
 fun FilterDamageStateBundle.isUnique() = run {
@@ -162,7 +162,8 @@ sealed class FilterSheetButtonPosition {
 
 private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
     FilterDamageStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
-    FilterSinStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty)
+    FilterSinStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
+    false
 )
 
 private fun emptyEgoFilterPriceBlockState(): EgoFilterPriceState =
@@ -183,6 +184,5 @@ fun emptyEgoFilterResistBlockState() = EgoFilterResistBlockState(
     first = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL),
     second = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL),
     third = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL),
-    fourth = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL)
 )
 
