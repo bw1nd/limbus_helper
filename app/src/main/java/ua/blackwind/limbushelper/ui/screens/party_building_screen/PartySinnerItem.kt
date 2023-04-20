@@ -28,8 +28,7 @@ import ua.blackwind.limbushelper.ui.util.getSinColor
 fun PartySinnerItem(
     sinner: PartySinner,
     showInactive: Boolean,
-    onIdentityItemClick: (Int) -> Unit,
-    onIdentityItemLongPress: (Int, Int) -> Unit,
+    onIdentityItemClick: (Int, Int) -> Unit,
     onIdentityDeleteButtonClick: (Identity) -> Unit,
     onEgoDeleteButtonClick: (Ego) -> Unit
 ) {
@@ -66,10 +65,9 @@ fun PartySinnerItem(
             sinner.identities.forEach { previewIdentity ->
                 if (showInactive || previewIdentity.isActive) {
                     PartyIdentityItem(
-                        previewIdentity,
-                        onIdentityItemClick,
-                        onIdentityItemLongPress,
-                        onIdentityDeleteButtonClick
+                        viewIdentity = previewIdentity,
+                        onClick = onIdentityItemClick,
+                        onDeleteButtonClick = onIdentityDeleteButtonClick
                     )
                 }
             }

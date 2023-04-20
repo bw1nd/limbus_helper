@@ -60,7 +60,6 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
                 onShowActiveIdentitiesClick = viewModel::onShowActiveIdentitiesClick,
                 onIdentityDeleteButtonClick = onDeleteButtonClick,
                 onIdentityItemClick = viewModel::onIdentityClick,
-                onIdentityItemLongPress = viewModel::onIdentityLongPress,
                 onEgoDeleteButtonClick = viewModel::onEgoDeleteButtonClick
             )
         }
@@ -80,8 +79,7 @@ fun PartyBuildingScreenUi(
     onShowActiveIdentitiesClick: (Boolean) -> Unit,
     onIdentityDeleteButtonClick: (Identity) -> Unit,
     onEgoDeleteButtonClick: (Ego) -> Unit,
-    onIdentityItemClick: (Int) -> Unit,
-    onIdentityItemLongPress: (Int, Int) -> Unit,
+    onIdentityItemClick: (Int, Int) -> Unit,
 ) {
     if (party.sinners.isEmpty()) {
         Column(
@@ -128,7 +126,7 @@ fun PartyBuildingScreenUi(
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                             Spacer(modifier = Modifier.weight(1f))
-                            Row() {
+                            Row {
                                 Button(onClick = { onAcceptPartyClear() }) {
                                     Text("Accept", textDecoration = TextDecoration.Underline)
                                 }
@@ -159,7 +157,6 @@ fun PartyBuildingScreenUi(
                             sinnerModel,
                             showInactive = !isShowActiveIdentitiesChecked,
                             onIdentityItemClick = onIdentityItemClick,
-                            onIdentityItemLongPress = onIdentityItemLongPress,
                             onIdentityDeleteButtonClick = onIdentityDeleteButtonClick,
                             onEgoDeleteButtonClick = onEgoDeleteButtonClick
                         )

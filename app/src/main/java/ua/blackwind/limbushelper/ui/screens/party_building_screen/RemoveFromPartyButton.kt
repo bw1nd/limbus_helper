@@ -28,6 +28,7 @@ import ua.blackwind.limbushelper.ui.util.BannerShape
 fun RemoveFromPartyButton(
     size: Dp,
     modifier: Modifier = Modifier,
+    identityIsActive: Boolean = true,
     onClick: () -> Unit
 ) {
     val convertedSize = with(LocalDensity.current) {
@@ -39,7 +40,11 @@ fun RemoveFromPartyButton(
         shape = BannerShape(Size(convertedSize, convertedSize)),
         color = MaterialTheme.colorScheme.primary,
         tonalElevation = 2.dp,
-        border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.onPrimaryContainer),
+        border = BorderStroke(
+            2.dp, color =
+            if (identityIsActive) MaterialTheme.colorScheme.onPrimaryContainer
+            else MaterialTheme.colorScheme.primary
+        ),
         modifier = modifier
             .size(size)
     ) {

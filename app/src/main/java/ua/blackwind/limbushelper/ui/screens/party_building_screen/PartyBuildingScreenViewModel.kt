@@ -86,7 +86,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
         viewModelScope.launch { removeEgoFromPartyUseCase(party = _party.value, ego = ego) }
     }
 
-    fun onIdentityLongPress(identityId: Int, sinnerId: Int) {
+    fun onIdentityClick(identityId: Int, sinnerId: Int) {
         viewModelScope.launch {
             changeActiveIdentityIdForParty(
                 DEFAULT_PARTY_ID,
@@ -96,7 +96,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
         }
     }
 
-    fun onIdentityClick(identityId: Int) {
+    fun onIdentityPortraitClick(identityId: Int) {
         //Placeholder for Detail screen
     }
 
