@@ -18,6 +18,9 @@ import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.util.previewIdentity
 
+private const val ITEM_WIDTH_DP = 390
+private const val ITEM_HEIGHT_DP = 100
+
 @Composable
 fun FilterScreenListItem(
     listItem: FilterDataModel,
@@ -29,8 +32,8 @@ fun FilterScreenListItem(
         shape = CutCornerShape(topStart = 10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
-            .width(390.dp)
-            .height(100.dp)
+            .width(ITEM_WIDTH_DP.dp)
+            .height(ITEM_HEIGHT_DP.dp)
     ) {
         val item = listItem.item
         Box(Modifier.fillMaxSize()) {
@@ -48,12 +51,6 @@ fun FilterScreenListItem(
                         )
                     )
                 }
-//                AlternativeCheckbox(
-//                    checked = listItem.inParty,
-//                    onCheckedChange = { checked ->
-//                        if (checked) onInPartyChecked(listItem) else onInPartyUnChecked(listItem)
-//                    },
-//                )
             }
             InPartyCheckBox(
                 checked = listItem.inParty,
