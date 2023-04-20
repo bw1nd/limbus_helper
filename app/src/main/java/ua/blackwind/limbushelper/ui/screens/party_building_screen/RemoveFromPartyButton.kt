@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
@@ -18,23 +19,23 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ua.blackwind.limbushelper.domain.sinner.model.Ego
-import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.ui.common.MultipleEventsCutter
+import ua.blackwind.limbushelper.ui.common.get
 import ua.blackwind.limbushelper.ui.theme.removeFromPartyCrossIconColor
 import ua.blackwind.limbushelper.ui.util.BannerShape
 
 @Composable
 fun RemoveFromPartyButton(
-    identity: Identity,
     size: Dp,
     modifier: Modifier = Modifier,
-    onClick: (Identity) -> Unit
+    onClick: () -> Unit
 ) {
     val convertedSize = with(LocalDensity.current) {
         size.toPx()
     }
+    val multipleEventsCutter = remember { MultipleEventsCutter.get() }
     Surface(
-        onClick = { onClick(identity) },
+        onClick = { multipleEventsCutter.processEvent { onClick() } },
         shape = BannerShape(Size(convertedSize, convertedSize)),
         color = MaterialTheme.colorScheme.primary,
         tonalElevation = 2.dp,
@@ -51,33 +52,5 @@ fun RemoveFromPartyButton(
                 modifier = Modifier.size(size * .7f)
             )
         }
-    }
-}
-
-@Composable
-fun RemoveFromPartyButton(
-    ego: Ego,
-    size: Dp,
-    modifier: Modifier = Modifier,
-    onClick: (Ego) -> Unit
-) {
-    val convertedSize = with(LocalDensity.current) {
-        size.toPx()
-    }
-    Surface(
-        onClick = { onClick(ego) },
-        shape = BannerShape(Size(convertedSize, convertedSize)),
-        color = MaterialTheme.colorScheme.primary,
-        tonalElevation = 2.dp,
-        border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.onPrimaryContainer),
-        modifier = modifier
-            .size(size)
-    ) {
-        Icon(
-            painter = rememberVectorPainter(image = Icons.Outlined.Close),
-            tint = removeFromPartyCrossIconColor,
-            contentDescription = null,
-            modifier = Modifier.size(size * .7f)
-        )
     }
 }

@@ -34,15 +34,14 @@ fun PartyEgoItem(
             .fillMaxWidth()
     )
     {
-        Box() {
+        Box {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Row(content = egoItemCore(ego = ego))
                 Spacer(Modifier.weight(1f))
             }
             RemoveFromPartyButton(
-                ego = ego,
                 size = REMOVE_FROM_PARTY_BANNER_SIZE_DP.dp,
-                onClick = onDeleteButtonClick,
+                onClick = { onDeleteButtonClick(ego) },
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }

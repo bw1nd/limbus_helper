@@ -61,9 +61,8 @@ fun PartyIdentityItem(
                 Spacer(Modifier.weight(1f))
             }
             RemoveFromPartyButton(
-                identity = identity,
                 size = REMOVE_FROM_PARTY_BANNER_SIZE_DP.dp,
-                onClick = onDeleteButtonClick,
+                onClick = { onDeleteButtonClick(identity) },
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }
