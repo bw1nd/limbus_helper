@@ -2,27 +2,25 @@ package ua.blackwind.limbushelper.ui.screens.party_building_screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.ui.common.identityItemCore
 import ua.blackwind.limbushelper.ui.theme.activeIdentityBorderColor
 import ua.blackwind.limbushelper.ui.theme.inactiveIdentityBorderColor
 import ua.blackwind.limbushelper.ui.util.previewIdentity
+
+private const val REMOVE_FROM_PARTY_BANNER_SIZE_DP = 34
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -57,18 +55,17 @@ fun PartyIdentityItem(
             )
     ) {
         val identity = viewIdentity.identity
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Row(content = identityItemCore(identity))
-            Spacer(Modifier.weight(1f))
-            Icon(
-                painter = painterResource(id = R.drawable.delete_ic),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable { onDeleteButtonClick(identity) }
+        Box() {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(content = identityItemCore(identity))
+                Spacer(Modifier.weight(1f))
+            }
+            RemoveFromPartyButton(
+                identity = identity,
+                size = REMOVE_FROM_PARTY_BANNER_SIZE_DP.dp,
+                onClick = onDeleteButtonClick,
+                modifier = Modifier.align(Alignment.TopEnd)
             )
-            Spacer(Modifier.weight(1f))
         }
     }
 }
@@ -80,9 +77,9 @@ fun PreviewPartyIdentityItem() {
         PartyIdentityItem(
             viewIdentity = PartyIdentity(previewIdentity, true),
             {},
-            { _, _ -> },{})
+            { _, _ -> }, {})
         PartyIdentityItem(
             viewIdentity = PartyIdentity(previewIdentity, false),
-            {}, { _, _ -> },{})
+            {}, { _, _ -> }, {})
     }
 }

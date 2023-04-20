@@ -17,8 +17,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ua.blackwind.limbushelper.ui.theme.addToPartyIconTint
-import ua.blackwind.limbushelper.ui.theme.removeFromPartyIconColor
+import ua.blackwind.limbushelper.ui.theme.addToPartyPlusIconColor
+import ua.blackwind.limbushelper.ui.theme.removeFromPartyCheckIconColor
 import ua.blackwind.limbushelper.ui.util.BannerShape
 
 @Composable
@@ -45,14 +45,14 @@ fun InPartyCheckBox(
             if (checked) {
                 Icon(
                     painter = rememberVectorPainter(image = Icons.Outlined.Check),
-                    tint = removeFromPartyIconColor,
+                    tint = removeFromPartyCheckIconColor,
                     contentDescription = null,
                     modifier = Modifier.size(size * .7f)
                 )
             } else {
                 Icon(
                     painter = rememberVectorPainter(image = Icons.Default.Add),
-                    tint = addToPartyIconTint,
+                    tint = addToPartyPlusIconColor,
                     contentDescription = null,
                     modifier = Modifier.size(size * .7f)
                 )
