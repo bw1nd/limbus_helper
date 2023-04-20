@@ -24,7 +24,6 @@ option java_multiple_files = false;
           FilterResistStateArg first = 1;
           FilterResistStateArg second = 2;
           FilterResistStateArg third = 3;
-          FilterResistStateArg fourth = 4;
     }
 
     message FilterResistStateArg{
