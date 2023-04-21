@@ -14,9 +14,9 @@ val previewIdentity = Identity(
     slashRes = IdentityDamageResistType.NORMAL,
     pierceRes = IdentityDamageResistType.INEFF,
     bluntRes = IdentityDamageResistType.FATAL,
-    maxHp = 146,
-    maxArmor = 38,
-    maxDamage = 30,
+    hp = 146,
+    defense = 38,
+    offense = 30,
     speed = 3 to 6,
     firstSkill = Skill(
         0,
@@ -31,7 +31,7 @@ val previewIdentity = Identity(
     ),
     secondSkill = Skill(0, "Rip", DamageType.PIERCE, Sin.WRATH, 3, 3, 2, 2, emptyList()),
     thirdSkill = Skill(0, "Rip", DamageType.BLUNT, Sin.SLOTH, 3, 3, 15, 2, emptyList()),
-    defenceSkill = DefenceSkill(0, "Guard", DefenceSkillType.GUARD, 2, 10, 1, null, ),
+    defenseSkill = DefenseSkill(0, "Guard", DefenseSkillType.GUARD, 2, 10, 1, null, ),
     passive = Passive(0, 0, SinCost(emptyList()), ""),
     support = Support(0, 0, SinCost(emptyList()), ""),
     imageUrl = ""

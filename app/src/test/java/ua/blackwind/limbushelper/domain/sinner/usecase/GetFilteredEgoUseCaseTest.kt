@@ -272,9 +272,9 @@ class GetFilteredEgoUseCaseTest {
         name = "",
         dmgType = dmgType,
         sin = sin,
-        dmg = 0,
-        baseDie = 0,
-        coinBonus = 0,
+        offense = 0,
+        basePower = 0,
+        coinPower = 0,
         coinCount = 0,
         sanityCost = 0,
         effects = effects

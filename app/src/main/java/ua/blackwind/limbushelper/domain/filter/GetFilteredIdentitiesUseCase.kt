@@ -2,7 +2,7 @@ package ua.blackwind.limbushelper.domain.filter
 
 import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
-import ua.blackwind.limbushelper.domain.sinner.model.DefenceSkillType
+import ua.blackwind.limbushelper.domain.sinner.model.DefenseSkillType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
@@ -46,8 +46,8 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
         identity: Identity,
         filter: TypeHolder<Sin>
     ): Boolean {
-        return identity.defenceSkill.type == DefenceSkillType.COUNTER && if (filter is TypeHolder.Value) {
-            identity.defenceSkill.sin == filter.value
+        return identity.defenseSkill.type == DefenseSkillType.COUNTER && if (filter is TypeHolder.Value) {
+            identity.defenseSkill.sin == filter.value
         } else true
     }
 

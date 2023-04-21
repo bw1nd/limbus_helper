@@ -62,7 +62,7 @@ class SinnerRepository @Inject constructor(
         return dao.getEgoSkillById(id)?.toEgoSkill()
     }
 
-    private suspend fun getDefenceSkillById(id: Int): DefenceSkill {
+    private suspend fun getDefenceSkillById(id: Int): DefenseSkill {
         return dao.getDefenceSkillById(id).toDefenceSkill()
     }
 
@@ -70,7 +70,7 @@ class SinnerRepository @Inject constructor(
         //TODO this function uses dummy data, must add passive and support db tables to implement it
         return identityEntity.toIdentity(
             getSkill = ::getSkillById,
-            getDefenceSkill = ::getDefenceSkillById,
+            getDefenseSkill = ::getDefenceSkillById,
             getPassive = { Passive(0, 0, SinCost(listOf(1 to Sin.WRATH)), "passive") },
             getSupport = { Support(0, 0, SinCost(listOf(2 to Sin.LUST)), "support") }
         )

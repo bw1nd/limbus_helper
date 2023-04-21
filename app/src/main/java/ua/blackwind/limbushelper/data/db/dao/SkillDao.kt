@@ -1,7 +1,7 @@
 package ua.blackwind.limbushelper.data.db.dao
 
 import androidx.room.Query
-import ua.blackwind.limbushelper.data.db.model.DefenceSkillEntity
+import ua.blackwind.limbushelper.data.db.model.DefenseSkillEntity
 import ua.blackwind.limbushelper.data.db.model.SkillEntity
 
 interface SkillDao {
@@ -20,6 +20,6 @@ interface SkillDao {
     )
     suspend fun getSkillsByIdentityId(id: Int): List<SkillEntity>
 
-    @Query("SELECT * FROM defence_skill WHERE id = :id")
-    suspend fun getDefenceSkillById(id: Int): DefenceSkillEntity
+    @Query("SELECT * FROM defense_skill WHERE id = :id")
+    suspend fun getDefenceSkillById(id: Int): DefenseSkillEntity
 }

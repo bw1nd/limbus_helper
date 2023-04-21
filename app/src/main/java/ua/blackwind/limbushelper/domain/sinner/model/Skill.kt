@@ -10,8 +10,8 @@ data class Skill(
     val dmgType: DamageType,
     val sin: Sin,
     val copiesCount: Int,
-    val baseDie: Int,
-    val coinBonus: Int,
+    val basePower: Int,
+    val coinPower: Int,
     val coinCount: Int,
     val effects: List<Effect>
 )

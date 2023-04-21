@@ -33,7 +33,7 @@ class GetFilteredIdentitiesUseCaseTest {
             listOf(Effect.BLEED, Effect.PARALYSIS)
         ),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.WRATH, emptyList()),
-        defenceSkill = DefenceSkill(0, "Guard", DefenceSkillType.GUARD, 0, 0, 0, null),
+        defenseSkill = DefenseSkill(0, "Guard", DefenseSkillType.GUARD, 0, 0, 0, null),
         passive = dummyPassive,
         support = dummySupport
     )
@@ -50,10 +50,10 @@ class GetFilteredIdentitiesUseCaseTest {
             listOf(Effect.POISE, Effect.FRAGILE)
         ),
         thirdSkill = generateSkill(DamageType.PIERCE, Sin.ENVY, emptyList()),
-        defenceSkill = DefenceSkill(
+        defenseSkill = DefenseSkill(
             0,
             "Counter Wrath",
-            DefenceSkillType.COUNTER,
+            DefenseSkillType.COUNTER,
             0,
             0,
             0,
@@ -72,10 +72,10 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill = generateSkill(DamageType.SLASH, Sin.GLUTTONY, listOf(Effect.BLEED)),
         secondSkill = generateSkill(DamageType.BLUNT, Sin.GLOOM, listOf(Effect.POISE)),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
-        defenceSkill = DefenceSkill(
+        defenseSkill = DefenseSkill(
             0,
             "Counter Wrath",
-            DefenceSkillType.COUNTER,
+            DefenseSkillType.COUNTER,
             0,
             0,
             0,
@@ -94,7 +94,7 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill = generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),
         secondSkill = generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
         thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
-        defenceSkill = DefenceSkill(0, "Counter Lust", DefenceSkillType.COUNTER, 0, 0, 0, Sin.LUST),
+        defenseSkill = DefenseSkill(0, "Counter Lust", DefenseSkillType.COUNTER, 0, 0, 0, Sin.LUST),
         passive = dummyPassive,
         support = dummySupport
     )
@@ -555,7 +555,7 @@ class GetFilteredIdentitiesUseCaseTest {
         firstSkill: Skill,
         secondSkill: Skill,
         thirdSkill: Skill,
-        defenceSkill: DefenceSkill,
+        defenseSkill: DefenseSkill,
         passive: Passive,
         support: Support
     ) = Identity(
@@ -566,14 +566,14 @@ class GetFilteredIdentitiesUseCaseTest {
         slashRes = slashResist,
         pierceRes = pierceResist,
         bluntRes = bluntResist,
-        maxHp = 100,
-        maxArmor = 30,
-        maxDamage = 30,
+        hp = 100,
+        defense = 30,
+        offense = 30,
         speed = 2 to 5,
         firstSkill = firstSkill,
         secondSkill = secondSkill,
         thirdSkill = thirdSkill,
-        defenceSkill = defenceSkill,
+        defenseSkill = defenseSkill,
         passive = passive,
         support = support,
         imageUrl = ""

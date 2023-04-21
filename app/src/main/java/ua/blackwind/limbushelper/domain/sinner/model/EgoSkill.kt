@@ -9,9 +9,9 @@ data class EgoSkill(
     val name: String,
     val dmgType: DamageType,
     val sin: Sin,
-    val dmg: Int,
-    val baseDie: Int,
-    val coinBonus: Int,
+    val offense: Int,
+    val basePower: Int,
+    val coinPower: Int,
     val coinCount: Int,
     val sanityCost: Int,
     val effects: List<Effect>

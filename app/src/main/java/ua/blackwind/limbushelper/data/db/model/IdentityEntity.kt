@@ -16,9 +16,9 @@ data class IdentityEntity(
     val slashRes: IdentityDamageResistType,
     val pierceRes: IdentityDamageResistType,
     val bluntRes: IdentityDamageResistType,
-    val maxHp: Int,
-    val maxArmor: Int,
-    val maxDamage: Int,
+    val hp: Int,
+    val defense: Int,
+    val offense: Int,
     val speed: String,
     val firstSkillId: Int,
     val secondSkillId: Int,
@@ -34,7 +34,7 @@ data class IdentityEntity(
  */
 suspend fun IdentityEntity.toIdentity(
     getSkill: suspend (id: Int) -> Skill,
-    getDefenceSkill: suspend (id: Int) -> DefenceSkill,
+    getDefenseSkill: suspend (id: Int) -> DefenseSkill,
     getPassive: suspend (id: Int) -> Passive,
     getSupport: suspend (id: Int) -> Support
 ) = Identity(
@@ -45,15 +45,15 @@ suspend fun IdentityEntity.toIdentity(
     slashRes = this.slashRes,
     pierceRes = this.pierceRes,
     bluntRes = this.bluntRes,
-    maxHp = this.maxHp,
-    maxArmor = this.maxArmor,
-    maxDamage = this.maxDamage,
+    hp = this.hp,
+    defense = this.defense,
+    offense = this.offense,
     speed = this.speed.split(SPEED_VALUE_SEPARATOR)
         .let { Pair(it.first().toInt(), it.last().toInt()) },
     firstSkill = getSkill(firstSkillId),
     secondSkill = getSkill(secondSkillId),
     thirdSkill = getSkill(thirdSkillId),
-    defenceSkill = getDefenceSkill(defenceSkillId),
+    defenseSkill = getDefenseSkill(defenceSkillId),
     passive = getPassive(supportId),
     support = getSupport(passiveId),
     imageUrl = this.imageUrl

@@ -113,7 +113,7 @@ fun identityItemCore(
                     firstSkill = identity.firstSkill,
                     secondSkill = identity.secondSkill,
                     thirdSkill = identity.thirdSkill,
-                    defenceSkill = identity.defenceSkill
+                    defenseSkill = identity.defenseSkill
                 )
             }
         }
@@ -124,7 +124,7 @@ fun SkillBlock(
     firstSkill: Skill,
     secondSkill: Skill,
     thirdSkill: Skill,
-    defenceSkill: DefenceSkill
+    defenseSkill: DefenseSkill
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -135,7 +135,7 @@ fun SkillBlock(
         SkillItem(skill = firstSkill)
         SkillItem(skill = secondSkill)
         SkillItem(skill = thirdSkill)
-        DefenceSkillItem(item = defenceSkill)
+        DefenceSkillItem(item = defenseSkill)
     }
 }
 
@@ -144,14 +144,14 @@ fun SkillItem(skill: Skill) {
     SkillItemCore(
         dmgType = skill.dmgType,
         sin = skill.sin,
-        baseDie = skill.baseDie,
-        coinBonus = skill.coinBonus,
+        baseDie = skill.basePower,
+        coinBonus = skill.coinPower,
         coinCount = skill.coinCount
     )
 }
 
 @Composable
-fun DefenceSkillItem(item: DefenceSkill) {
+fun DefenceSkillItem(item: DefenseSkill) {
     Column(
         modifier = Modifier
             .height(SKILL_IMAGE_SIZE_DP.dp)
@@ -169,9 +169,9 @@ fun DefenceSkillItem(item: DefenceSkill) {
                 painter = painterResource(
                     id =
                     when (item.type) {
-                        DefenceSkillType.GUARD -> R.drawable.ego_resist_ic
-                        DefenceSkillType.EVADE -> R.drawable.evade_50_ic
-                        DefenceSkillType.COUNTER -> R.drawable.counter_50_ic
+                        DefenseSkillType.GUARD -> R.drawable.ego_resist_ic
+                        DefenseSkillType.EVADE -> R.drawable.evade_50_ic
+                        DefenseSkillType.COUNTER -> R.drawable.counter_50_ic
                     }
                 ), contentDescription = null,
                 modifier = Modifier.size(40.dp)
@@ -185,8 +185,8 @@ fun EgoSkillItem(skill: EgoSkill) {
     SkillItemCore(
         dmgType = skill.dmgType,
         sin = skill.sin,
-        baseDie = skill.baseDie,
-        coinBonus = skill.coinBonus,
+        baseDie = skill.basePower,
+        coinBonus = skill.coinPower,
         coinCount = skill.coinCount
     )
 }
@@ -309,6 +309,6 @@ fun SkillBlockPreview() {
         firstSkill = previewIdentity.firstSkill,
         secondSkill = previewIdentity.secondSkill,
         thirdSkill = previewIdentity.thirdSkill,
-        defenceSkill = previewIdentity.defenceSkill
+        defenseSkill = previewIdentity.defenseSkill
     )
 }
