@@ -201,7 +201,6 @@ class FilterScreenViewModel @Inject constructor(
                 FilterDrawerSheetState.IdentityMode.getDefaultState()
             )
         }
-        updateFilterDrawerSheetState(FilterDrawerSheetState.IdentityMode.getDefaultState())
         _sinPickerState.update { SinPickerState.Gone }
     }
 
