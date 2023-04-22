@@ -36,7 +36,10 @@ fun PartySinnerItem(
         mutableStateOf<RiskLevel?>(null)
     }
     Column(Modifier.padding(horizontal = 5.dp)) {
-        Row {
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier.padding(bottom = 2.dp)
+        ) {
             Text(
                 fontSize = 22.sp,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -79,7 +82,8 @@ fun PartySinnerItem(
 fun SinnerEgoBlock(egos: List<Ego>, onItemClick: (RiskLevel) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(5.dp)
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        modifier = Modifier.padding(bottom = 2.dp)
     ) {
         RiskLevel.values().forEach { risk ->
             SinnerEgoBadge(

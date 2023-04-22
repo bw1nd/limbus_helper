@@ -75,8 +75,8 @@ fun identityItemCore(
         )
         Column(
             Modifier
-                .padding(start = 5.dp)
-                .padding(vertical = 4.dp)
+                .padding(start = 3.dp)
+                .padding(vertical = 2.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -90,10 +90,12 @@ fun identityItemCore(
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
-            Row(verticalAlignment = Alignment.Top) {
+            Row(verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceEvenly) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(top = 3.dp)
+                    modifier = Modifier
+                        .padding(top = 3.dp)
                 ) {
                     ResistanceBlock(
                         slashRes = identity.slashRes,
@@ -159,7 +161,7 @@ fun DefenceSkillItem(item: DefenseSkill) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(40.dp)
+                .defaultMinSize(40.dp)
                 .padding(2.dp)
                 .border(2.dp, color = MaterialTheme.colorScheme.onPrimary)
                 .background(color = item.sin?.let { sin -> getSinColor(sin) }
@@ -238,7 +240,6 @@ fun ResistanceBlock(
     )
     Row(
         verticalAlignment = Alignment.Top,
-        modifier = Modifier.width(105.dp)
     ) {
         ResistanceItem(
             dmgType = (res[IdentityDamageResistType.INEFF]!!),
