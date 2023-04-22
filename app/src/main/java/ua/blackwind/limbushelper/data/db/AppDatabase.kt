@@ -17,7 +17,8 @@ import ua.blackwind.limbushelper.data.db.model.*
         PartyEntity::class,
         PartyIdentityEntity::class,
         PartyActiveIdentityEntity::class,
-        PartyEgoEntity::class
+        PartyEgoEntity::class,
+        PartySelectedEgoEntity::class
     ],
     exportSchema = false,
     version = 1
