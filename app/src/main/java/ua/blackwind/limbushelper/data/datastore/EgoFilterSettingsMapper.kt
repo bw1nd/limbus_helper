@@ -36,6 +36,7 @@ class EgoFilterSettingsMapper @Inject constructor() {
                 )
             ),
             if (settings.effectsState.effectsCount > 1) {
+
                 FilterEffectBlockState(
                     settings.effectsState.effectsMap.mapKeys { (key, _) -> Effect.valueOf(key) }
                 )

@@ -2,7 +2,6 @@ package ua.blackwind.limbushelper.data.datastore
 
 import androidx.datastore.core.CorruptionException
 import ua.blackwind.limbus_helper.IdentityFilterSettings
-
 import ua.blackwind.limbushelper.domain.common.DamageType
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.Sin
