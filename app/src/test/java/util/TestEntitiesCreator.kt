@@ -103,20 +103,6 @@ class TestEntitiesCreator {
         support = dummySupport
     )
 
-    val sixthIdentity = generateIdentity(
-        name = "TEST IDENTITY #5",
-        sinnerId = 5,
-        slashResist = IdentityDamageResistType.INEFF,
-        pierceResist = IdentityDamageResistType.FATAL,
-        bluntResist = IdentityDamageResistType.NORMAL,
-        firstSkill = generateSkill(DamageType.BLUNT, Sin.ENVY, listOf(Effect.POISE)),
-        secondSkill = generateSkill(DamageType.PIERCE, Sin.SLOTH, listOf(Effect.POISE)),
-        thirdSkill = generateSkill(DamageType.BLUNT, Sin.LUST, emptyList()),
-        defenseSkill = DefenseSkill(0, "Counter Lust", DefenseSkillType.COUNTER, 0, 0, 0, Sin.LUST),
-        passive = dummyPassive,
-        support = dummySupport
-    )
-
     val firstEgo = generateEgo(
         name = "TEST EGO #1",
         sinnerId = 2,
