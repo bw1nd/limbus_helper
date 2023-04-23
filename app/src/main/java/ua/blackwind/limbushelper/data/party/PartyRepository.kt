@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.combine
 import ua.blackwind.limbushelper.data.SinnerRepository
 import ua.blackwind.limbushelper.data.db.dao.Dao
 import ua.blackwind.limbushelper.data.db.model.*
+import ua.blackwind.limbushelper.domain.common.RiskLevel
 import ua.blackwind.limbushelper.domain.common.Sin
 import ua.blackwind.limbushelper.domain.party.IPartyRepository
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
@@ -20,35 +21,47 @@ class PartyRepository @Inject constructor(
 ): IPartyRepository {
 
     override fun getParty(id: Int): Flow<Party> {
-        return dao.getIdentityListByPartyId(DEFAULT_PARTY_ID)
-            .combine(
-                dao.getActiveIdentityListForParty(
-                    DEFAULT_PARTY_ID
-                )
-            ) { identities, activeIdentities ->
-                identities to activeIdentities
-            }.combine(dao.getEgoListByPartyId(DEFAULT_PARTY_ID)) { identities, ego ->
-                val party = dao.getParty(DEFAULT_PARTY_ID)
-                val sinners = dao.getAllSinners()
-                val partyIdentities = identities.first.map { identityEntity ->
-                    val identity = sinnerRepository.getIdentityById(identityEntity.identityId)
-                    PartyIdentity(
-                        identity,
-                        identity.id in identities.second.map { it.identityId })
-                }
-                val partyEgo = ego.map { dao.getEgoById(it.egoId) }
-
-                Party(party.id, party.name,
-                    sinners.map { sinnerEntity ->
-                        PartySinner(
-                            sinnerEntity.toSinner(),
-                            partyIdentities.filter { it.identity.sinnerId == sinnerEntity.id },
-                            partyEgo.filter { it.sinnerId == sinnerEntity.id }
-                                .map { egoEntityToEgo(it) }
-                        )
-                    }
-                )
+        return combine(
+            dao.getIdentityListByPartyId(DEFAULT_PARTY_ID),
+            dao.getActiveIdentityListForParty(DEFAULT_PARTY_ID),
+            dao.getEgoListByPartyId(DEFAULT_PARTY_ID),
+            dao.getSelectedEgoRiskLevelsForParty(DEFAULT_PARTY_ID)
+        ) { identities, active, egos, selected ->
+            val party = dao.getParty(DEFAULT_PARTY_ID)
+            val sinners = dao.getAllSinners()
+            val partyIdentities = identities.map { identityEntity ->
+                val identity = sinnerRepository.getIdentityById(identityEntity.identityId)
+                PartyIdentity(
+                    identity,
+                    identity.id in active.map { it.identityId })
             }
+            val partyEgo = egos.map { dao.getEgoById(it.egoId) }
+
+            Party(party.id, party.name,
+                sinners.map { sinnerEntity ->
+                    PartySinner(
+                        sinnerEntity.toSinner(),
+                        partyIdentities.filter { it.identity.sinnerId == sinnerEntity.id },
+                        partyEgo.filter { it.sinnerId == sinnerEntity.id }
+                            .map { egoEntityToEgo(it) },
+                        selected
+                            .find { it.sinnerId == sinnerEntity.id }?.risk
+                    )
+                }
+            )
+        }
+    }
+
+    override suspend fun changeSinnerSelectedEgoRisk(
+        partyId: Int,
+        sinnerId: Int,
+        riskLevel: RiskLevel?
+    ) {
+        dao.changeSelectedEgoRiskLevelForSinner(
+            PartySelectedEgoEntity(
+                partyId, sinnerId, riskLevel
+            )
+        )
     }
 
     override suspend fun addIdentityToParty(partyId: Int, identity: Identity) {

@@ -19,9 +19,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.R
+import ua.blackwind.limbushelper.domain.common.RiskLevel
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.PartyBuildingInfoPanelState
 
 @Destination
@@ -60,7 +62,8 @@ fun PartyBuildingScreen(showSnackBar: suspend (String, String) -> SnackbarResult
                 onShowActiveIdentitiesClick = viewModel::onShowActiveIdentitiesClick,
                 onIdentityDeleteButtonClick = onDeleteButtonClick,
                 onIdentityItemClick = viewModel::onIdentityClick,
-                onEgoDeleteButtonClick = viewModel::onEgoDeleteButtonClick
+                onEgoDeleteButtonClick = viewModel::onEgoDeleteButtonClick,
+                onSinnerRiskLevelItemClick = viewModel::onSinnerEgoRiskClick
             )
         }
     }
@@ -80,6 +83,7 @@ fun PartyBuildingScreenUi(
     onIdentityDeleteButtonClick: (Identity) -> Unit,
     onEgoDeleteButtonClick: (Ego) -> Unit,
     onIdentityItemClick: (Int, Int) -> Unit,
+    onSinnerRiskLevelItemClick: (Sinner, RiskLevel?) -> Unit
 ) {
     if (party.sinners.isEmpty()) {
         Column(
@@ -154,11 +158,12 @@ fun PartyBuildingScreenUi(
                     }
                     if (show) {
                         PartySinnerItem(
-                            sinnerModel,
+                            sinner = sinnerModel,
                             showInactive = !isShowActiveIdentitiesChecked,
                             onIdentityItemClick = onIdentityItemClick,
                             onIdentityDeleteButtonClick = onIdentityDeleteButtonClick,
-                            onEgoDeleteButtonClick = onEgoDeleteButtonClick
+                            onEgoDeleteButtonClick = onEgoDeleteButtonClick,
+                            onRiskLevelItemClick = onSinnerRiskLevelItemClick
                         )
                     }
                 }

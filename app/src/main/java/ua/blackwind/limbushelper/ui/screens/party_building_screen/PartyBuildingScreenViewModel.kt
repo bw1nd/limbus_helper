@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
+import ua.blackwind.limbushelper.domain.common.RiskLevel
 import ua.blackwind.limbushelper.domain.party.model.DEFAULT_PARTY_ID
 import ua.blackwind.limbushelper.domain.party.model.Party
 import ua.blackwind.limbushelper.domain.party.usecase.*
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.*
 import javax.inject.Inject
 
@@ -26,6 +28,7 @@ class PartyBuildingScreenViewModel @Inject constructor(
     private val changeActiveIdentityIdForParty: ChangeSinnerActiveIdentityForParty,
     private val removeEgoFromPartyUseCase: RemoveEgoFromPartyUseCase,
     private val clearPartyByIdUseCase: ClearPartyByIdUseCase,
+    private val changeSelectedSinnerEgoRiskUseCase: ChangeSelectedSinnerEgoRiskUseCase,
     getPartyInfoUseCase: GetPartyInfoUseCase
 ): ViewModel() {
 
@@ -83,7 +86,14 @@ class PartyBuildingScreenViewModel @Inject constructor(
     }
 
     fun onEgoDeleteButtonClick(ego: Ego) {
-        viewModelScope.launch { removeEgoFromPartyUseCase(party = _party.value, ego = ego) }
+        viewModelScope.launch {
+            removeEgoFromPartyUseCase(party = _party.value, ego = ego)
+            if (
+                _party.value.sinners.find { it.sinner.id == ego.sinnerId }?.selectedRiskLevel == ego.risk
+            ) {
+                changeSelectedSinnerEgoRiskUseCase(_party.value.id, ego.sinnerId, null)
+            }
+        }
     }
 
     fun onIdentityClick(identityId: Int, sinnerId: Int) {
@@ -98,6 +108,12 @@ class PartyBuildingScreenViewModel @Inject constructor(
 
     fun onIdentityPortraitClick(identityId: Int) {
         //Placeholder for Detail screen
+    }
+
+    fun onSinnerEgoRiskClick(sinner: Sinner, riskLevel: RiskLevel?) {
+        viewModelScope.launch {
+            changeSelectedSinnerEgoRiskUseCase(_party.value.id, sinner.id, riskLevel)
+        }
     }
 
     fun undoDelete(identity: Identity) {

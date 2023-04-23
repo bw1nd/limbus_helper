@@ -53,7 +53,7 @@ interface PartyDao {
     suspend fun removeAllEgoFromParty(partyId: Int)
 
     @Query("SELECT * FROM party_selected_ego WHERE partyId = :partyId")
-    suspend fun getSelectedEgoRiskLevelsForParty(partyId: Int): List<PartySelectedEgoEntity>
+    fun getSelectedEgoRiskLevelsForParty(partyId: Int): Flow<List<PartySelectedEgoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun changeSelectedEgoRiskLevelForSinner(entity: PartySelectedEgoEntity)

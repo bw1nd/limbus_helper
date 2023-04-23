@@ -9,8 +9,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -21,6 +19,7 @@ import ua.blackwind.limbushelper.domain.common.RiskLevel
 import ua.blackwind.limbushelper.domain.party.model.PartySinner
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
+import ua.blackwind.limbushelper.domain.sinner.model.Sinner
 import ua.blackwind.limbushelper.ui.util.getDamageTypeIcon
 import ua.blackwind.limbushelper.ui.util.getSinColor
 
@@ -30,11 +29,9 @@ fun PartySinnerItem(
     showInactive: Boolean,
     onIdentityItemClick: (Int, Int) -> Unit,
     onIdentityDeleteButtonClick: (Identity) -> Unit,
-    onEgoDeleteButtonClick: (Ego) -> Unit
+    onEgoDeleteButtonClick: (Ego) -> Unit,
+    onRiskLevelItemClick: (Sinner, RiskLevel?) -> Unit
 ) {
-    val mode = rememberSaveable() {
-        mutableStateOf<RiskLevel?>(null)
-    }
     Column(Modifier.padding(horizontal = 5.dp)) {
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -48,7 +45,15 @@ fun PartySinnerItem(
             Spacer(modifier = Modifier.weight(1f))
             SinnerEgoBlock(
                 sinner.ego
-            ) { risk -> mode.value = if (mode.value != risk) risk else null }
+            ) { risk ->
+                onRiskLevelItemClick(
+                    sinner.sinner,
+                    if (sinner.selectedRiskLevel != risk &&
+                        sinner.ego.any { it.risk == risk }
+                    ) risk
+                    else null
+                )
+            }
         }
         Divider(color = MaterialTheme.colorScheme.tertiary, thickness = 2.dp)
         Spacer(modifier = Modifier.size(5.dp))
@@ -57,11 +62,9 @@ fun PartySinnerItem(
             verticalArrangement = Arrangement.spacedBy(5.dp),
             horizontalAlignment = Alignment.End
         ) {
-            mode.value?.let { risk ->
+            sinner.selectedRiskLevel?.let { risk ->
                 val ego = sinner.ego.find { it.risk == risk }
-                if (ego == null) {
-                    mode.value = null
-                } else {
+                if (ego != null) {
                     PartyEgoItem(ego = ego, onDeleteButtonClick = onEgoDeleteButtonClick)
                 }
             }
