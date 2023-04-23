@@ -11,8 +11,6 @@ interface IPartyRepository {
 
     fun getParty(id: Int): Flow<Party>
 
-    //fun getActiveIdentityListForParty(partyId: Int): Flow<List<Pair<Int, Int>>>
-
     suspend fun addIdentityToParty(partyId: Int, identity: Identity)
 
     suspend fun deleteIdentityFromParty(partyId: Int, identity: Identity)
@@ -28,5 +26,7 @@ interface IPartyRepository {
     suspend fun removeAllIdentityFromParty(partyId: Int)
 
     suspend fun removeAllEgoFromParty(partyId: Int)
+
+    suspend fun changeSinnerSelectedEgoRisk(partyId: Int, sinnerId: Int, riskLevel: RiskLevel?)
 
 }

@@ -24,7 +24,7 @@ import ua.blackwind.limbushelper.ui.util.getSinnerIconById
 private const val NUMBER_OF_GRID_ROWS = 3
 
 @Composable
-fun FilterSinnersBlock(
+fun FilterSinnersUiContainer(
     state: FilterSinnersBlockState,
     onSinnerCheckedChange: (FilterSinnerModel) -> Unit
 ) {

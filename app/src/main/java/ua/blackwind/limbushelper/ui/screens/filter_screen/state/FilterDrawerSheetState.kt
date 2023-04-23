@@ -1,16 +1,10 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen.state
 
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.Sin
-import ua.blackwind.limbushelper.domain.filter.EgoFilterPriceSetArg
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
-import ua.blackwind.limbushelper.ui.util.StateType
 
 private const val FIRST_SINNER_ID = 1
 private const val LAST_SINNER_ID = 12
-
 
 sealed interface FilterDrawerSheetState {
     data class IdentityMode(
@@ -40,7 +34,7 @@ sealed interface FilterDrawerSheetState {
         companion object {
             fun getDefaultState() =
                 EgoMode(
-                    EgoFilterSkillBlockState(StateType.Empty, StateType.Empty),
+                    EgoFilterSkillBlockState(TypeHolder.Empty, TypeHolder.Empty),
                     emptyEgoFilterPriceBlockState(),
                     emptyEgoFilterResistBlockState(),
                     emptyFilterEffectBlockState(),
@@ -60,15 +54,14 @@ sealed interface SinPickerState {
 }
 
 data class EgoFilterSkillBlockState(
-    val damageType: StateType<DamageType>,
-    val sinType: StateType<Sin>
+    val damageType: TypeHolder<DamageType>,
+    val sinType: TypeHolder<Sin>
 )
 
 data class EgoFilterResistBlockState(
     val first: EgoFilterResistArg,
     val second: EgoFilterResistArg,
     val third: EgoFilterResistArg,
-    val fourth: EgoFilterResistArg
 )
 
 //TODO this looks kinda sus, mb there is better way
@@ -78,26 +71,24 @@ fun EgoFilterResistBlockState.toFilterArg() =
         second.resist to second.sin,
         third.resist to third.sin,
         third.resist to third.sin
-    ).filter { it.second !is StateType.Empty }
-        .map { it.first to (it.second as? StateType.Value<Sin>)?.value as Sin }
+    ).filter { it.second !is TypeHolder.Empty }
+        .associate { it.first to (it.second as? TypeHolder.Value<Sin>)?.value as Sin }
 
 
 data class EgoFilterResistArg(
-    val sin: StateType<Sin>,
+    val sin: TypeHolder<Sin>,
     val resist: EgoSinResistType
 )
 
 data class EgoFilterPriceState(
-    val first: StateType<Sin>,
-    val second: StateType<Sin>,
-    val third: StateType<Sin>
+    val first: TypeHolder<Sin>,
+    val second: TypeHolder<Sin>,
+    val third: TypeHolder<Sin>
 )
 
 fun EgoFilterPriceState.toFilterArg() =
-    EgoFilterPriceSetArg(
-        listOf(first, second, third, first).filter { it !is StateType.Empty }
-            .map { (it as StateType.Value<Sin>).value }
-    )
+    listOf(first, second, third, first).filter { it !is TypeHolder.Empty }
+        .map { (it as TypeHolder.Value<Sin>).value }
 
 data class FilterDrawerSheetMethods(
     val onSwitchChange: (Int) -> Unit,
@@ -105,7 +96,7 @@ data class FilterDrawerSheetMethods(
     val onClearFilterButtonPress: () -> Unit,
     val onSkillButtonClick: (FilterSheetButtonPosition) -> Unit,
     val onSkillButtonLongPress: (FilterSheetButtonPosition) -> Unit,
-    val onSinPickerClick: (StateType<Sin>) -> Unit,
+    val onSinPickerClick: (TypeHolder<Sin>) -> Unit,
     val onIdentityResistButtonClick: (FilterSheetButtonPosition) -> Unit,
     val onEgoResistButtonClick: (FilterSheetButtonPosition) -> Unit,
     val onEgoResistButtonLongPress: (FilterSheetButtonPosition) -> Unit,
@@ -125,7 +116,8 @@ sealed class FilterSheetTab(val index: Int) {
  */
 data class FilterSkillBlockState(
     val damage: FilterDamageStateBundle,
-    val sin: FilterSinStateBundle
+    val sin: FilterSinStateBundle,
+    val thirdSkillIsCounter: Boolean
 )
 
 /**
@@ -133,13 +125,13 @@ data class FilterSkillBlockState(
  * in order they appear on screen.
  */
 data class FilterDamageStateBundle(
-    val first: StateType<DamageType>,
-    val second: StateType<DamageType>,
-    val third: StateType<DamageType>,
+    val first: TypeHolder<DamageType>,
+    val second: TypeHolder<DamageType>,
+    val third: TypeHolder<DamageType>
 )
 
 fun FilterDamageStateBundle.isUnique() = run {
-    val filtered = listOf(first, second, third).filter { it !is StateType.Empty }
+    val filtered = listOf(first, second, third).filter { it !is TypeHolder.Empty }
     filtered.size == filtered.toSet().size
 }
 
@@ -148,9 +140,9 @@ fun FilterDamageStateBundle.isUnique() = run {
  * in order they appear on screen.
  */
 data class FilterSinStateBundle(
-    val first: StateType<Sin>,
-    val second: StateType<Sin>,
-    val third: StateType<Sin>,
+    val first: TypeHolder<Sin>,
+    val second: TypeHolder<Sin>,
+    val third: TypeHolder<Sin>,
 )
 
 data class FilterEffectBlockState(
@@ -161,12 +153,6 @@ data class FilterSinnersBlockState(
     val sinners: Map<FilterSinnerModel, Boolean>
 )
 
-data class IdentityFilterResistButtonLabels(
-    val ineffective: String,
-    val normal: String,
-    val fatal: String
-)
-
 sealed class FilterSheetButtonPosition {
     object None: FilterSheetButtonPosition()
     object First: FilterSheetButtonPosition()
@@ -175,15 +161,16 @@ sealed class FilterSheetButtonPosition {
 }
 
 private fun emptyFilterSkillBlockState() = FilterSkillBlockState(
-    FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty),
-    FilterSinStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+    FilterDamageStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
+    FilterSinStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty),
+    false
 )
 
 private fun emptyEgoFilterPriceBlockState(): EgoFilterPriceState =
-    EgoFilterPriceState(StateType.Empty, StateType.Empty, StateType.Empty)
+    EgoFilterPriceState(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty)
 
 private fun emptyFilterResistClockState() =
-    FilterDamageStateBundle(StateType.Empty, StateType.Empty, StateType.Empty)
+    FilterDamageStateBundle(TypeHolder.Empty, TypeHolder.Empty, TypeHolder.Empty)
 
 fun emptyFilterEffectBlockState() = FilterEffectBlockState(
     Effect.values().associateWith { false }
@@ -194,9 +181,8 @@ fun emptyFilterSinnerBlockState() = FilterSinnersBlockState(
 )
 
 fun emptyEgoFilterResistBlockState() = EgoFilterResistBlockState(
-    first = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL),
-    second = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL),
-    third = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL),
-    fourth = EgoFilterResistArg(StateType.Empty, EgoSinResistType.NORMAL)
+    first = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL),
+    second = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL),
+    third = EgoFilterResistArg(TypeHolder.Empty, EgoSinResistType.NORMAL),
 )
 

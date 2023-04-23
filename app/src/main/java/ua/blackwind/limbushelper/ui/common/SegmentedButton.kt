@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.common
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
@@ -95,7 +94,6 @@ fun SegmentedButtonCore(
     color: Color,
     onItemSelection: (selectedItemIndex: Int) -> Unit
 ) {
-    Log.d("SEGMENTED", "Index is $selectedIndex")
     Row(
         modifier = Modifier
     ) {

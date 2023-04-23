@@ -22,7 +22,7 @@ import kotlin.math.ceil
 private const val NUMBER_OF_EFFECTS_IN_COLUMN = 3
 
 @Composable
-fun FilterEffectsBlock(
+fun FilterEffectsUiContainer(
     state: FilterEffectBlockState,
     onEffectCheckedChange: (Boolean, Effect) -> Unit
 ) {

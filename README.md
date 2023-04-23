@@ -25,19 +25,19 @@
 It is currently under development.
 
 <div align="center">
-<a  href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.2.0/limbus_helper_v0.2.0.apk">
+<a  href="https://github.com/BlackW1ndCoding/limbus_helper/releases/download/v0.3.0/limbus_helper_v0.3.0.apk">
 <img alt="Get it on Github"
  src="./readme-assets/images/badge_github_alt.png" height="120"
  />
 </a>
 
-`IMPORTANT` Version `0.2.0` is not compatible with version `0.1.0`.<br>
-If you had previous version on your device, don't forget to delete it before installing `0.2.0`.
+`IMPORTANT` Version `0.3.0` is not compatible with version `0.2.0`.<br>
+If you had previous version on your device, don't forget to delete it before installing `0.3.0`.
 </div>
 
 ## Features 
 
-Current version: ```v0.2.0``` 
+Current version: ```v0.3.0``` 
 
 
 This version features:

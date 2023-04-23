@@ -1,6 +1,5 @@
 package ua.blackwind.limbushelper.ui.screens.filter_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,20 +9,16 @@ import kotlinx.coroutines.launch
 import ua.blackwind.limbushelper.data.PreferencesRepository
 import ua.blackwind.limbushelper.data.datastore.EgoFilterSettingsMapper
 import ua.blackwind.limbushelper.data.datastore.IdentityFilterSettingsMapper
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.filter.*
 import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.model.getAllEgo
+import ua.blackwind.limbushelper.domain.party.model.getAllIdentities
 import ua.blackwind.limbushelper.domain.party.usecase.*
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterSinnerModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.state.*
-import ua.blackwind.limbushelper.ui.util.StateType
-import ua.blackwind.limbushelper.ui.util.toFilterDamageTypeArg
-import ua.blackwind.limbushelper.ui.util.toFilterSinTypeArg
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +35,7 @@ class FilterScreenViewModel @Inject constructor(
     private val filterEgoSettingsMapper: EgoFilterSettingsMapper
 ): ViewModel() {
     //TODO Everything inside of this class is a huge mess
-    private val party = MutableStateFlow(Party(0, "Default", emptyList(), emptyList()))
+    private val party = MutableStateFlow(Party(0, "Default", emptyList()))
 
     private val _filteredItems = MutableStateFlow<List<FilterDataModel>>(emptyList())
     val filteredItems: StateFlow<List<FilterDataModel>> = _filteredItems
@@ -103,7 +98,6 @@ class FilterScreenViewModel @Inject constructor(
                     }
                 }
             }.collectLatest { newState ->
-                Log.d("FILTER", "Updating state")
                 _filterDrawerShitState.update { newState }
                 filter()
             }
@@ -205,7 +199,6 @@ class FilterScreenViewModel @Inject constructor(
                 FilterDrawerSheetState.IdentityMode.getDefaultState()
             )
         }
-        updateFilterDrawerSheetState(FilterDrawerSheetState.IdentityMode.getDefaultState())
         _sinPickerState.update { SinPickerState.Gone }
     }
 
@@ -253,7 +246,7 @@ class FilterScreenViewModel @Inject constructor(
         _sinPickerState.update { SinPickerState.EgoResistSelected }
     }
 
-    fun onFilterSinPickerPress(sin: StateType<Sin>) {
+    fun onFilterSinPickerPress(sin: TypeHolder<Sin>) {
         when (val value = _filterDrawerShitState.value) {
             is FilterDrawerSheetState.EgoMode -> {
                 if (_sinPickerState.value is SinPickerState.SkillSelected) {
@@ -261,8 +254,9 @@ class FilterScreenViewModel @Inject constructor(
                         value.copy(
                             skillState = EgoFilterSkillBlockState(
                                 value.skillState.damageType,
-                                sin
-                            )
+                                sin,
+
+                                )
                         )
                     )
                 }
@@ -346,7 +340,8 @@ class FilterScreenViewModel @Inject constructor(
                                 selectedSheetButtonPosition,
                                 sin,
                                 oldSinState.sin
-                            )
+                            ),
+                            oldSinState.thirdSkillIsCounter
                         )
                     )
                 )
@@ -366,14 +361,41 @@ class FilterScreenViewModel @Inject constructor(
                 )
             }
             is FilterDrawerSheetState.IdentityMode -> {
-                updateFilterDrawerSheetState(
-                    old.copy(
-                        skillState = FilterSkillBlockState(
-                            updateDamageStateBundle(button, old.skillState.damage, false),
-                            old.skillState.sin
+                if (button is FilterSheetButtonPosition.Third && old.skillState.damage.third is TypeHolder.Value
+                    && old.skillState.damage.third.value == DamageType.BLUNT
+                ) {
+                    if (old.skillState.thirdSkillIsCounter) {
+                        updateFilterDrawerSheetState(
+                            old.copy(
+                                skillState = old.skillState.copy(
+                                    damage = updateDamageStateBundle(
+                                        FilterSheetButtonPosition.Third,
+                                        old.skillState.damage, false
+                                    ),
+                                    thirdSkillIsCounter = false
+                                )
+                            )
+                        )
+                    } else {
+                        updateFilterDrawerSheetState(
+                            old.copy(
+                                skillState = old.skillState.copy(
+                                    thirdSkillIsCounter = true
+                                )
+                            )
+                        )
+                    }
+                } else {
+                    updateFilterDrawerSheetState(
+                        old.copy(
+                            skillState = FilterSkillBlockState(
+                                updateDamageStateBundle(button, old.skillState.damage, false),
+                                old.skillState.sin,
+                                old.skillState.thirdSkillIsCounter
+                            )
                         )
                     )
-                )
+                }
             }
         }
     }
@@ -466,11 +488,11 @@ class FilterScreenViewModel @Inject constructor(
                 is FilterItemTypeModel.IdentityType ->
                     FilterDataModel(
                         item,
-                        party.identityList.any { it.identity.id == item.identity.id }
+                        party.getAllIdentities().any { it.id == item.identity.id }
                     )
                 is FilterItemTypeModel.EgoType ->
                     FilterDataModel(item,
-                        party.egoList.any { it.id == item.ego.id })
+                        party.getAllEgo().any { it.id == item.ego.id })
             }
         }
     }
@@ -495,13 +517,17 @@ class FilterScreenViewModel @Inject constructor(
         }
         val result = FilterDamageStateBundle(first, second, third)
         return if (unique && !result.isUnique()) {
-            updateDamageStateBundle(button, FilterDamageStateBundle(first, second, third), true)
+            updateDamageStateBundle(
+                button,
+                FilterDamageStateBundle(first, second, third),
+                true
+            )
         } else result
     }
 
     private fun updateSinStateBundle(
         button: FilterSheetButtonPosition,
-        sin: StateType<Sin>,
+        sin: TypeHolder<Sin>,
         input: FilterSinStateBundle
     ): FilterSinStateBundle {
         var (first, second, third) = input
@@ -515,13 +541,13 @@ class FilterScreenViewModel @Inject constructor(
         return FilterSinStateBundle(first, second, third)
     }
 
-    private fun cycleSkillDamageTypes(type: StateType<DamageType>): StateType<DamageType> {
-        if (type is StateType.Empty) return StateType.Value(DamageType.SLASH)
-        val value = type as StateType.Value<DamageType>
+    private fun cycleSkillDamageTypes(type: TypeHolder<DamageType>): TypeHolder<DamageType> {
+        if (type is TypeHolder.Empty) return TypeHolder.Value(DamageType.SLASH)
+        val value = type as TypeHolder.Value<DamageType>
         return when (value.value) {
-            DamageType.SLASH -> StateType.Value(DamageType.PIERCE)
-            DamageType.PIERCE -> StateType.Value(DamageType.BLUNT)
-            DamageType.BLUNT -> StateType.Empty
+            DamageType.SLASH -> TypeHolder.Value(DamageType.PIERCE)
+            DamageType.PIERCE -> TypeHolder.Value(DamageType.BLUNT)
+            DamageType.BLUNT -> TypeHolder.Empty
         }
     }
 
@@ -533,23 +559,24 @@ class FilterScreenViewModel @Inject constructor(
     ): IdentityFilter {
         return IdentityFilter(
             resist = FilterResistSetArg(
-                ineffective = resistState.first.toFilterDamageTypeArg(),
-                normal = resistState.second.toFilterDamageTypeArg(),
-                fatal = resistState.third.toFilterDamageTypeArg()
+                ineffective = resistState.first,
+                normal = resistState.second,
+                fatal = resistState.third
             ),
             skills = IdentityFilterSkillsSetArg(
                 FilterSkillArg(
-                    skillState.damage.first.toFilterDamageTypeArg(),
-                    skillState.sin.first.toFilterSinTypeArg()
+                    skillState.damage.first,
+                    skillState.sin.first
                 ),
                 FilterSkillArg(
-                    skillState.damage.second.toFilterDamageTypeArg(),
-                    skillState.sin.second.toFilterSinTypeArg()
+                    skillState.damage.second,
+                    skillState.sin.second
                 ),
                 FilterSkillArg(
-                    skillState.damage.third.toFilterDamageTypeArg(),
-                    skillState.sin.third.toFilterSinTypeArg()
+                    skillState.damage.third,
+                    skillState.sin.third
                 ),
+                thirdIsCounter = skillState.thirdSkillIsCounter
             ),
             effects = effectState.effects.filter { it.value }.keys.toList(),
             sinners = sinnersState.sinners.filter { it.value }.keys.map { it.id }.toList()
@@ -560,12 +587,10 @@ class FilterScreenViewModel @Inject constructor(
 
         return EgoFilter(
             skillFilterArg = FilterSkillArg(
-                damageType = state.skillState.damageType.toFilterDamageTypeArg(),
-                sin = state.skillState.sinType.toFilterSinTypeArg()
+                damageType = state.skillState.damageType,
+                sin = state.skillState.sinType
             ),
-            resistSetArg = EgoFilterSinResistTypeArg(
-                state.resistState.toFilterArg()
-            ),
+            resistSetArg = state.resistState.toFilterArg(),
             priceSetArg = state.priceState.toFilterArg(),
             effects =
             state.effectsState.effects.filter { it.value }.keys.toList(),

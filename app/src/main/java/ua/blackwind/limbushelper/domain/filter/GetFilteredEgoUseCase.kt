@@ -4,6 +4,7 @@ import ua.blackwind.limbushelper.data.SinnerRepository
 import ua.blackwind.limbushelper.domain.common.Effect
 import ua.blackwind.limbushelper.domain.common.EgoSinResistType
 import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.TypeHolder
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import javax.inject.Inject
 
@@ -21,15 +22,15 @@ class GetFilteredEgoUseCase @Inject constructor(
                 )
             }
             val byResist = {
-                filter.resistSetArg.resistList.isEmpty() || egoPassResistFilter(
+                filter.resistSetArg.isEmpty() || egoPassResistFilter(
                     ego,
-                    filter.resistSetArg.resistList
+                    filter.resistSetArg
                 )
             }
             val byPrice = {
-                filter.priceSetArg.priceList.isEmpty() || egoPassPriceFilter(
+                filter.priceSetArg.isEmpty() || egoPassPriceFilter(
                     ego,
-                    filter.priceSetArg.priceList
+                    filter.priceSetArg
                 )
             }
             bySinner() && byEffect() && bySkill() && byResist() && byPrice()
@@ -39,17 +40,19 @@ class GetFilteredEgoUseCase @Inject constructor(
     private fun egoPassPriceFilter(ego: Ego, filter: List<Sin>): Boolean =
         filter.all { it in ego.resourceCost.keys }
 
-    private fun egoPassResistFilter(ego: Ego, filter: List<Pair<EgoSinResistType, Sin>>): Boolean {
-        return filter.all { arg ->
-            if (arg.first == EgoSinResistType.NORMAL)
-                ego.sinResistances.none { it.key == arg.second } else
-                ego.sinResistances.any { it.value == arg.first && it.key == arg.second }
+    private fun egoPassResistFilter(ego: Ego, filter: Map<EgoSinResistType, Sin>): Boolean {
+        return filter.all { (resist, sin) ->
+            if (resist == EgoSinResistType.NORMAL)
+                ego.sinResistances.none { it.key == sin } else
+                ego.sinResistances.any { it.value == resist && it.key == sin }
         }
     }
 
     private fun egoPassSkillFilter(ego: Ego, filter: FilterSkillArg): Boolean {
         val (egoDamage, egoSin) = ego.awakeningSkill.dmgType to ego.awakeningSkill.sin
-        val (filterDamage, filterSin) = filter.damageType.toDamageType() to filter.sin.toSin()
+        val filterDamage =
+            if (filter.damageType is TypeHolder.Value) filter.damageType.value else null
+        val filterSin = if (filter.sin is TypeHolder.Value) filter.sin.value else null
         if (filter.isStrict()) {
             return egoDamage == filterDamage && egoSin == filterSin
         }

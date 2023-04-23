@@ -51,4 +51,10 @@ interface PartyDao {
 
     @Query("DELETE FROM party_ego WHERE partyId = :partyId")
     suspend fun removeAllEgoFromParty(partyId: Int)
+
+    @Query("SELECT * FROM party_selected_ego WHERE partyId = :partyId")
+    fun getSelectedEgoRiskLevelsForParty(partyId: Int): Flow<List<PartySelectedEgoEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun changeSelectedEgoRiskLevelForSinner(entity: PartySelectedEgoEntity)
 }

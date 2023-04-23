@@ -15,8 +15,8 @@ data class SkillEntity(
     val dmgType: DamageType,
     val sin: Sin,
     val copiesCount: Int,
-    val baseDie: Int,
-    val coinBonus: Int,
+    val basePower: Int,
+    val coinPower: Int,
     val coinCount: Int,
     val effects: String
 )
@@ -27,8 +27,8 @@ fun SkillEntity.toSkill() = Skill(
     dmgType = this.dmgType,
     sin = this.sin,
     copiesCount = this.copiesCount,
-    baseDie = this.baseDie,
-    coinBonus = this.coinBonus,
+    basePower = this.basePower,
+    coinPower = this.coinPower,
     coinCount = this.coinCount,
     effects = if (this.effects.isEmpty()) emptyList() else
         this.effects.split(EFFECTS_SEPARATOR).map {

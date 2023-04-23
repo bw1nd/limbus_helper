@@ -1,13 +1,10 @@
 package ua.blackwind.limbushelper.domain.filter
 
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 
 data class IdentityFilter(
-    val resist: FilterResistSetArg,
     val skills: IdentityFilterSkillsSetArg,
+    val resist: FilterResistSetArg,
     val effects: List<Effect>,
     val sinners: List<Int>
 )
@@ -15,81 +12,46 @@ data class IdentityFilter(
 fun IdentityFilter.isEmpty() =
     resist.isEmpty() && skills.isEmpty() && effects.isEmpty() && sinners.isEmpty()
 
-
 data class EgoFilter(
     val skillFilterArg: FilterSkillArg,
-    val resistSetArg: EgoFilterSinResistTypeArg,
-    val priceSetArg: EgoFilterPriceSetArg,
+    val resistSetArg: Map<EgoSinResistType, Sin>,
+    val priceSetArg: List<Sin>,
     val effects: List<Effect>,
     val sinners: List<Int>
 )
 
-data class EgoFilterSinResistTypeArg(
-    val resistList: List<Pair<EgoSinResistType, Sin>>
-)
-
-data class EgoFilterPriceSetArg(
-    val priceList: List<Sin>
-)
-
 data class FilterResistSetArg(
-    val ineffective: FilterDamageTypeArg,
-    val normal: FilterDamageTypeArg,
-    val fatal: FilterDamageTypeArg
+    val ineffective: TypeHolder<DamageType>,
+    val normal: TypeHolder<DamageType>,
+    val fatal: TypeHolder<DamageType>
 )
 
 fun FilterResistSetArg.isEmpty() =
-    this.ineffective == FilterDamageTypeArg.Empty
-            && this.normal == FilterDamageTypeArg.Empty
-            && this.fatal == FilterDamageTypeArg.Empty
+    this.ineffective == TypeHolder.Empty
+            && this.normal == TypeHolder.Empty
+            && this.fatal == TypeHolder.Empty
 
 data class IdentityFilterSkillsSetArg(
     val first: FilterSkillArg,
     val second: FilterSkillArg,
-    val third: FilterSkillArg
+    val third: FilterSkillArg,
+    val thirdIsCounter: Boolean
 )
 
-fun IdentityFilterSkillsSetArg.toSkillList() = listOf(first, second, third)
+fun IdentityFilterSkillsSetArg.toSkillList(thirdIsCounter: Boolean): List<FilterSkillArg> {
+    return if (thirdIsCounter) listOf(first, second) else listOf(first, second, third)
+}
 
 fun IdentityFilterSkillsSetArg.isEmpty() =
-    this.first.damageType == FilterDamageTypeArg.Empty
-            && first.sin == FilterSinTypeArg.Empty
-            && second.damageType == FilterDamageTypeArg.Empty
-            && second.sin == FilterSinTypeArg.Empty
-            && third.damageType == FilterDamageTypeArg.Empty
-            && third.sin == FilterSinTypeArg.Empty
+    first.isEmpty() && second.isEmpty() && third.isEmpty()
 
 data class FilterSkillArg(
-    val damageType: FilterDamageTypeArg,
-    val sin: FilterSinTypeArg
+    val damageType: TypeHolder<DamageType>,
+    val sin: TypeHolder<Sin>
 )
 
 fun FilterSkillArg.isEmpty() =
-    damageType is FilterDamageTypeArg.Empty && sin is FilterSinTypeArg.Empty
+    damageType is TypeHolder.Empty && sin is TypeHolder.Empty
 
-fun FilterSkillArg.isStrict() = this.damageType !is FilterDamageTypeArg.Empty &&
-        this.sin !is FilterSinTypeArg.Empty
-
-sealed class FilterDamageTypeArg {
-    object Empty: FilterDamageTypeArg()
-    data class Type(
-        val type: DamageType
-    ): FilterDamageTypeArg()
-}
-
-fun FilterDamageTypeArg.toDamageType() = when (this) {
-    is FilterDamageTypeArg.Empty -> null
-    is FilterDamageTypeArg.Type -> this.type
-}
-
-sealed class FilterSinTypeArg {
-    object Empty: FilterSinTypeArg()
-    data class Type(
-        val type: Sin
-    ): FilterSinTypeArg()
-}
-
-fun FilterSinTypeArg.toSin() = when (this) {
-    FilterSinTypeArg.Empty -> null
-    is FilterSinTypeArg.Type -> this.type
-}
+fun FilterSkillArg.isStrict() = this.damageType !is TypeHolder.Empty &&
+        this.sin !is TypeHolder.Empty

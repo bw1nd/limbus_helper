@@ -1,10 +1,8 @@
 package ua.blackwind.limbushelper.domain.filter
 
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.Effect
-import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.sinner.ISinnerRepository
+import ua.blackwind.limbushelper.domain.sinner.model.DefenseSkillType
 import ua.blackwind.limbushelper.domain.sinner.model.Identity
 import ua.blackwind.limbushelper.domain.sinner.model.Skill
 import javax.inject.Inject
@@ -34,9 +32,23 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
             val bySkill = {
                 skillIsEmpty || identityPassSkillFilter(identity, filter.skills)
             }
-
-            bySinner() && byEffect() && byResist() && bySkill()
+            val byCounter = {
+                !filter.skills.thirdIsCounter || identityPassCounterFilter(
+                    identity,
+                    filter.skills.third.sin
+                )
+            }
+            bySinner() && byEffect() && byResist() && bySkill() && byCounter()
         }
+    }
+
+    private fun identityPassCounterFilter(
+        identity: Identity,
+        filter: TypeHolder<Sin>
+    ): Boolean {
+        return identity.defenseSkill.type == DefenseSkillType.COUNTER && if (filter is TypeHolder.Value) {
+            identity.defenseSkill.sin == filter.value
+        } else true
     }
 
     private fun identityPassSinnerFilter(identity: Identity, filter: List<Int>): Boolean {
@@ -49,13 +61,15 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
     ): Boolean {
         val identitySkills =
             listOf(identity.firstSkill, identity.secondSkill, identity.thirdSkill).toMutableList()
-        val filterSkills = filter.toSkillList().toMutableList()
+        val filterSkills = filter.toSkillList(filter.thirdIsCounter).toMutableList()
         filterSkills.toList().forEach { skillFilter ->
             if (skillFilter.isStrict()) {
+                val filterDamageType = (skillFilter.damageType as TypeHolder.Value).value
+                val filterSinType = (skillFilter.sin as TypeHolder.Value).value
                 val correspondingSkill =
                     identitySkills.find {
-                        it.dmgType == skillFilter.damageType.toDamageType()
-                                && it.sin == skillFilter.sin.toSin()
+                        it.dmgType == filterDamageType
+                                && it.sin == filterSinType
                     }
                         ?: return false
                 filterSkills.remove(skillFilter)
@@ -63,8 +77,12 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
             }
         }
         val skillsAfterStrictFilter = identitySkills.toList()
-        val looseDamageFilter = filterSkills.map { it.damageType.toDamageType() }.toList()
-        val looseSinFilter = filterSkills.map { it.sin.toSin() }.toList()
+        val looseDamageFilter =
+            filterSkills.map {
+                if (it.damageType is TypeHolder.Value) it.damageType.value else null
+            }.toList()
+        val looseSinFilter =
+            filterSkills.map { if (it.sin is TypeHolder.Value) it.sin.value else null }.toList()
         return checkDamageImprint(
             skillsAfterStrictFilter,
             looseDamageFilter
@@ -134,10 +152,10 @@ class GetFilteredIdentitiesUseCase @Inject constructor(private val repository: I
     private fun checkIdentityResistance(
         identity: Identity,
         resistanceType: IdentityDamageResistType,
-        damageType: FilterDamageTypeArg
+        damageType: TypeHolder<DamageType>
     ): Boolean {
-        if (damageType is FilterDamageTypeArg.Empty) return true
-        return when ((damageType as FilterDamageTypeArg.Type).type) {
+        if (damageType is TypeHolder.Empty) return true
+        return when ((damageType as TypeHolder.Value).value) {
             DamageType.SLASH -> identity.slashRes == resistanceType
             DamageType.PIERCE -> identity.pierceRes == resistanceType
             DamageType.BLUNT -> identity.bluntRes == resistanceType

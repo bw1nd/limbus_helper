@@ -30,7 +30,6 @@ fun FilterScreen() {
     val sinPickerState by viewModel.sinPickerState.collectAsState()
     val filterMode by viewModel.filterMode.collectAsState()
 
-
     val filterSheetStateMethods = FilterDrawerSheetMethods(
         onSwitchChange = viewModel::onFilterTabSwitch,
         onFilterButtonClick = viewModel::filter,
@@ -80,7 +79,7 @@ fun FilterScreenUi(
                 filterMode = filterMode,
                 filterState = filterDrawerSheetState,
                 sinPickerState = sinPickerState,
-                methods = filterSheetMethods,
+                filterElementsMethods = filterSheetMethods,
                 onFilterModeChanged = onFilterModeChanged
             )
         }
@@ -116,7 +115,7 @@ fun FilterScreenUi(
                             .fillMaxHeight(0.9f)
                     ) {
                         items(list.size) {
-                            FilterListItem(
+                            FilterScreenListItem(
                                 listItem = list[it],
                                 onInPartyChecked = onInPartyChecked,
                                 onInPartyUnChecked = onInPartyUnChecked

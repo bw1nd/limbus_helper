@@ -27,7 +27,7 @@ import ua.blackwind.limbushelper.R
 import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.sinner.model.Ego
 import ua.blackwind.limbushelper.domain.sinner.model.EgoSkill
-import ua.blackwind.limbushelper.ui.screens.filter_screen.FilterListItem
+import ua.blackwind.limbushelper.ui.screens.filter_screen.FilterScreenListItem
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterDataModel
 import ua.blackwind.limbushelper.ui.screens.filter_screen.model.FilterItemTypeModel
 import ua.blackwind.limbushelper.ui.theme.*
@@ -84,7 +84,7 @@ fun egoItemCore(ego: Ego): @Composable (RowScope.() -> Unit) =
                 .padding(start = 5.dp)
                 .padding(vertical = 4.dp)
         ) {
-            Row() {
+            Row {
                 Text(
                     text = ego.name,
                     fontSize = 14.sp,
@@ -258,7 +258,7 @@ fun EgoCostItem(sin: Sin, cost: Int) {
 @Composable
 private fun PreviewEgoItemCore() {
     Box(modifier = Modifier.size(400.dp, 100.dp)) {
-        FilterListItem(listItem = FilterDataModel(
+        FilterScreenListItem(listItem = FilterDataModel(
             FilterItemTypeModel.EgoType(
                 Ego(
                     0,

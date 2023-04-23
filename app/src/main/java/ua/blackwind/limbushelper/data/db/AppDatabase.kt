@@ -13,10 +13,12 @@ import ua.blackwind.limbushelper.data.db.model.*
         EgoEntity::class,
         SkillEntity::class,
         EgoSkillEntity::class,
+        DefenseSkillEntity::class,
         PartyEntity::class,
         PartyIdentityEntity::class,
         PartyActiveIdentityEntity::class,
-        PartyEgoEntity::class
+        PartyEgoEntity::class,
+        PartySelectedEgoEntity::class
     ],
     exportSchema = false,
     version = 1
