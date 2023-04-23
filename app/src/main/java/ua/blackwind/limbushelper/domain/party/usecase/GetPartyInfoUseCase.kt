@@ -1,10 +1,9 @@
 package ua.blackwind.limbushelper.domain.party.usecase
 
-import ua.blackwind.limbushelper.domain.common.DamageType
-import ua.blackwind.limbushelper.domain.common.EgoSinResistType
-import ua.blackwind.limbushelper.domain.common.IdentityDamageResistType
-import ua.blackwind.limbushelper.domain.common.Sin
+import ua.blackwind.limbushelper.data.SinnerRepository
+import ua.blackwind.limbushelper.domain.common.*
 import ua.blackwind.limbushelper.domain.party.model.Party
+import ua.blackwind.limbushelper.domain.party.model.PartyIdentity
 import ua.blackwind.limbushelper.domain.party.model.PartyInfoData
 import ua.blackwind.limbushelper.ui.screens.party_building_screen.model.InfoPanelDamageResist
 import javax.inject.Inject
@@ -22,13 +21,14 @@ private const val POOR_UPPER_BOUND = 160
 private const val UPPER_BOUND = 200
 
 //TODO needs unit tests and potency calculation calibration.
-class GetPartyInfoUseCase @Inject constructor() {
-    operator fun invoke(party: Party): PartyInfoData {
+class GetPartyInfoUseCase @Inject constructor(
+    private val repository: SinnerRepository
+) {
+    suspend operator fun invoke(party: Party): PartyInfoData {
         val identities = party.sinners.map { it.identities }.flatten()
         val activeList = identities.filter { it.isActive }
-        val egoList =
-            party.sinners.map { it.ego }.flatten()
-                .filter { ego -> activeList.any { it.identity.sinnerId == ego.sinnerId } }
+        val egoList = formEgoList(activeList, party)
+
         val attackByDamage = DamageType.values().associateWith { 0 }.toMutableMap()
         val resistByDamage = DamageType.values().associateWith { 0 }.toMutableMap()
         val attackBySin = Sin.values().associateWith { 0 }.toMutableMap()
@@ -55,15 +55,13 @@ class GetPartyInfoUseCase @Inject constructor() {
                 resistByDamage[DamageType.BLUNT]!! + enumerateDamageResistType(identity.bluntRes)
         }
 
-        egoList.groupBy { it.sinnerId }
-            .map { list -> list.value.minBy { it.risk.ordinal } }
-            .forEach { ego ->
-                Sin.values().forEach { sin ->
-                    resistBySin[sin] = resistBySin[sin]!! + enumerateSinResistType(
-                        ego.sinResistances[sin] ?: EgoSinResistType.NORMAL
-                    )
-                }
+        egoList.forEach { ego ->
+            Sin.values().forEach { sin ->
+                resistBySin[sin] = resistBySin[sin]!! + enumerateSinResistType(
+                    ego.sinResistances[sin] ?: EgoSinResistType.NORMAL
+                )
             }
+        }
 
         return PartyInfoData(
             attackByDamage.toMap(),
@@ -78,6 +76,19 @@ class GetPartyInfoUseCase @Inject constructor() {
             identities.size
         )
     }
+
+    private suspend fun formEgoList(
+        activeList: List<PartyIdentity>,
+        party: Party
+    ) = repository.getAllSinners()
+        .filter { sinner -> activeList.any { it.identity.sinnerId == sinner.id } }
+        .map { sinner ->
+            party.sinners.find { it.sinner.id == sinner.id }?.let { partySinner ->
+                if (partySinner.selectedRiskLevel != null)
+                    partySinner.ego.find { it.risk == partySinner.selectedRiskLevel } else
+                    partySinner.ego.find { it.risk == RiskLevel.ZAYIN }
+            } ?: repository.getEgoById(sinner.id)
+        }
 
     private fun enumerateDamageResistType(resist: IdentityDamageResistType): Int {
         return when (resist) {
